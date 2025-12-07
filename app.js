@@ -213,21 +213,61 @@ $("add_surgery").addEventListener("click", () => {
   const item = newEl("div", "list-item");
 
   item.innerHTML = `
-    <label>Surgery Name</label>
-    <input type="text" class="surg_name">
+    <label>Surgery</label>
+    <select class="surg_name"></select>
 
-    <label>Surgery Cost</label>
-    <input type="number" class="surg_cost">
+    <label>Surgeon</label>
+    <select class="surg_doctor"></select>
+
+    <label>No. of Assistants</label>
+    <input type="number" class="surg_asst" value="1">
+
+    <label>Anaesthesia Type</label>
+    <select class="surg_anes">
+      <option>GA</option>
+      <option>LA</option>
+      <option>RA</option>
+    </select>
+
+    <label>Emergency?</label>
+    <select class="surg_emg">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+
+    <label>Implant / Consumables (optional)</label>
+    <input type="number" class="surg_implant" placeholder="0">
 
     <button class="small-btn remove_surg">Remove</button>
   `;
 
   box.appendChild(item);
 
+  /* Load dropdowns */
+  initSurgeryDropdown(item.querySelector(".surg_name"));
+
+  const drSel = item.querySelector(".surg_doctor");
+  drSel.innerHTML = `<option value="">Select</option>`;
+  DOCTORS.forEach((dr) => {
+    drSel.innerHTML += `<option>${dr.name}</option>`;
+  });
+
   item.querySelector(".remove_surg").addEventListener("click", () => {
     item.remove();
   });
 });
+
+function initSurgeryDropdown(sel) {
+  sel.innerHTML = `<option value="">Select Surgery</option>`;
+  if (TARIFF.surgeries) {
+    TARIFF.surgeries.forEach((s) => {
+      const o = document.createElement("option");
+      o.value = s.name;
+      o.textContent = s.name;
+      sel.appendChild(o);
+    });
+  }
+}
 
 /* ================================================================
    PHARMACY
@@ -363,11 +403,38 @@ function calculateTotals() {
     if (drObj) gross += drObj.visit_fee * cnt;
   });
 
-  /* Surgeries */
-  document.querySelectorAll("#surgery_list .list-item").forEach((it) => {
-    const cost = Number(it.querySelector(".surg_cost").value || 0);
-    gross += cost;
-  });
+/* Surgeries — Auto Package Calculation */
+document.querySelectorAll("#surgery_list .list-item").forEach((it) => {
+  const sname = it.querySelector(".surg_name").value;
+  const asst = Number(it.querySelector(".surg_asst").value || 0);
+  const implant = Number(it.querySelector(".surg_implant").value || 0);
+  const emergency = it.querySelector(".surg_emg").value === "yes";
+
+  const pkg = (TARIFF.surgeries || []).find((x) => x.name === sname);
+  if (!pkg) return;
+
+  let total = 0;
+
+  /* surgeon */
+  total += pkg.surgeon_fee;
+
+  /* assistant surgeon */
+  total += (pkg.surgeon_fee * (pkg.assistant_fee / 100)) * asst;
+
+  /* anaesthesia */
+  total += pkg.anaesthesia_fee;
+
+  /* OT charges */
+  let ot = pkg.ot_charges;
+  if (emergency) ot *= 1.5;
+  total += ot;
+
+  /* implants */
+  total += implant;
+
+  gross += total;
+});
+
 
   /* Pharmacy */
   document.querySelectorAll("#pharmacy_list .list-item").forEach((it) => {
@@ -468,12 +535,27 @@ $("generate_bill").addEventListener("click", () => {
     if (drObj) addRow("Consultation — " + dr, cnt, drObj.visit_fee);
   });
 
-  /* SURGERIES */
-  document.querySelectorAll("#surgery_list .list-item").forEach((it) => {
-    const name = it.querySelector(".surg_name").value;
-    const cost = Number(it.querySelector(".surg_cost").value);
-    addRow("Surgery — " + name, 1, cost);
-  });
+/* SURGERIES — Detailed Entry */
+document.querySelectorAll("#surgery_list .list-item").forEach((it) => {
+  const name = it.querySelector(".surg_name").value;
+  const asst = Number(it.querySelector(".surg_asst").value || 0);
+  const implant = Number(it.querySelector(".surg_implant").value || 0);
+  const emergency = it.querySelector(".surg_emg").value === "yes";
+
+  const pkg = (TARIFF.surgeries || []).find((x) => x.name === name);
+  if (!pkg) return;
+
+  addRow("Surgery — " + name, 1, pkg.surgeon_fee);
+  addRow("Assistant Surgeon Fee (" + asst + ")", 1, (pkg.surgeon_fee * pkg.assistant_fee/100) * asst);
+  addRow("Anaesthesia Fee", 1, pkg.anaesthesia_fee);
+
+  let ot = pkg.ot_charges;
+  if (emergency) ot *= 1.5;
+  addRow("OT Charges" + (emergency ? " (Emergency)" : ""), 1, ot);
+
+  if (implant > 0) addRow("Implants / Consumables", 1, implant);
+});
+
 
   /* PHARMACY */
   document.querySelectorAll("#pharmacy_list .list-item").forEach((it) => {
