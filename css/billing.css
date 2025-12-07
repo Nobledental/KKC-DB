@@ -1,87 +1,105 @@
-.billing-layout {
-  display:flex; gap:22px;
+/* ============================================================================
+   BILLING PAGE — PREMIUM HOSPITAL UI
+============================================================================ */
+
+.billing-page {
+  max-width: 1100px;
+  margin: auto;
 }
 
-/* SIDEBAR */
-.sidebar {
-  width:260px;
-  display:flex;
-  flex-direction:column;
-  gap:20px;
-}
-.sidebar-block {
-  background:white;
-  padding:16px;
-  border-radius:var(--radius);
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
+/* PATIENT SEARCH */
+.patient-search {
+  position: relative;
+  margin-bottom: var(--space-md);
 }
 
-/* PATIENT SUMMARY */
+.patient-search input {
+  width: 100%;
+}
+
+.dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  display: none;
+}
+
+.patient-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.patient-item:hover {
+  background: var(--accent-soft);
+}
+
 .patient-summary {
-  background:white;
-  padding:16px;
-  border-radius:var(--radius);
-  border:1px solid var(--line);
-  font-size:14px;
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface-strong);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
 }
 
-/* BILL TABLE (Compact Style Preserved) */
-.bill-area { flex:1; display:flex; flex-direction:column; gap:20px; }
-
-.bill-table {
-  padding:16px;
-  border-radius:var(--radius);
-  border:1px solid var(--line);
-  background:white;
+/* BILLING TABLE */
+.table-wrapper {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
-.bill-table .row {
-  display:grid;
-  grid-template-columns:
-    120px
-    1fr
-    80px
-    60px
-    60px
-    80px
-    40px;
-  gap:8px;
-  padding:8px 0;
-  border-bottom:1px solid var(--line);
+.bill-header-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 100px 70px 70px 100px 40px;
+  background: var(--surface-strong);
+  padding: 12px;
+  font-size: var(--small);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
 }
 
-.bill-table input { width:100%; }
-
-.bill-table button {
-  background:#ef4444;
-  border:none;
-  color:white;
-  border-radius:6px;
-  cursor:pointer;
+.bill-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 100px 70px 70px 100px 40px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
 }
 
-/* TOTALS */
-.totals {
-  background:white;
-  padding:20px;
-  border-radius:var(--radius);
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-  font-size:14px;
+.bill-row input {
+  width: 95%;
 }
 
-.totals > div {
-  display:flex;
-  justify-content:space-between;
-  padding:6px 0;
-  border-bottom:1px solid var(--line);
+.bill-row div {
+  display: flex;
+  align-items: center;
 }
 
-.totals .final {
-  font-size:18px;
-  font-weight:700;
-  border-top:2px solid var(--line);
-  margin-top:8px;
-  padding-top:12px;
+/* ACTIONS */
+.bill-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+/* SUMMARY */
+.summary-grid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+}
+
+.summary-grid p {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.final-box p {
+  font-size: 22px;
+  color: var(--accent);
 }
