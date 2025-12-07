@@ -1,461 +1,331 @@
 /* ============================================================================
-   GLOBAL — THEME + RESET
+   GLOBAL BASE – Premium Medical UI
 ============================================================================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  font-family: "Manrope", sans-serif;
-  height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  overflow: hidden;
-}
-
-/* LIGHT THEME */
 :root {
-  --bg: #f5f7fa;
-  --text: #1c1f24;
-  --panel: #ffffff;
-  --panel-soft: #f0f2f5;
-  --border: #e0e3e7;
-  --accent: #0ea5e9;
-  --accent-soft: rgba(14,165,233,0.14);
-  --shadow: 0 6px 20px rgba(0,0,0,0.08);
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --subtext: #64748b;
+    --accent: #0284c7;
+    --accent-soft: #e0f2fe;
+
+    --radius: 14px;
+    --shadow: 0 6px 18px rgba(0,0,0,0.06);
+
+    --font-main: 'Manrope', sans-serif;
+    --font-alt: 'Mulish', sans-serif;
 }
 
-/* DARK THEME */
-html[data-theme="dark"] {
-  --bg: #0d1116;
-  --text: #eef3ff;
-  --panel: #171c22;
-  --panel-soft: #1f252d;
-  --border: #2a323c;
-  --accent: #3bd6ff;
-  --accent-soft: rgba(59,214,255,0.12);
-  --shadow: 0 6px 20px rgba(0,0,0,0.4);
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-main);
 }
 
-/* Scroll global */
-body, main {
-  overflow-y: auto;
-  scrollbar-width: thin;
+body {
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1, h2, h3 {
+    font-weight: 800;
 }
 
 /* ============================================================================
-   SIDEBAR
+   SIDEBAR – Apollo Medical Panel
 ============================================================================ */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 260px;
-  height: 100%;
-  background: var(--panel);
-  border-right: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  transition: width 0.25s ease;
-  z-index: 20;
-}
-
-.sidebar.collapsed {
-  width: 80px;
+    width: 270px;
+    background: white;
+    border-right: 1px solid var(--border);
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
 }
 
 .sidebar-header {
-  text-align: center;
-  padding: 20px 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
-.sidebar-logo {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 10px;
+.sidebar-header .logo {
+    width: 48px;
+    height: auto;
 }
 
-.sidebar-nav {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
+.sidebar-header h2 {
+    font-size: 18px;
+    font-weight: 800;
 }
 
-.nav-btn {
-  background: none;
-  border: none;
-  color: var(--text);
-  padding: 12px 16px;
-  font-size: 15px;
-  text-align: left;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 6px;
-  transition: background 0.2s ease;
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.nav-btn:hover,
-.nav-btn.active {
-  background: var(--accent-soft);
-  color: var(--accent);
+.menu-item {
+    padding: 12px 16px;
+    font-size: 15px;
+    text-align: left;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    background: transparent;
+    color: var(--text);
+    font-weight: 600;
 }
 
-.sidebar-footer {
-  padding: 15px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.menu-item:hover {
+    background: var(--accent-soft);
 }
 
-#toggleTheme,
-#collapseSidebar {
-  padding: 10px;
-  border: none;
-  background: var(--panel-soft);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-#toggleTheme:hover,
-#collapseSidebar:hover {
-  background: var(--accent-soft);
+.menu-item.active {
+    background: var(--accent);
+    color: white;
 }
 
 /* ============================================================================
-   TOPBAR
+   TOP BAR
 ============================================================================ */
 .topbar {
-  position: fixed;
-  left: 260px;
-  top: 0;
-  height: 60px;
-  width: calc(100% - 260px);
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  transition: left 0.25s ease, width 0.25s ease;
+    height: 70px;
+    border-bottom: 1px solid var(--border);
+    background: white;
+    padding: 0 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.sidebar.collapsed ~ .topbar {
-  left: 80px;
-  width: calc(100% - 80px);
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-#panelTitle {
-  font-size: 22px;
-  font-weight: 700;
+#themeToggle,
+#printBtn {
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: white;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#printBtn.hidden {
+    display: none;
 }
 
 /* ============================================================================
-   MAIN PANELS
+   MAIN CONTENT WRAPPER
 ============================================================================ */
-#main {
-  position: fixed;
-  top: 60px;
-  left: 260px;
-  width: calc(100% - 260px);
-  height: calc(100% - 60px);
-  padding: 20px;
-  overflow-y: auto;
-  transition: left 0.25s ease, width 0.25s ease;
-}
-
-.sidebar.collapsed ~ #main {
-  left: 80px;
-  width: calc(100% - 80px);
+#mainContent {
+    padding: 26px;
+    overflow-y: auto;
+    width: calc(100vw - 270px);
 }
 
 .panel {
-  display: none;
+    display: none;
 }
 
-.active-panel {
-  display: block;
-}
-
-/* ============================================================================
-   DASHBOARD
-============================================================================ */
-.dash-grid {
-  margin-top: 25px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-
-.dash-card {
-  background: var(--panel);
-  padding: 20px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-}
-
-.dash-card h3 {
-  font-size: 18px;
-}
-
-.dash-card p {
-  margin-top: 12px;
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--accent);
+.panel.active {
+    display: block;
 }
 
 /* ============================================================================
-   BILL PANEL — STRUCTURE
+   DASHBOARD CARDS
 ============================================================================ */
-.bill-container {
-  display: flex;
-  gap: 24px;
+.stats-grid {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
 }
 
-.bill-left, .bill-right {
-  background: var(--panel);
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
+.stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
 }
 
-.bill-left {
-  width: 35%;
+.stat-card h3 {
+    font-size: 15px;
+    color: var(--subtext);
+    margin-bottom: 6px;
 }
 
-.bill-right {
-  width: 65%;
-  overflow-y: auto;
-  max-height: calc(100vh - 120px);
+.stat-card p {
+    font-size: 30px;
+    font-weight: 800;
 }
 
 /* ============================================================================
-   FORM ELEMENTS
+   CARD + FORM ELEMENTS
 ============================================================================ */
-.form-group {
-  margin-bottom: 14px;
-  display: flex;
-  flex-direction: column;
+.card {
+    background: var(--card);
+    padding: 22px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-top: 20px;
 }
 
-.form-group label {
-  font-size: 14px;
-  margin-bottom: 5px;
-  opacity: 0.8;
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
 }
 
-.form-group input,
-.form-group select {
-  padding: 10px;
-  border-radius: 8px;
-  background: var(--panel-soft);
-  border: 1px solid var(--border);
-  color: var(--text);
+label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--subtext);
 }
 
-.form-row {
-  display: flex;
-  gap: 12px;
-}
-
-.insurance-block {
-  display: none;
+input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-top: 6px;
+    font-size: 15px;
 }
 
 /* ============================================================================
-   BILL BOXES
+   ADD BUTTON
 ============================================================================ */
-.bill-box {
-  background: var(--panel-soft);
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border);
+.add-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 14px;
 }
 
-.bill-box h3 {
-  margin-bottom: 12px;
+.add-btn:hover {
+    background: #0369a1;
 }
 
-/* Mini button */
-.mini-btn {
-  background: var(--accent);
-  border: none;
-  padding: 6px 12px;
-  color: white;
-  font-size: 13px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-bottom: 10px;
+/* ============================================================================
+   SUMMARY CARD
+============================================================================ */
+.summary-card .summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 16px;
+    color: var(--text);
 }
 
-/* Summary */
-.bill-summary {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 18px;
-  border-radius: 12px;
-  margin-top: 30px;
-}
-
-.bill-summary p {
-  margin-bottom: 8px;
-  font-size: 15px;
+.summary-row.total {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+    border-bottom: none;
 }
 
 .primary-btn,
-.secondary-btn {
-  padding: 10px 18px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  margin-top: 12px;
-  margin-right: 10px;
+.print-btn {
+    margin-top: 18px;
+    padding: 12px 22px;
+    font-size: 15px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
 }
 
 .primary-btn {
-  background: var(--accent);
-  color: white;
+    background: var(--accent);
+    color: white;
 }
 
-.secondary-btn {
-  background: var(--panel-soft);
-  color: var(--text);
-}
-
-/* ============================================================================
-   TABLES (Visits, Investigations, etc.)
-============================================================================ */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table td, table th {
-  padding: 8px;
-  border-bottom: 1px solid var(--border);
-}
-
-table th {
-  text-align: left;
-  background: var(--accent-soft);
-  font-weight: 700;
-}
-
-.inline-input {
-  width: 100%;
-  padding: 6px;
-  border-radius: 6px;
-  background: var(--panel);
-  border: 1px solid var(--border);
+.print-btn {
+    background: #0f172a;
+    color: white;
 }
 
 /* ============================================================================
-   TARIFF MASTER
+   ROOM SHIFT / CONSULTATION ENTRY BLOCKS
 ============================================================================ */
-.tariff-section {
-  background: var(--panel);
-  padding: 20px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  margin-bottom: 25px;
-  box-shadow: var(--shadow);
+.entry-block {
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
 }
 
-.tariff-section h3 {
-  margin-bottom: 12px;
+.entry-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 10px;
 }
 
-.package-card {
-  background: var(--panel-soft);
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
+.entry-row div {
+    flex: 1;
 }
 
-.package-name {
-  font-weight: 700;
-  font-size: 16px;
-}
-
-.package-cat {
-  font-size: 13px;
-  opacity: 0.7;
+.remove-btn {
+    background: #ef4444;
+    color: white;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
 }
 
 /* ============================================================================
-   HISTORY PANEL
+   TABLES (Investigations, Pharmacy)
 ============================================================================ */
-#historyTable td {
-  padding: 12px 8px;
+.table-row {
+    background: #f8fafc;
+    padding: 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 1fr 120px 60px;
+    gap: 12px;
 }
 
-#historyTable tr:hover {
-  background: var(--accent-soft);
-  cursor: pointer;
-}
-
-/* ============================================================================
-   DRAWER (Right-Side)
-============================================================================ */
-.drawer {
-  position: fixed;
-  right: -450px;
-  top: 0;
-  width: 450px;
-  height: 100%;
-  background: var(--panel);
-  border-left: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  transition: right 0.25s ease;
-  z-index: 99;
-  padding: 20px;
-}
-
-.drawer.open {
-  right: 0;
-}
-
-.drawer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.drawer-content input,
-.drawer-content select {
-  width: 100%;
-  margin-bottom: 12px;
-  padding: 10px;
-  background: var(--panel-soft);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
-/* ============================================================================
-   RESPONSIVE
-============================================================================ */
-@media (max-width: 1000px) {
-  .bill-container {
-    flex-direction: column;
-  }
-  .bill-left, .bill-right {
+.table-row input {
     width: 100%;
-  }
 }
 
-@media (max-width: 700px) {
-  .dash-grid {
-    grid-template-columns: 1fr;
-  }
+/* ============================================================================
+   PRINT OVERRIDES (For A4 PDF Export)
+============================================================================ */
+@media print {
+    body {
+        background: white;
+    }
+    .sidebar, .topbar {
+        display: none !important;
+    }
+    #mainContent {
+        width: 100%;
+        padding: 0;
+    }
+    .panel {
+        display: block !important;
+    }
 }
