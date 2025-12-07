@@ -1,5 +1,5 @@
 /* ============================================================================
-   UTILITIES — KCC Billing OS
+   UTILITIES — KCC Billing OS (UPGRADED)
 ============================================================================ */
 
 function pad(n, size = 2) {
@@ -7,7 +7,7 @@ function pad(n, size = 2) {
 }
 
 /* -------------------------------------------
-   DATE HELPERS
+   FORMAT DATE (DD-MM-YYYY)
 ------------------------------------------- */
 function formatDate(d) {
   if (!d) return "";
@@ -16,41 +16,41 @@ function formatDate(d) {
 }
 
 /* -------------------------------------------
-   AUTO UHID
-   Format: KCC-YYMM-000001
+   UHID FORMAT: KCC-YYMM-XXXXXX
 ------------------------------------------- */
 function generateUHID() {
   const now = new Date();
   const yymm = `${now.getFullYear().toString().slice(-2)}${pad(now.getMonth() + 1)}`;
-  const rand = Math.floor(Math.random() * 999999).toString().padStart(6, "0");
-  return `KCC-${yymm}-${rand}`;
+  const seq = Math.floor(Math.random() * 999999).toString().padStart(6, "0");
+  return `KCC-${yymm}-${seq}`;
 }
 
 /* -------------------------------------------
-   AUTO IP NUMBER
-   Format: IP-YYMM-000001
+   IP NUMBER FORMAT: IP-YYMM-XXXXXX
 ------------------------------------------- */
 function generateIP() {
   const now = new Date();
   const yymm = `${now.getFullYear().toString().slice(-2)}${pad(now.getMonth() + 1)}`;
-  const rand = Math.floor(Math.random() * 999999).toString().padStart(6, "0");
-  return `IP-${yymm}-${rand}`;
+  const seq = Math.floor(Math.random() * 999999).toString().padStart(6, "0");
+  return `IP-${yymm}-${seq}`;
 }
 
 /* -------------------------------------------
-   AUTO INVOICE NUMBER
-   12-digit or INV-YYYY-XXXXXX
+   INVOICE NUMBER (12 DIGIT SAFE)
 ------------------------------------------- */
 function generateInvoice() {
   const now = new Date();
   const y = now.getFullYear();
-  const rand = Math.floor(Math.random() * 999999).toString().padStart(6, "0");
-  return `${y}${rand}`;
+  const seq = Math.floor(Math.random() * 999999).toString().padStart(6, "0");
+  return `${y}${seq}`; // Example: 202401123456
 }
 
 /* -------------------------------------------
-   Format INR
+   INR FORMATTER
 ------------------------------------------- */
 function fmt(n) {
-  return "₹" + Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 });
+  return "₹" + Number(n || 0).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
