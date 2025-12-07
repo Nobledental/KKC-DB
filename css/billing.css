@@ -1,61 +1,87 @@
 .billing-layout {
-  display: flex;
-  gap: 20px;
+  display:flex; gap:22px;
 }
 
+/* SIDEBAR */
 .sidebar {
-  width: 260px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  width:260px;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
 }
-
 .sidebar-block {
-  background: var(--card);
-  padding: 16px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  background:white;
+  padding:16px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
 }
 
-.bill-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
+/* PATIENT SUMMARY */
 .patient-summary {
-  background: var(--card);
-  padding: 16px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+  background:white;
+  padding:16px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  font-size:14px;
 }
+
+/* BILL TABLE (Compact Style Preserved) */
+.bill-area { flex:1; display:flex; flex-direction:column; gap:20px; }
 
 .bill-table {
-  background: var(--card);
-  padding: 16px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+  padding:16px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:white;
 }
 
 .bill-table .row {
-  display: grid;
-  grid-template-columns: 120px 100px 1fr 80px 60px 80px 80px 80px auto;
-  gap: 8px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  display:grid;
+  grid-template-columns:
+    120px
+    1fr
+    80px
+    60px
+    60px
+    80px
+    40px;
+  gap:8px;
+  padding:8px 0;
+  border-bottom:1px solid var(--line);
 }
 
+.bill-table input { width:100%; }
+
+.bill-table button {
+  background:#ef4444;
+  border:none;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* TOTALS */
 .totals {
-  background: var(--card);
-  padding: 20px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+  background:white;
+  padding:20px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  font-size:14px;
 }
 
 .totals > div {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.totals .final {
+  font-size:18px;
+  font-weight:700;
+  border-top:2px solid var(--line);
+  margin-top:8px;
+  padding-top:12px;
 }
