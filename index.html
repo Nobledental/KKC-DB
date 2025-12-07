@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KCC Billing Page — Krishna Kidney Centre</title>
+  <title>KCC Billing OS — Krishna Kidney Centre</title>
 
-  <!-- FONT -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- CSS -->
@@ -22,210 +22,282 @@
 <body>
 
 <!-- ============================================================
-     TOP HEADER
+     SIDEBAR
 ============================================================ -->
-<header class="app-header">
-  <div class="left">
-    <img src="assets/logo.png" class="logo">
-    <h1>Krishna Kidney Centre — Billing</h1>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="assets/logo.png" class="sidebar-logo" alt="KCC Logo">
+    <h2>Krishna Kidney Centre</h2>
   </div>
 
-  <div class="right">
-    <button id="printBtn">🖨 Print</button>
-    <button id="pdfBtn">📄 Export PDF</button>
-    <button id="themeToggle">🌗</button>
+  <nav class="sidebar-nav">
+    <button class="nav-btn active" data-panel="dashboard">🏠 Dashboard</button>
+    <button class="nav-btn" data-panel="newBill">🧾 New Bill</button>
+    <button class="nav-btn" data-panel="tariff">💰 Tariff Master</button>
+    <button class="nav-btn" data-panel="history">📚 Bill History</button>
+    <button class="nav-btn" data-panel="settings">⚙️ Settings</button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button id="toggleTheme">🌓 Theme</button>
+    <button id="collapseSidebar">⬅ Collapse</button>
   </div>
+</aside>
+
+
+<!-- ============================================================
+     TOP NAVBAR
+============================================================ -->
+<header class="topbar">
+  <h1 id="panelTitle">Dashboard</h1>
 </header>
 
 
 <!-- ============================================================
-     MAIN BILLING CONTAINER
+     MAIN CONTENT PANELS
 ============================================================ -->
-<main class="billing-shell">
+<main id="main">
 
-  <!-- ============================================================
-       PATIENT DETAILS FORM
-  ============================================================= -->
-  <section class="card section-card">
-    <h2 class="section-title">Patient Details</h2>
+  <!-- ==========================
+       DASHBOARD PANEL
+  =========================== -->
+  <section id="dashboard" class="panel active-panel">
+    <h2>Welcome to KCC Billing OS</h2>
+    <p>Your fully offline hospital billing system.</p>
 
-    <div class="form-grid">
+    <div class="dash-grid">
 
-      <div>
-        <label>Patient Name</label>
-        <input id="p_name">
+      <div class="dash-card">
+        <h3>Total Bills</h3>
+        <p id="dashTotalBills">0</p>
       </div>
 
-      <div>
-        <label>Patient ID</label>
-        <input id="p_id">
+      <div class="dash-card">
+        <h3>Total Revenue</h3>
+        <p id="dashTotalRevenue">₹0</p>
       </div>
 
-      <div>
-        <label>Age</label>
-        <input id="p_age">
-      </div>
-
-      <div>
-        <label>Gender</label>
-        <select id="p_gender">
-          <option value="">Select</option>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
-      </div>
-
-      <div class="wide">
-        <label>Address</label>
-        <textarea id="p_address"></textarea>
-      </div>
-
-      <div>
-        <label>Department</label>
-        <input id="p_department">
-      </div>
-
-      <div>
-        <label>Consultant</label>
-        <input id="p_consultant">
-      </div>
-
-      <div>
-        <label>Admission Date</label>
-        <input type="date" id="p_admission">
-      </div>
-
-      <div>
-        <label>Discharge Date</label>
-        <input type="date" id="p_discharge">
-      </div>
-
-      <div>
-        <label>Length of Stay</label>
-        <input id="p_los" disabled>
-      </div>
-
-      <div>
-        <label>Insurance?</label>
-        <select id="p_insurance">
-          <option value="no">No</option>
-          <option value="yes">Yes</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Insurance / Corp. Name</label>
-        <input id="p_insurer">
-      </div>
-
-      <div>
-        <label>Claim / Approval No</label>
-        <input id="p_claim">
+      <div class="dash-card">
+        <h3>Pending Balance</h3>
+        <p id="dashPendingBalance">₹0</p>
       </div>
 
     </div>
   </section>
 
+  <!-- ==========================
+       NEW BILL PANEL
+  =========================== -->
+  <section id="newBill" class="panel">
 
-  <!-- ============================================================
-       ROOM CHARGES
-  ============================================================= -->
-  <section class="card section-card">
-    <h2 class="section-title">Room & Daily Charges</h2>
+    <div class="bill-container">
 
-    <select id="room_select"></select>
-    <div id="room_breakup" class="table-box"></div>
+      <!-- =====================
+           LEFT — PATIENT DETAILS
+      ====================== -->
+      <div class="bill-left">
+
+        <h3>Patient Details</h3>
+
+        <div class="form-group"><label>Name</label><input id="pt_name"></div>
+        <div class="form-group"><label>Patient ID</label><input id="pt_id"></div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Age</label><input id="pt_age" type="number"></div>
+          <div class="form-group">
+            <label>Gender</label>
+            <select id="pt_gender">
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group"><label>Address</label><input id="pt_address"></div>
+
+        <div class="form-group"><label>Department</label><input id="pt_dept"></div>
+        <div class="form-group"><label>Consultant</label><input id="pt_doctor"></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Admission Date</label>
+            <input type="date" id="pt_doa">
+          </div>
+          <div class="form-group">
+            <label>Discharge Date</label>
+            <input type="date" id="pt_dod">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Insurance?</label>
+          <select id="pt_insured">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group insurance-block">
+          <label>Insurance / Corporate Name</label>
+          <input id="pt_insurer">
+        </div>
+
+        <div class="form-group insurance-block">
+          <label>Claim Number</label>
+          <input id="pt_claim">
+        </div>
+
+        <div class="form-group">
+          <label>Length of Stay</label>
+          <input id="pt_los" disabled>
+        </div>
+
+      </div>
+
+      <!-- =====================
+           RIGHT — BILL MODULES
+      ====================== -->
+      <div class="bill-right">
+
+        <!-- ROOM & DAILY CHARGES -->
+        <div class="bill-box">
+          <h3>Room & Daily Charges</h3>
+          <select id="roomType"></select>
+
+          <div class="room-breakup">
+            <p>Room Rent/day: <span id="room_rent">0</span></p>
+            <p>Nursing/day: <span id="room_nursing">0</span></p>
+            <p>Duty Doctor/day: <span id="room_duty">0</span></p>
+            <p>Consultant Fee/day: <span id="room_consult">0</span></p>
+          </div>
+        </div>
+
+        <!-- CONSULTANT VISITS -->
+        <div class="bill-box">
+          <h3>Consultant Visits</h3>
+          <button class="mini-btn" id="addVisit">+ Add Visit</button>
+          <table id="visitTable"></table>
+        </div>
+
+        <!-- SURGERY MODULE -->
+        <div class="bill-box">
+          <h3>Surgeries</h3>
+          <button class="mini-btn" id="addSurgery">+ Add Surgery</button>
+          <div id="surgeryList"></div>
+        </div>
+
+        <!-- PHARMACY -->
+        <div class="bill-box">
+          <h3>Pharmacy</h3>
+          <input type="number" id="pharmacyTotal" placeholder="Total Pharmacy Amount">
+          <button class="mini-btn" id="addPharmaItem">Breakup +</button>
+          <div id="pharmaList"></div>
+        </div>
+
+        <!-- INVESTIGATIONS -->
+        <div class="bill-box">
+          <h3>Investigations</h3>
+          <button class="mini-btn" id="addInvestigation">+ Add Investigation</button>
+          <div id="investList"></div>
+        </div>
+
+        <!-- MISC -->
+        <div class="bill-box">
+          <h3>Miscellaneous</h3>
+          <button class="mini-btn" id="addMisc">+ Add Item</button>
+          <div id="miscList"></div>
+        </div>
+
+        <!-- RECEIPTS -->
+        <div class="bill-box">
+          <h3>Receipts</h3>
+          <button class="mini-btn" id="addReceipt">+ Add Receipt</button>
+          <div id="receiptList"></div>
+        </div>
+
+        <!-- FINAL SUMMARY -->
+        <div class="bill-summary">
+          <h3>Final Summary</h3>
+          <p>Gross Total: <span id="sum_gross">₹0</span></p>
+          <p>Total Paid: <span id="sum_paid">₹0</span></p>
+          <p>Balance: <span id="sum_balance">₹0</span></p>
+
+          <button id="saveBill" class="primary-btn">Save Bill</button>
+          <button id="exportPDF" class="secondary-btn">Export PDF</button>
+        </div>
+
+      </div>
+
+    </div>
   </section>
 
+  <!-- ==========================
+       TARIFF MASTER PANEL
+  =========================== -->
+  <section id="tariff" class="panel">
 
-  <!-- ============================================================
-       CONSULTANT VISITS
-  ============================================================= -->
-  <section class="card section-card">
-    <h2 class="section-title">Consultant Visits</h2>
-    <button class="btn-add" id="addVisitBtn">+ Add Visit</button>
-    <div id="visit_list" class="table-box"></div>
+    <h2>Tariff Master</h2>
+
+    <div class="tariff-section">
+      <h3>A. Room & Daily Charges</h3>
+      <table id="tariff_rooms"></table>
+    </div>
+
+    <div class="tariff-section">
+      <h3>B. Surgical Packages</h3>
+      <button class="mini-btn" id="addPackage">+ Add Package</button>
+      <div id="packageList"></div>
+    </div>
+
+    <div class="tariff-section">
+      <h3>C. Investigations</h3>
+      <button class="mini-btn" id="addInvestTariff">+ Add Investigation</button>
+      <table id="tariff_invest"></table>
+    </div>
+
+    <div class="tariff-section">
+      <h3>Import / Export Tariff</h3>
+      <button class="primary-btn" id="exportTariff">Export JSON</button>
+      <input type="file" id="importTariff" accept=".json">
+    </div>
+
   </section>
 
-
-  <!-- ============================================================
-       SURGERIES
-  ============================================================= -->
-  <section class="card section-card">
-    <h2 class="section-title">Surgeries</h2>
-    <button class="btn-add" id="addSurgeryBtn">+ Add Surgery</button>
-    <div id="surgery_list" class="table-box"></div>
+  <!-- ==========================
+       BILL HISTORY
+  =========================== -->
+  <section id="history" class="panel">
+    <h2>Bill History</h2>
+    <table id="historyTable"></table>
   </section>
 
-
-  <!-- ============================================================
-       PHARMACY
-  ============================================================= -->
-  <section class="card section-card">
-    <h2 class="section-title">Pharmacy</h2>
-
-    <label>Total Pharmacy Amount</label>
-    <input id="pharmacy_total">
-
-    <button class="btn-add" id="addPharmacyItemBtn">+ Add Item</button>
-
-    <div id="pharmacy_list" class="table-box"></div>
-  </section>
-
-
-  <!-- ============================================================
-       INVESTIGATIONS
-  ============================================================= -->
-  <section class="card section-card">
-    <h2 class="section-title">Investigations</h2>
-    <button class="btn-add" id="addInvestBtn">+ Add Investigation</button>
-    <div id="invest_list" class="table-box"></div>
-  </section>
-
-
-  <!-- ============================================================
-       MISCELLANEOUS
-  ============================================================= -->
-  <section class="card section-card">
-    <h2 class="section-title">Miscellaneous</h2>
-    <button class="btn-add" id="addMiscBtn">+ Add Item</button>
-    <div id="misc_list" class="table-box"></div>
-  </section>
-
-
-  <!-- ============================================================
-       RECEIPTS
-  ============================================================= -->
-  <section class="card section-card">
-    <h2 class="section-title">Receipts</h2>
-    <button class="btn-add" id="addReceiptBtn">+ Add Receipt</button>
-    <div id="receipt_list" class="table-box"></div>
-  </section>
-
-
-  <!-- ============================================================
-       FINAL SUMMARY
-  ============================================================= -->
-  <section class="card final-summary">
-    <h2>Final Summary</h2>
-
-    <p>Gross Total: <strong id="sum_gross">₹0</strong></p>
-    <p>Total Receipts: <strong id="sum_paid">₹0</strong></p>
-    <p>Balance: <strong id="sum_balance">₹0</strong></p>
+  <!-- ==========================
+       SETTINGS
+  =========================== -->
+  <section id="settings" class="panel">
+    <h2>Settings</h2>
+    <p>Offline Hospital Billing OS</p>
   </section>
 
 </main>
 
 
 <!-- ============================================================
-     PRINT CONTAINER (Hidden, same design exports)
+     RIGHT-SIDE DRAWER (Used for Editing Tariffs & Packages)
 ============================================================ -->
-<div id="printArea"></div>
+<div id="drawer" class="drawer">
+  <div class="drawer-header">
+    <h3 id="drawerTitle">Edit</h3>
+    <button id="drawerClose">✖</button>
+  </div>
+  <div id="drawerContent" class="drawer-content"></div>
+</div>
 
 
 <!-- ============================================================
-     APP SCRIPT
+     APP JS
 ============================================================ -->
 <script src="data/tariffs.js"></script>
 <script src="app.js"></script>
