@@ -1,10 +1,60 @@
 [
-  { "name": "Dr. Arjun Kumar", "visit": 500 },
-  { "name": "Dr. Manish Varma", "visit": 600 },
-  { "name": "Dr. Kannan", "visit": 450 },
-  { "name": "Dr. Rajesh Chandra", "visit": 700 },
-  { "name": "Dr. Sruthi Devi", "visit": 400 },
-  { "name": "Dr. Prakash Rao", "visit": 550 },
-  { "name": "Dr. Neha Sharma", "visit": 520 },
-  { "name": "Dr. Vinod Reddy", "visit": 480 }
+  {
+    "dept": "Nephrology",
+    "doctors": [
+      "Dr. K. Suresh Kumar",
+      "Dr. P. Harish",
+      "Dr. Manoj Reddy"
+    ]
+  },
+  {
+    "dept": "Urology",
+    "doctors": [
+      "Dr. Krishna Chaitanya",
+      "Dr. Arjun Varma",
+      "Dr. Rohan Menon"
+    ]
+  },
+  {
+    "dept": "General Medicine",
+    "doctors": [
+      "Dr. Anitha Rao",
+      "Dr. Mahesh Pandey",
+      "Dr. Sujit Nair"
+    ]
+  },
+  {
+    "dept": "Cardiology",
+    "doctors": [
+      "Dr. Vivek Sharma",
+      "Dr. Rohit Sharma"
+    ]
+  },
+  {
+    "dept": "Orthopedics",
+    "doctors": [
+      "Dr. Ramesh Pillai",
+      "Dr. Viraj Reddy"
+    ]
+  },
+  {
+    "dept": "ENT",
+    "doctors": [
+      "Dr. Anjali Kapoor",
+      "Dr. Nishanth Rao"
+    ]
+  },
+  {
+    "dept": "Gastroenterology",
+    "doctors": [
+      "Dr. Nikhil Dev",
+      "Dr. Ravindra Shetty"
+    ]
+  },
+  {
+    "dept": "Dermatology",
+    "doctors": [
+      "Dr. Megha Ponnappa"
+    ]
+  }
 ]
