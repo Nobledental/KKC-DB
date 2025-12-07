@@ -1,220 +1,162 @@
-/* ================================================================
+/* ============================================================================
    GLOBAL
-================================================================ */
+============================================================================ */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-html, body {
   font-family: "Manrope", sans-serif;
-  background: #f7f9fc;
-  color: #1b2a3d;
-  height: 100%;
 }
 
 body {
+  background: #f4f7fb;
+  color: #1b2533;
   display: flex;
-  overflow: hidden;
 }
 
-/* ================================================================
-   SIDEBAR
-================================================================ */
+/* ============================================================================
+   LAYOUT: SIDEBAR
+============================================================================ */
 .sidebar {
   width: 260px;
   background: #ffffff;
-  border-right: 1px solid #e3e7ef;
-  padding: 30px 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 28px;
-  box-shadow: 4px 0 20px rgba(0,0,0,0.04);
+  border-right: 1px solid #dce3ec;
+  padding: 20px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
 }
 
-.logo-block {
-  text-align: left;
+.sidebar .logo-block {
+  text-align: center;
+  margin-bottom: 25px;
 }
 
 .side-logo {
-  width: 65px;
-  margin-bottom: 12px;
-}
-
-.sidebar h2 {
-  font-size: 20px;
-  font-weight: 800;
-  color: #003c5f;
-}
-
-.sidebar-nav {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  width: 70px;
+  margin-bottom: 10px;
 }
 
 .sidebar-nav button {
+  display: block;
   width: 100%;
-  padding: 12px 14px;
-  font-size: 15px;
-  font-weight: 600;
-  background: #f0f4f9;
-  border: 1px solid #d7dee8;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  border: none;
   border-radius: 10px;
+  background: #eef2f5;
+  font-size: 15px;
   cursor: pointer;
-  text-align: left;
   transition: 0.2s;
+}
+
+.sidebar-nav button.active {
+  background: #0ea5e9;
+  color: #fff;
 }
 
 .sidebar-nav button:hover {
-  background: #e8edf4;
+  background: #dce7ff;
 }
 
-.sidebar-nav .active {
-  background: #003c5f;
-  color: #fff;
-  border-color: #003c5f;
-}
-
-/* ================================================================
-   MAIN AREA
-================================================================ */
+/* ============================================================================
+   MAIN
+============================================================================ */
 .main {
-  flex: 1;
-  height: 100vh;
-  overflow-y: auto;
-  padding: 32px 40px;
+  margin-left: 260px;
+  padding: 30px;
+  width: calc(100% - 260px);
 }
 
-.panel.hidden {
+/* ============================================================================
+   TOOLBAR
+============================================================================ */
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.primary-btn {
+  background: #0ea5e9;
+  color: #fff;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.small-btn,
+.add-btn {
+  background: #0ea5e9;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.add-btn {
+  margin-top: 10px;
+}
+
+/* ============================================================================
+   PANELS
+============================================================================ */
+.panel {
+  display: block;
+}
+
+.hidden {
   display: none;
 }
 
-.panel h1 {
-  font-size: 26px;
-  font-weight: 800;
-  margin-bottom: 24px;
-  color: #002b46;
-}
-
-/* ================================================================
-   CARD BASE (Apollo / Kauvery Style)
-================================================================ */
+/* ============================================================================
+   CARD SYSTEM
+============================================================================ */
 .card {
-  background: #ffffff;
-  border-radius: 14px;
-  border: 1px solid #e3e7ef;
-  margin-bottom: 22px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(18px);
+  padding: 22px 26px;
+  border-radius: 18px;
+  margin-bottom: 25px;
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
-.card-header {
-  padding: 16px 20px;
+.card-title {
   font-weight: 800;
-  font-size: 17px;
-  background: #f0f4f9;
-  border-bottom: 1px solid #e3e7ef;
-  color: #003b5c;
+  font-size: 18px;
+  margin-bottom: 18px;
+  color: #0f3559;
 }
 
-.card-body {
-  padding: 22px 20px;
-}
-
-/* ================================================================
-   GRID SYSTEMS
-================================================================ */
 .grid-3 {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+  grid-template-columns: repeat(3,1fr);
+  gap: 20px;
 }
 
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
-}
-
-/* ================================================================
-   INPUTS + SELECTS
-================================================================ */
-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #4a5568;
-}
-
-input, select {
+.card input,
+.card select {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #d7dee8;
-  background: #ffffff;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: 0.15s;
-}
-
-input:focus, select:focus {
-  border-color: #0078c8;
-  box-shadow: 0 0 0 2px rgba(0,120,200,0.2);
-}
-
-/* ================================================================
-   BUTTONS
-================================================================ */
-.primary-btn {
-  padding: 14px 32px;
-  font-size: 16px;
-  font-weight: 800;
-  background: #0078c8;
-  color: #ffffff;
-  border: none;
   border-radius: 10px;
-  cursor: pointer;
-  margin-top: 14px;
-  transition: 0.25s;
-}
-
-.primary-btn:hover {
-  background: #005e98;
-}
-
-.add-btn, .small-btn {
-  background: #e9f3ff;
-  border: 1px solid #b9d6f5;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-weight: 700;
+  border: 1px solid #d8e0ea;
   font-size: 14px;
-  color: #005792;
-  cursor: pointer;
-  margin-bottom: 12px;
 }
 
-.small-btn { padding: 8px 12px; }
-
-/* ================================================================
-   COLLAPSIBLE SECTIONS
-================================================================ */
-.collapsible { border: 1px solid #e3e7ef; }
-
+/* ============================================================================
+   COLLAPSIBLE
+============================================================================ */
 .collapsible-header {
-  background: #f0f4f9;
-  padding: 16px 20px;
-  font-weight: 800;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-.collapsible-header:hover {
-  background: #e6ebf3;
+  padding-bottom: 10px;
 }
 
 .collapsible .card-body {
@@ -225,63 +167,117 @@ input:focus, select:focus {
   display: block;
 }
 
-/* LIST ITEM BLOCK */
-.list-item {
-  padding: 14px 16px;
-  border: 1px solid #e3e7ef;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  background: #fafcff;
+/* ============================================================================
+   BILL PRINT HEADER
+============================================================================ */
+.bill-header {
+  text-align: center;
+  padding: 25px 10px;
+  margin-bottom: 20px;
 }
 
-/* ================================================================
-   SUMMARY FIELDS
-================================================================ */
-.card-body input[readonly] {
-  background: #f3f5fa;
+.bill-header h1 {
+  font-size: 30px;
+  font-weight: 800;
+  color: #0e3248;
+}
+
+.bill-header p {
+  margin-top: 4px;
+  font-size: 15px;
+  opacity: 0.8;
+}
+
+.bill-header .sub1 {
+  font-size: 18px;
   font-weight: 700;
-  color: #003b5c;
 }
 
-/* ================================================================
-   SCROLLBAR
-================================================================ */
-::-webkit-scrollbar {
-  width: 9px;
+.bill-header .sub2 {
+  font-size: 14px;
+  font-weight: 600;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #c5ccd8;
-  border-radius: 20px;
+.bill-header .sub3 {
+  font-size: 13px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #aeb8c8;
+/* ============================================================================
+   LIST BLOCKS
+============================================================================ */
+.list-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 10px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e3e8ef;
+  margin-bottom: 10px;
 }
 
-/* ================================================================
-   RESPONSIVE
-================================================================ */
-@media (max-width: 1100px) {
-  .grid-3 {
-    grid-template-columns: 1fr 1fr;
+/* ============================================================================
+   PRINT AREA
+============================================================================ */
+.bill-print-area {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+}
+
+/* ============================================================================
+   PRINT MODE
+============================================================================ */
+@media print {
+
+  body {
+    background: white !important;
+  }
+
+  .no-print {
+    display: none !important;
   }
 
   .sidebar {
-    width: 230px;
+    display: none !important;
+  }
+
+  .main {
+    margin: 0 !important;
+    width: 100%;
+    padding: 0;
+  }
+
+  .bill-print-area {
+    width: 900px !important;
+    margin: 0 auto !important;
+    padding: 0 20px;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #d4d4d4;
+  }
+
+  .collapsible .card-body {
+    display: block !important;
   }
 }
 
-@media (max-width: 800px) {
-  .grid-3, .grid-2 {
+/* ============================================================================
+   RESPONSIVE
+============================================================================ */
+@media (max-width: 900px) {
+  .grid-3 {
     grid-template-columns: 1fr;
   }
 
   .main {
-    padding: 24px;
+    padding: 15px;
+    margin-left: 0;
   }
 
   .sidebar {
-    display: none; /* optional if you want to hide sidebar on mobile */
+    display: none;
   }
 }
