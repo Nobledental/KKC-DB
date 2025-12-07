@@ -2,132 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Krishna Kidney Centre — Final Bill</title>
+  <title>KCC — Final Bill Print</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="bill-print.css">
 
+  <link rel="stylesheet" href="bill-print.css">
 </head>
+
 <body>
 
-<div class="page">
+<div class="print-wrapper bill-print-area">
 
-  <!-- ========================= HEADER ========================= -->
-  <header class="bill-header">
-    <div class="header-left">
-      <img src="../assets/logo.png" class="hospital-logo">
-      <div>
-        <h1>KRISHNA KIDNEY CENTRE</h1>
-        <p class="sub">Multispeciality Kidney & Urology Hospital</p>
-        <p class="addr">Nellore, Andhra Pradesh</p>
-      </div>
+  <!-- ===================== HEADER ===================== -->
+  <header class="print-header">
+    <div class="title-block">
+      <h1>FINAL DISCHARGE BILL</h1>
+      <p>Krishna Kidney Centre — Multispeciality Hospital</p>
+      <p class="sub">ISO Certified | NABH Accredited</p>
     </div>
 
-    <div class="header-right">
-      <p class="label">Final Bill No:</p>
-      <p id="bill_no" class="value bold"></p>
-
-      <p class="label">Billing Date:</p>
-      <p id="bill_date" class="value"></p>
-    </div>
+    <div class="logo-circle"></div>
   </header>
 
-  <!-- ========================= PATIENT INFO ========================= -->
-  <section class="section-card">
-    <h2>Patient Details</h2>
+  <!-- ===================== PATIENT INFO ===================== -->
+  <section class="patient-card glass-card">
+    <div class="pc-left">
+      <h3>Patient Details</h3>
 
-    <div class="grid-2">
+      <div class="row"><span class="label">Name</span> <span class="value" id="bp_name"></span></div>
+      <div class="row"><span class="label">Age / Gender</span> <span class="value" id="bp_age_gender"></span></div>
+      <div class="row"><span class="label">UHID</span> <span class="value" id="bp_uhid"></span></div>
+      <div class="row"><span class="label">Doctor</span> <span class="value" id="bp_doctor"></span></div>
+    </div>
 
-      <div>
-        <label>Patient Name</label>
-        <p id="p_name" class="field"></p>
-      </div>
+    <div class="pc-right">
+      <h3>Admission Info</h3>
 
-      <div>
-        <label>Patient ID</label>
-        <p id="p_id" class="field"></p>
-      </div>
-
-      <div>
-        <label>Age / Gender</label>
-        <p id="p_age_gender" class="field"></p>
-      </div>
-
-      <div>
-        <label>Consultant</label>
-        <p id="p_doctor" class="field"></p>
-      </div>
-
-      <div>
-        <label>Admission Date</label>
-        <p id="p_doa" class="field"></p>
-      </div>
-
-      <div>
-        <label>Discharge Date</label>
-        <p id="p_dod" class="field"></p>
-      </div>
-
-      <div>
-        <label>Length of Stay</label>
-        <p id="p_los" class="field"></p>
-      </div>
-
-      <div>
-        <label>Payment Type</label>
-        <p id="p_payment_type" class="field"></p>
-      </div>
-
+      <div class="row"><span class="label">Admission Date</span> <span class="value" id="bp_doa"></span></div>
+      <div class="row"><span class="label">Discharge Date</span> <span class="value" id="bp_dod"></span></div>
+      <div class="row"><span class="label">Length of Stay</span> <span class="value" id="bp_los"></span></div>
+      <div class="row"><span class="label">Bill No</span> <span class="value" id="bp_billno"></span></div>
     </div>
   </section>
 
+  <!-- ===================== SUMMARY ===================== -->
+  <section class="charge-summary glass-card">
+    <h3>Billing Summary</h3>
 
-  <!-- ========================= BILLING SUMMARY ========================= -->
-  <section class="section-card">
-    <h2>Billing Summary</h2>
-
-    <table class="bill-table" id="bill_table">
+    <table class="summary-table" id="bp_table">
       <thead>
         <tr>
           <th>Description</th>
-          <th class="right">Qty</th>
-          <th class="right">Rate (₹)</th>
-          <th class="right">Total (₹)</th>
+          <th class="right">Amount (₹)</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="bp_items">
+      </tbody>
     </table>
 
-    <div class="total-box">
-      <span>Gross Total</span>
-      <span id="gross_total" class="bold"></span>
+    <div class="summary-total">
+      <div><strong>Gross Total</strong></div>
+      <div class="value" id="bp_gross"></div>
+    </div>
+
+    <div class="summary-total">
+      <div><strong>Total Paid</strong></div>
+      <div class="value" id="bp_paid"></div>
+    </div>
+
+    <div class="summary-total final">
+      <div><strong>Balance</strong></div>
+      <div class="value" id="bp_balance"></div>
     </div>
   </section>
 
-
-  <!-- ========================= RECEIPTS ========================= -->
-  <section class="section-card">
-    <h2>Payments & Receipts</h2>
-
-    <div id="receipt_list"></div>
-
-    <div class="summary-box">
-      <div class="row">
-        <span>Total Paid</span>
-        <span id="paid_total"></span>
-      </div>
-      <div class="row bold balance">
-        <span>Balance Payable</span>
-        <span id="balance_amt"></span>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ========================= FOOTER ========================= -->
-  <footer class="footer">
-    <p>Computer Generated — No Signature Required</p>
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="print-footer">
     <p>Thank you for choosing Krishna Kidney Centre</p>
+    <p>For any queries, contact the Billing Department</p>
   </footer>
 
 </div>
