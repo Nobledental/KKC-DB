@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>Print Invoice — KCC Billing OS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="css/print.css">
+</head>
+
+<body>
+
+<div id="printArea" class="a4">
+
+  <header class="print-header">
+    <img src="assets/logo.png" class="p-logo">
+    <div>
+      <h1>KRISHNA KIDNEY CENTRE</h1>
+      <p>Nellore · Andhra Pradesh · India</p>
+    </div>
+  </header>
+
+  <section id="pDetails" class="p-details"></section>
+
+  <section id="pTable" class="p-table"></section>
+
+  <div class="footer">
+    <svg id="barcode"></svg>
+    <p>Thank you for choosing Krishna Kidney Centre</p>
+  </div>
+
+</div>
+
+<script src="vendor/JsBarcode.min.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/print.js"></script>
+
+</body>
+</html>
