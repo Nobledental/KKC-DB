@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Krishna Kidney Centre — Final Bill</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Mulish:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="bill-print.css">
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- =========================================
+         HEADER
+    ============================================ -->
+    <header class="header">
+        <div>
+            <h1>KRISHNA KIDNEY CENTRE</h1>
+            <p>Multispeciality Hospital</p>
+            <p>NABH Accredited | 24×7 Services</p>
+        </div>
+
+        <div class="logo-box">
+            <img src="../assets/logo.png" class="logo">
+        </div>
+    </header>
+
+    <hr class="divider">
+
+    <!-- =========================================
+         BILL + PATIENT DETAILS
+    ============================================ -->
+    <section class="details-section">
+
+        <div class="block">
+            <h3>Patient Details</h3>
+
+            <div class="grid">
+                <div>
+                    <label>Patient Name</label>
+                    <p id="p_name"></p>
+                </div>
+                <div>
+                    <label>UHID</label>
+                    <p id="p_uhid"></p>
+                </div>
+                <div>
+                    <label>Age / Gender</label>
+                    <p id="p_age_gender"></p>
+                </div>
+                <div>
+                    <label>Consultant</label>
+                    <p id="p_doctor"></p>
+                </div>
+                <div>
+                    <label>Address</label>
+                    <p id="p_address"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="block">
+            <h3>Admission Info</h3>
+
+            <div class="grid">
+                <div>
+                    <label>Admission Date</label>
+                    <p id="p_admission"></p>
+                </div>
+                <div>
+                    <label>Discharge Date</label>
+                    <p id="p_discharge"></p>
+                </div>
+                <div>
+                    <label>Length of Stay</label>
+                    <p id="p_los"></p>
+                </div>
+                <div>
+                    <label>Bill Number</label>
+                    <p id="p_billno"></p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <hr class="divider">
+
+    <!-- =========================================
+         ROOM & NURSING SUMMARY
+    ============================================ -->
+    <section class="section">
+        <h2>Room, Nursing & RMO Charges</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Room Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Days</th>
+                    <th>Room</th>
+                    <th>Nursing</th>
+                    <th>RMO/DMO</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbl_room"></tbody>
+        </table>
+    </section>
+
+    <!-- =========================================
+         CONSULTANT VISITS
+    ============================================ -->
+    <section class="section">
+        <h2>Consultant Visits</h2>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Visits</th>
+                    <th>Rate</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbl_consult"></tbody>
+        </table>
+    </section>
+
+    <!-- =========================================
+         INVESTIGATIONS
+    ============================================ -->
+    <section class="section">
+        <h2>Investigations</h2>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Investigation</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="tbl_invest"></tbody>
+        </table>
+    </section>
+
+    <!-- =========================================
+         PHARMACY
+    ============================================ -->
+    <section class="section">
+        <h2>Pharmacy</h2>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbl_pharm"></tbody>
+        </table>
+    </section>
+
+    <!-- =========================================
+         RECEIPTS
+    ============================================ -->
+    <section class="section">
+        <h2>Receipts</h2>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Mode</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbl_receipts"></tbody>
+        </table>
+    </section>
+
+    <!-- =========================================
+         FINAL SUMMARY
+    ============================================ -->
+    <section class="section summary">
+        <h2>Final Summary</h2>
+
+        <table class="summary-table">
+            <tr>
+                <td>Room Charges Total</td>
+                <td id="sum_room"></td>
+            </tr>
+            <tr>
+                <td>Consultant Fees Total</td>
+                <td id="sum_consult"></td>
+            </tr>
+            <tr>
+                <td>Investigations Total</td>
+                <td id="sum_invest"></td>
+            </tr>
+            <tr>
+                <td>Pharmacy Total</td>
+                <td id="sum_pharm"></td>
+            </tr>
+            <tr class="highlight">
+                <td><strong>Gross Total</strong></td>
+                <td id="sum_gross"></td>
+            </tr>
+            <tr>
+                <td>Advance / Payments</td>
+                <td id="sum_paid"></td>
+            </tr>
+            <tr class="highlight-bold">
+                <td><strong>Balance Amount</strong></td>
+                <td id="sum_bal"></td>
+            </tr>
+        </table>
+    </section>
+
+    <footer class="footer">
+        <p>Computer generated bill — No signature required</p>
+        <p>Thank you for choosing Krishna Kidney Centre</p>
+    </footer>
+
+</div>
+
+<script src="bill-print.js"></script>
+</body>
+</html>
