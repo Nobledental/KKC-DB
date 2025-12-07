@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Billing Editor — KCC Billing OS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -12,55 +12,94 @@
 <body>
 
 <header class="topbar">
-  <img src="assets/logo.png" class="logo">
+  <img src="assets/logo.png" class="logo" />
   <h1>Billing Editor</h1>
 </header>
 
-<div class="page billing-layout">
+<div class="page billing-page">
 
-  <aside class="sidebar">
-    <div class="sidebar-block">
+  <!-- ================================
+       PATIENT LOADING SECTION
+  ================================= -->
+  <div class="section">
+    <h2>Select Patient</h2>
 
-      <label>Search Patient</label>
-      <input type="text" id="searchPatient">
-
-      <div id="patientResults"></div>
+    <div class="patient-search">
+      <input id="searchPatient" placeholder="Search patient by name or UHID">
+      <div id="patientResults" class="dropdown"></div>
     </div>
 
-    <div class="sidebar-block">
-      <button id="loadPatientBtn" class="btn-primary full">Load Patient</button>
-    </div>
-
-    <div class="sidebar-block">
-      <button id="generateDailyBtn" class="btn-secondary full">Generate Daily Charges</button>
-      <button id="addPackageBtn" class="btn-secondary full">Add Package</button>
-      <button id="addBillItemBtn" class="btn-secondary full">Add Bill Item</button>
-      <button id="addReturnBtn" class="btn-secondary full">Add Return</button>
-      <button id="addReceiptBtn" class="btn-secondary full">Add Receipt</button>
-    </div>
-
-    <div class="sidebar-block">
-      <button id="saveBillBtn" class="btn-primary full">Save Bill</button>
-      <a href="print.html" class="btn-primary full">Open Print View</a>
-    </div>
-
-  </aside>
-
-  <main class="bill-area">
+    <button id="loadPatientBtn" class="btn-primary">
+      Load Patient
+    </button>
 
     <div id="patientSummary" class="patient-summary"></div>
+  </div>
 
-    <div class="bill-table" id="billTable"></div>
+  <!-- ================================
+       BILLING TABLE
+  ================================= -->
+  <div class="section">
 
-    <div class="totals">
-      <div><span>Gross</span> <strong id="tGross">0</strong></div>
-      <div><span>GST</span> <strong id="tGST">0</strong></div>
-      <div><span>Returns</span> <strong id="tReturns">0</strong></div>
-      <div><span>Receipts</span> <strong id="tReceipts">0</strong></div>
-      <div class="final"><span>Final Payable</span> <strong id="tFinal">0</strong></div>
+    <h2>Billing Items</h2>
+
+    <div class="table-wrapper">
+      <div class="bill-header-row">
+        <div>Date</div>
+        <div>Description</div>
+        <div>Rate</div>
+        <div>Qty</div>
+        <div>GST%</div>
+        <div>Net</div>
+        <div></div>
+      </div>
+
+      <div id="billTable"></div>
     </div>
 
-  </main>
+    <!-- ACTION BUTTONS -->
+    <div class="bill-actions">
+      <button id="generateDailyBtn" class="btn-secondary">Auto Daily Charges</button>
+      <button id="addBillItemBtn" class="btn-primary">Add Item</button>
+      <button id="addReturnBtn" class="btn-secondary">Add Return</button>
+      <button id="addReceiptBtn" class="btn-secondary">Add Receipt</button>
+    </div>
+
+  </div>
+
+  <!-- ================================
+       SUMMARY
+  ================================= -->
+  <div class="section">
+    <h2>Summary</h2>
+
+    <div class="summary-grid">
+      <div>
+        <label>Total Gross</label>
+        <p id="tGross">₹0.00</p>
+      </div>
+      <div>
+        <label>Total GST</label>
+        <p id="tGST">₹0.00</p>
+      </div>
+      <div>
+        <label>Total Returns</label>
+        <p id="tReturns">₹0.00</p>
+      </div>
+      <div>
+        <label>Total Receipts</label>
+        <p id="tReceipts">₹0.00</p>
+      </div>
+      <div class="final-box">
+        <label>Final Payable</label>
+        <p id="tFinal">₹0.00</p>
+      </div>
+    </div>
+
+    <button id="saveBillBtn" class="btn-primary full">
+      Save Bill
+    </button>
+  </div>
 
 </div>
 
