@@ -1,0 +1,48 @@
+@page {
+  margin: 14mm;
+}
+
+body {
+  font-family: Helvetica, sans-serif;
+  background: white;
+}
+
+.a4 {
+  width: 100%;
+}
+
+.print-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.p-logo {
+  width: 70px;
+}
+
+.p-details,
+.p-table {
+  margin-bottom: 20px;
+}
+
+.p-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.p-table th, .p-table td {
+  border: 1px solid #333;
+  padding: 6px;
+  font-size: 13px;
+}
+
+.footer {
+  margin-top: 30px;
+  text-align: center;
+}
+
+@media print {
+  .no-print { display: none; }
+}
