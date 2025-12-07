@@ -1,0 +1,10 @@
+[
+  { "name": "Dr. Arjun Kumar", "visit": 500 },
+  { "name": "Dr. Manish Varma", "visit": 600 },
+  { "name": "Dr. Kannan", "visit": 450 },
+  { "name": "Dr. Rajesh Chandra", "visit": 700 },
+  { "name": "Dr. Sruthi Devi", "visit": 400 },
+  { "name": "Dr. Prakash Rao", "visit": 550 },
+  { "name": "Dr. Neha Sharma", "visit": 520 },
+  { "name": "Dr. Vinod Reddy", "visit": 480 }
+]
