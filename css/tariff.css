@@ -1,19 +1,48 @@
-#roomTariffs div,
-#miscTariffs div,
-#otTariffs div,
-#packageList div,
-#investigationList div {
-  padding:14px;
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  background:white;
-  margin-bottom:12px;
+/* ============================================================================
+   TARIFF EDITOR — PREMIUM HOSPITAL UI
+============================================================================ */
+
+.tariff-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
-textarea {
-  width:100%;
-  min-height:80px;
-  margin-top:10px;
+/* Each editable tariff card */
+.tariff-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--space-md);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
 }
 
-.export-bar { display:flex; gap:10px; margin-top:20px; }
+.tariff-item input,
+.tariff-item textarea {
+  width: 100%;
+}
+
+/* Labels */
+.tariff-item label {
+  font-size: var(--small);
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Remove buttons */
+.delete-btn {
+  background: var(--danger);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-top: var(--space-sm);
+}
+
+.export-bar {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-start;
+}
