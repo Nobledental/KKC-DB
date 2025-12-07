@@ -1,75 +1,54 @@
-/* ===============================
-   LOAD BILL FROM localStorage
-================================= */
+/* ============================================================================
+   BILL PRINT — JS
+   Loads bill data from localStorage & renders into print layout
+============================================================================ */
 
-const bill = JSON.parse(localStorage.getItem("billPreview") || "{}");
-
-function set(id, value) {
-  document.getElementById(id).textContent = value ?? "";
+function qs(s) {
+  return document.querySelector(s);
 }
 
-/* ===============================
-   FILL HEADER
-================================= */
+window.onload = () => {
+  const data = JSON.parse(localStorage.getItem("KCC_CURRENT_BILL") || "{}");
+  renderBill(data);
+};
 
-set("bill_no", bill.bill_no);
-set("bill_date", bill.bill_date);
+/* ----------------------------------------------------------
+   RENDER BILL ON THE PRINT PAGE
+---------------------------------------------------------- */
+function renderBill(bill) {
+  if (!bill) return;
 
-/* ===============================
-   FILL PATIENT INFO
-================================= */
+  qs("#bp_name").textContent = bill.name;
+  qs("#bp_age_gender").textContent = `${bill.age} / ${bill.gender}`;
+  qs("#bp_uhid").textContent = bill.patientID;
+  qs("#bp_doctor").textContent = bill.doctor;
 
-set("p_name", bill.patient.name);
-set("p_id", bill.patient.id);
-set("p_age_gender", `${bill.patient.age} / ${bill.patient.gender}`);
-set("p_doctor", bill.patient.doctor);
-set("p_doa", bill.patient.admission_date);
-set("p_dod", bill.patient.discharge_date);
-set("p_los", bill.los);
-set("p_payment_type", bill.payment_type);
+  qs("#bp_doa").textContent = bill.doa;
+  qs("#bp_dod").textContent = bill.dod;
+  qs("#bp_los").textContent = bill.los;
+  qs("#bp_billno").textContent = bill.billNo;
 
-/* ===============================
-   BILLING TABLE
-================================= */
-
-const tbody = document.querySelector("#bill_table tbody");
-
-bill.items.forEach(item => {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td>${item.desc}</td>
-    <td class="right">${item.qty}</td>
-    <td class="right">${item.rate.toLocaleString("en-IN")}</td>
-    <td class="right">${item.total.toLocaleString("en-IN")}</td>
+  /* ----------------------------------------------------------
+     SUMMARY TABLE (STATIC FOR NOW – dynamic items later)
+  ---------------------------------------------------------- */
+  const body = qs("#bp_items");
+  body.innerHTML = `
+    <tr><td>Hospital Charges (Room, Nursing, RMO, Shifts)</td><td class="right">Included</td></tr>
+    <tr><td>Consultant Visits</td><td class="right">Included</td></tr>
+    <tr><td>Surgeries & Procedures</td><td class="right">Included</td></tr>
+    <tr><td>Pharmacy</td><td class="right">Included</td></tr>
+    <tr><td>Investigations</td><td class="right">Included</td></tr>
+    <tr><td>Miscellaneous</td><td class="right">Included</td></tr>
   `;
-  tbody.appendChild(tr);
-});
 
-/* ===============================
-   TOTALS
-================================= */
+  qs("#bp_gross").textContent = `₹ ${format(bill.totals.gross)}`;
+  qs("#bp_paid").textContent = `₹ ${format(bill.totals.paid)}`;
+  qs("#bp_balance").textContent = `₹ ${format(bill.totals.balance)}`;
+}
 
-set("gross_total", `₹ ${bill.gross_total.toLocaleString("en-IN")}`);
-
-/* ===============================
-   RECEIPTS
-================================= */
-
-const receiptBox = document.getElementById("receipt_list");
-
-bill.receipts.forEach(r => {
-  const div = document.createElement("div");
-  div.className = "receipt-line";
-  div.innerHTML = `
-    <p><strong>${r.mode}</strong> — ₹${r.amount.toLocaleString("en-IN")} (${r.date})</p>
-  `;
-  receiptBox.appendChild(div);
-});
-
-set("paid_total", `₹ ${bill.paid_total.toLocaleString("en-IN")}`);
-set("balance_amt", `₹ ${bill.balance.toLocaleString("en-IN")}`);
-
-/* ===============================
-   AUTO PRINT (Optional)
-================================= */
-// window.print();
+/* ----------------------------------------------------------
+   FORMAT NUMBERS
+---------------------------------------------------------- */
+function format(n) {
+  return Number(n).toLocaleString("en-IN");
+}
