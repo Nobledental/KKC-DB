@@ -1,14 +1,15 @@
 /* ============================================================================
-   IndexedDB Wrapper — KCC Billing OS
-   Stores: patients, tariffs, bills
+   INDEXEDDB STORAGE SERVICE — KCC BILLING OS (UPGRADED)
+   Handles: patients, tariffs, bills
+   Version-safe, promise-based, production-ready
 ============================================================================ */
 
 const DB_NAME = "kcc_billing_os";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 let db = null;
 
 /* -------------------------------------------
-   OPEN / INIT DATABASE
+   OPEN DATABASE + UPGRADE SUPPORT
 ------------------------------------------- */
 function openDB() {
   return new Promise((resolve, reject) => {
@@ -17,6 +18,7 @@ function openDB() {
     req.onupgradeneeded = e => {
       db = e.target.result;
 
+      /* Create or upgrade object stores */
       if (!db.objectStoreNames.contains("patients"))
         db.createObjectStore("patients", { keyPath: "uhid" });
 
@@ -29,45 +31,70 @@ function openDB() {
 
     req.onsuccess = e => {
       db = e.target.result;
-      resolve();
+      resolve(true);
     };
 
+    req.onerror = e => {
+      console.error("IndexedDB error:", e);
+      reject(e);
+    };
+  });
+}
+
+/* AUTO OPEN DB */
+openDB();
+
+/* -------------------------------------------
+   GENERIC WRITE
+------------------------------------------- */
+function storeSet(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, "readwrite");
+    const obj = tx.objectStore(store);
+
+    obj.put(data);
+
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = e => reject(e);
+  });
+}
+
+/* -------------------------------------------
+   GET SINGLE RECORD
+------------------------------------------- */
+function storeGet(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, "readonly");
+    const obj = tx.objectStore(store);
+
+    const req = obj.get(key);
+    req.onsuccess = () => resolve(req.result || null);
     req.onerror = e => reject(e);
   });
 }
 
-openDB();
+/* -------------------------------------------
+   GET ALL RECORDS
+------------------------------------------- */
+function storeGetAll(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, "readonly");
+    const req = tx.objectStore(store).getAll();
+
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = e => reject(e);
+  });
+}
 
 /* -------------------------------------------
-   GENERIC GET / SET
+   DELETE RECORD
 ------------------------------------------- */
-function storeSet(storeName, data) {
-  return new Promise(resolve => {
-    const tx = db.transaction(storeName, "readwrite");
-    tx.objectStore(storeName).put(data);
+function storeDelete(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, "readwrite");
+    tx.objectStore(store).delete(key);
+
     tx.oncomplete = () => resolve(true);
-  });
-}
-
-function storeGet(storeName, key) {
-  return new Promise(resolve => {
-    const tx = db.transaction(storeName, "readonly");
-    tx.objectStore(storeName).get(key).onsuccess = e => resolve(e.target.result);
-  });
-}
-
-function storeGetAll(storeName) {
-  return new Promise(resolve => {
-    const tx = db.transaction(storeName, "readonly");
-    const req = tx.objectStore(storeName).getAll();
-    req.onsuccess = e => resolve(e.target.result);
-  });
-}
-
-function storeDelete(storeName, key) {
-  return new Promise(resolve => {
-    const tx = db.transaction(storeName, "readwrite");
-    tx.objectStore(storeName).delete(key);
-    tx.oncomplete = () => resolve(true);
+    tx.onerror = e => reject(e);
   });
 }
