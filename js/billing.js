@@ -1,44 +1,47 @@
 /* ============================================================================
-   BILLING ENGINE — KCC Billing OS
+   BILLING ENGINE — KCC BILLING OS (UPGRADED)
 ============================================================================ */
 
 let currentPatient = null;
 let tariffMaster = null;
 let billRows = [];
 
-/* -------------------------------------------
-   LOAD TARIFF
-------------------------------------------- */
+/* LOAD TARIFF MASTER ------------------------------------------------------- */
 (async () => {
   tariffMaster = await storeGet("tariffs", "MASTER");
 })();
 
-/* -------------------------------------------
-   SEARCH PATIENT
-------------------------------------------- */
+/* PATIENT SEARCH ----------------------------------------------------------- */
 document.getElementById("searchPatient").oninput = async e => {
   const q = e.target.value.toLowerCase();
   const all = await storeGetAll("patients");
-  const r = document.getElementById("patientResults");
-  r.innerHTML = "";
+  const box = document.getElementById("patientResults");
 
-  all.filter(p => p.name.toLowerCase().includes(q)).forEach(p => {
-    const div = document.createElement("div");
-    div.className = "patient-item";
-    div.textContent = `${p.name} (${p.uhid})`;
-    div.onclick = () => {
-      currentPatient = p;
-      document.getElementById("loadPatientBtn").click();
-    };
-    r.appendChild(div);
-  });
+  if (!q) {
+    box.style.display = "none";
+    return;
+  }
+
+  box.innerHTML = "";
+  box.style.display = "block";
+
+  all.filter(p => p.name.toLowerCase().includes(q) || p.uhid.toLowerCase().includes(q))
+    .forEach(p => {
+      const div = document.createElement("div");
+      div.className = "patient-item";
+      div.textContent = `${p.name} (${p.uhid})`;
+      div.onclick = () => {
+        currentPatient = p;
+        document.getElementById("searchPatient").value = p.name;
+        box.style.display = "none";
+      };
+      box.appendChild(div);
+    });
 };
 
-/* -------------------------------------------
-   LOAD PATIENT INTO BILLING PAGE
-------------------------------------------- */
+/* LOAD PATIENT ------------------------------------------------------------- */
 document.getElementById("loadPatientBtn").onclick = () => {
-  if (!currentPatient) return;
+  if (!currentPatient) return alert("Select a patient first.");
 
   document.getElementById("patientSummary").innerHTML = `
     <strong>${currentPatient.name}</strong><br>
@@ -49,32 +52,43 @@ document.getElementById("loadPatientBtn").onclick = () => {
   `;
 };
 
-/* -------------------------------------------
-   ADD BILL ROW
-------------------------------------------- */
+/* ADD ROW ------------------------------------------------------------------ */
 function addBillRow(row) {
   billRows.push(row);
   renderTable();
 }
 
-/* -------------------------------------------
-   RENDER TABLE
-------------------------------------------- */
+/* RENDER TABLE ------------------------------------------------------------- */
 function renderTable() {
   const t = document.getElementById("billTable");
   t.innerHTML = "";
 
   billRows.forEach((r, i) => {
+    const amt = r.rate * r.qty;
+    const gstAmt = amt * (r.gst / 100);
+    const net = amt + gstAmt;
+
     t.innerHTML += `
-      <div class="row">
-        <input type="date" value="${r.date}" onchange="billRows[${i}].date=this.value; calcTotals();">
-        <input value="${r.desc}" onchange="billRows[${i}].desc=this.value">
-        <input type="number" value="${r.rate}" onchange="billRows[${i}].rate=+this.value; calcTotals();">
-        <input type="number" value="${r.qty}" onchange="billRows[${i}].qty=+this.value; calcTotals();">
-        <div>${fmt(r.rate * r.qty)}</div>
-        <input type="number" value="${r.gst}" onchange="billRows[${i}].gst=+this.value; calcTotals();">
-        <div>${fmt(r.qty * r.rate + (r.rate*r.qty*r.gst/100))}</div>
-        <button onclick="billRows.splice(${i},1); renderTable(); calcTotals();">×</button>
+      <div class="bill-row">
+        <input type="date" value="${r.date}" 
+          onchange="billRows[${i}].date=this.value; calcTotals();">
+
+        <input value="${r.desc}" 
+          onchange="billRows[${i}].desc=this.value">
+
+        <input type="number" value="${r.rate}" 
+          onchange="billRows[${i}].rate=+this.value; calcTotals();">
+
+        <input type="number" value="${r.qty}" 
+          onchange="billRows[${i}].qty=+this.value; calcTotals();">
+
+        <input type="number" value="${r.gst}" 
+          onchange="billRows[${i}].gst=+this.value; calcTotals();">
+
+        <div>${fmt(net)}</div>
+
+        <button onclick="billRows.splice(${i},1); renderTable();" 
+          style="border:none; background:none; color:red; font-size:20px;">×</button>
       </div>
     `;
   });
@@ -82,81 +96,75 @@ function renderTable() {
   calcTotals();
 }
 
-/* -------------------------------------------
-   DAILY CHARGES AUTO GENERATION
-------------------------------------------- */
+/* AUTO DAILY CHARGES ------------------------------------------------------- */
 document.getElementById("generateDailyBtn").onclick = () => {
-  if (!currentPatient) return;
+  if (!currentPatient) return alert("Load patient first.");
 
-  let los = 1;
-  if (currentPatient.admDate) {
-    const a = new Date(currentPatient.admDate);
-    const b = new Date();
-    los = Math.ceil((b - a) / (1000 * 60 * 60 * 24));
-  }
+  const adm = new Date(currentPatient.admDate);
+  const today = new Date();
+  const days = Math.ceil((today - adm) / (1000 * 60 * 60 * 24));
 
-  for (let d = 1; d <= los; d++) {
-    addBillRow({ date: "", desc: `Room Rent — Day ${d}`, rate: tariffMaster.misc.room || 0, qty: 1, gst: 0 });
-    addBillRow({ date: "", desc: `Nursing — Day ${d}`, rate: tariffMaster.misc.nursing || 0, qty: 1, gst: 0 });
-    addBillRow({ date: "", desc: `RMO/DMO — Day ${d}`, rate: tariffMaster.misc.rmo || 0, qty: 1, gst: 0 });
-    addBillRow({ date: "", desc: `Consultation — Day ${d}`, rate: tariffMaster.misc.consult || 0, qty: 1, gst: 0 });
+  const misc = tariffMaster.misc;
+
+  for (let d = 0; d < days; d++) {
+
+    const dt = new Date(adm);
+    dt.setDate(adm.getDate() + d);
+    const iso = dt.toISOString().split("T")[0];
+
+    addBillRow({ date: iso, desc: "Room Rent", rate: misc.room || 0, qty: 1, gst: 0 });
+    addBillRow({ date: iso, desc: "Nursing", rate: misc.nursing || 0, qty: 1, gst: 0 });
+    addBillRow({ date: iso, desc: "RMO/DMO", rate: misc.rmo || 0, qty: 1, gst: 0 });
+    addBillRow({ date: iso, desc: "Consultation", rate: misc.consult || 0, qty: 2, gst: 0 });
   }
 };
 
-/* -------------------------------------------
-   ADD MANUAL BILL ITEM
-------------------------------------------- */
-document.getElementById("addBillItemBtn").onclick = () => {
+/* ADD CUSTOM LINES --------------------------------------------------------- */
+document.getElementById("addBillItemBtn").onclick = () =>
   addBillRow({ date: "", desc: "", rate: 0, qty: 1, gst: 0 });
-};
 
-/* -------------------------------------------
-   RETURNS
-------------------------------------------- */
-document.getElementById("addReturnBtn").onclick = () => {
+document.getElementById("addReturnBtn").onclick = () =>
   addBillRow({ date: "", desc: "Return", rate: 0, qty: -1, gst: 0 });
-};
 
-/* -------------------------------------------
-   RECEIPTS
-------------------------------------------- */
-document.getElementById("addReceiptBtn").onclick = () => {
+document.getElementById("addReceiptBtn").onclick = () =>
   addBillRow({ date: "", desc: "Receipt", rate: 0, qty: 1, gst: 0 });
-};
 
-/* -------------------------------------------
-   TOTALS ENGINE
-------------------------------------------- */
+/* TOTALS ENGINE ------------------------------------------------------------ */
 function calcTotals() {
-  let gross = 0, gst = 0, returns = 0, receipts = 0;
+  let gross = 0,
+      gst = 0,
+      returns = 0,
+      receipts = 0;
 
   billRows.forEach(r => {
-    const amount = r.rate * r.qty;
-    const tax = amount * (r.gst / 100);
+    const amt = r.rate * r.qty;
+    const tax = amt * (r.gst / 100);
 
-    if (r.qty < 0) returns += amount;
-    if (r.desc.toLowerCase().includes("receipt")) receipts += amount;
-
-    gross += amount;
+    gross += amt;
     gst += tax;
+
+    if (r.qty < 0) returns += amt;
+    if (r.desc.toLowerCase().includes("receipt")) receipts += amt;
   });
 
   document.getElementById("tGross").textContent = fmt(gross);
   document.getElementById("tGST").textContent = fmt(gst);
   document.getElementById("tReturns").textContent = fmt(returns);
   document.getElementById("tReceipts").textContent = fmt(receipts);
-  document.getElementById("tFinal").textContent = fmt(gross + gst + returns - receipts);
+
+  const final = gross + gst + returns - receipts;
+  document.getElementById("tFinal").textContent = fmt(final);
 }
 
-/* -------------------------------------------
-   SAVE BILL
-------------------------------------------- */
+/* SAVE BILL ---------------------------------------------------------------- */
 document.getElementById("saveBillBtn").onclick = async () => {
+  if (!currentPatient) return alert("Load patient first.");
 
   const invoice = generateInvoice();
 
   const bill = {
     invoice,
+    date: new Date().toISOString(),
     patient: currentPatient,
     rows: billRows,
     totals: {
@@ -169,5 +177,6 @@ document.getElementById("saveBillBtn").onclick = async () => {
   };
 
   await storeSet("bills", bill);
-  alert("Bill Saved — Invoice " + invoice);
+
+  alert("Bill Saved — Invoice: " + invoice);
 };
