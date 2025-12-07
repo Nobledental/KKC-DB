@@ -1,6 +1,6 @@
-/* ===========================================================
-   GLOBAL
-=========================================================== */
+/* ============================================================
+   GLOBAL RESET + BASE STYLE
+============================================================ */
 * {
     margin: 0;
     padding: 0;
@@ -9,209 +9,359 @@
 
 body {
     font-family: "Manrope", sans-serif;
-    background: #f1f5f9;
+    background: #f5f7fa;
+    color: #1e293b;
+    padding-top: 70px; /* space for fixed tabs */
 }
 
-/* ===========================================================
-   FIXED TOP TABS (GOOGLE MATERIAL U1)
-=========================================================== */
+.page-wrapper {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* ============================================================
+   TOP NAV TABS (GOOGLE UNDERLINE U1)
+============================================================ */
 .top-tabs {
-    display: flex;
-    gap: 32px;
-    padding: 18px 32px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
     background: white;
     border-bottom: 1px solid #e2e8f0;
-    position: sticky;
-    top: 0;
-    z-index: 99;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
 }
 
 .tab {
-    cursor: pointer;
-    padding-bottom: 8px;
-    font-size: 15px;
+    margin-right: 28px;
+    font-size: 16px;
     font-weight: 600;
+    padding: 16px 2px;
+    cursor: pointer;
     color: #475569;
+    position: relative;
 }
 
 .tab.active {
     color: #0ea5e9;
-    border-bottom: 3px solid #0ea5e9;
 }
 
-/* ===========================================================
-   WRAPPER
-=========================================================== */
-.page-wrapper {
-    max-width: 1050px;
-    margin: 30px auto;
+.tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: 6px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #0ea5e9;
+    border-radius: 4px;
 }
 
-/* ===========================================================
-   SECTION TITLES
-=========================================================== */
+/* ============================================================
+   TAB SECTIONS
+============================================================ */
+.tab-section {
+    display: none;
+    margin-top: 10px;
+}
+
+.tab-section.active {
+    display: block;
+}
+
+/* ============================================================
+   HEADINGS
+============================================================ */
 .section-title {
     font-size: 24px;
     font-weight: 800;
-    margin-bottom: 20px;
     color: #0f172a;
+    margin-bottom: 20px;
 }
 
-/* ===========================================================
-   CARDS
-=========================================================== */
-.card {
-    background: white;
-    padding: 22px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-    margin-bottom: 30px;
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
 }
 
 .sub-title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 14px;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-bottom: 10px;
 }
 
-.row-2, .row-3, .row-4 {
-    display: grid;
-    gap: 16px;
-    margin-bottom: 18px;
-}
-
-.row-2 { grid-template-columns: repeat(2, 1fr); }
-.row-3 { grid-template-columns: repeat(3, 1fr); }
-.row-4 { grid-template-columns: repeat(4, 1fr); }
-
+/* ============================================================
+   FORM ELEMENTS
+============================================================ */
 label {
-    font-size: 12px;
+    font-size: 14px;
     color: #475569;
-    font-weight: 600;
 }
 
 input, select {
     width: 100%;
     padding: 10px;
-    margin-top: 4px;
-    border-radius: 8px;
     border: 1px solid #cbd5e1;
-    font-size: 14px;
-}
-
-input:focus {
-    outline: none;
-    border-color: #0ea5e9;
-    box-shadow: 0 0 0 2px rgba(14,165,233,0.2);
-}
-
-/* ===========================================================
-   BUTTONS
-=========================================================== */
-.btn-blue {
-    background: #0ea5e9;
-    color: white;
-    padding: 10px 20px;
-    border: none;
     border-radius: 8px;
     font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
+    margin-top: 5px;
+    background: white;
 }
 
-.btn-green {
-    background: #10b981;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
+/* ============================================================
+   GRID SYSTEM
+============================================================ */
+.form-row {
+    margin-bottom: 16px;
 }
 
-/* ===========================================================
-   BILL ROWS
-=========================================================== */
-#billRows .billrow {
+.row-2col {
     display: grid;
-    grid-template-columns: 130px 1fr 110px 80px 90px 90px 90px 40px;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid #e2e8f0;
+    grid-template-columns: repeat(2,1fr);
+    gap: 18px;
+    margin-bottom: 18px;
 }
 
-/* ===========================================================
-   SUMMARY
-=========================================================== */
-.summary-item,
-.summary-final {
+.row-3col {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+/* ============================================================
+   CARD
+============================================================ */
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 16px;
+    margin-bottom: 28px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.btn.primary {
+    background: #0284c7;
+    color: white;
+}
+
+.btn.red {
+    background: #dc2626;
+    color: white;
+}
+
+.btn.mini {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn.full {
+    width: 100%;
+}
+
+/* ============================================================
+   BILLING TABLE
+============================================================ */
+.bill-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bill-table th {
+    background: #e2e8f0;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.bill-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+.right {
+    text-align: right;
+}
+
+/* ============================================================
+   SUMMARY CARD
+============================================================ */
+.summary-row {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
+    padding: 12px 0;
     font-size: 16px;
 }
 
-.summary-final {
-    font-size: 20px;
+.summary-row.total {
+    border-top: 2px solid #cbd5e1;
+    margin-top: 10px;
+    padding-top: 20px;
+    font-size: 18px;
     font-weight: 800;
-    color: #0ea5e9;
 }
 
-/* ===========================================================
-   PRINT A4
-=========================================================== */
-.print-a4 {
+/* ============================================================
+   HISTORY TABLE
+============================================================ */
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th {
+    background: #e2e8f0;
+    padding: 12px;
+    text-align: left;
+}
+
+.history-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* ============================================================
+   PACKAGE LIST
+============================================================ */
+.pkg-list {
+    list-style: none;
+    margin-top: 15px;
+}
+
+.pkg-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+/* ============================================================
+   PRINT TEMPLATE (A4)
+============================================================ */
+.print-section {
+    display: none;
+}
+
+.print-container {
     background: white;
-    padding: 28px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    width: 210mm;
-    min-height: 297mm;
-    margin: 20px auto;
+    padding: 30px;
+    max-width: 800px;
+    margin: auto;
 }
 
-.print-title {
-    font-size: 26px;
-    font-weight: 800;
+.print-hospital {
     text-align: center;
+    font-size: 22px;
+    font-weight: 800;
 }
 
 .print-sub {
     text-align: center;
-    font-size: 16px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.print-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
     margin-bottom: 20px;
+}
+
+.print-meta {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 8px;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.print-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.print-grid label {
+    font-size: 12px;
+    opacity: 0.7;
 }
 
 .print-table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
 }
 
 .print-table th {
-    background: #e2e8f0;
+    border-bottom: 2px solid #000;
     padding: 10px;
-    font-size: 13px;
+    text-align: left;
 }
 
 .print-table td {
-    padding: 8px;
     border-bottom: 1px solid #cbd5e1;
+    padding: 10px;
 }
 
 .print-summary {
     margin-top: 20px;
+    font-size: 15px;
 }
 
+.print-summary .final {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.print-footer {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 40px;
+    opacity: 0.6;
+}
+
+/* ============================================================
+   PRINT MODE
+============================================================ */
 @media print {
-    header, .section-title, .btn-green, .btn-blue, .tab, .top-tabs {
+
+    body {
+        padding-top: 0 !important;
+        background: white;
+    }
+
+    .top-tabs,
+    .page-wrapper > section:not(#print) {
         display: none !important;
     }
-    #patient, #tariff, #billing, #summary {
-        display: none !important;
-    }
-    #printArea {
+
+    #print {
         display: block !important;
-        page-break-after: always;
+        padding: 0;
+        margin: 0;
     }
 }
