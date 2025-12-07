@@ -1,434 +1,516 @@
-/* ============================================================================
-   KCC BILLING OS — PREMIUM MEDICAL BILLING ENGINE
-   Light Theme — Pure JS — 100% Offline
-============================================================================ */
+/* ===================================================================
+   KCC BILLING OS — CORE JS ENGINE
+   Fully Offline • Pure JavaScript • Premium Billing Engine
+=================================================================== */
 
-/* ----------------------------------------------------------------------------
-   GLOBAL BILL OBJECT
----------------------------------------------------------------------------- */
-let bill = {
-    uhid: "",
-    billNo: "",
-    patient: {
-        name: "",
-        age: "",
-        gender: "",
-        address: "",
-        doctor: "",
-        department: "",
-        admission: "",
-        discharge: "",
-        los: 0
-    },
-    rooms: [],
-    consultants: [],
-    investigations: [],
-    pharmacy: [],
-    receipts: [],
-    totals: {
-        room: 0,
-        consultant: 0,
-        investigations: 0,
-        pharmacy: 0,
-        gross: 0,
-        paid: 0,
-        balance: 0
+/* ===============================
+   UTILITIES
+================================= */
+const $ = (id) => document.getElementById(id);
+const newEl = (tag, cls = "") => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  return e;
+};
+
+/* Random generators */
+function generatePatientID() {
+  return "KCC-" + Math.floor(100000 + Math.random() * 900000);
+}
+
+function generateBillNumber() {
+  let n = "";
+  for (let i = 0; i < 12; i++) n += Math.floor(Math.random() * 10);
+  return n;
+}
+
+/* Date helpers */
+function calcLOS(doa, dod) {
+  if (!doa || !dod) return "";
+  const d1 = new Date(doa);
+  const d2 = new Date(dod);
+  const diff = (d2 - d1) / (1000 * 60 * 60 * 24);
+  return diff >= 0 ? diff + 1 : 0;
+}
+
+/* Currency formatting */
+function fmt(n) {
+  return Number(n || 0).toLocaleString("en-IN");
+}
+
+/* Collapsible cards */
+document.querySelectorAll(".collapsible-header").forEach((hdr) => {
+  hdr.addEventListener("click", () => {
+    hdr.parentElement.classList.toggle("open");
+  });
+});
+
+/* ================================================================
+   LOAD TARIFF + DOCTORS
+================================================================= */
+let TARIFF = {};
+let DOCTORS = [];
+
+async function loadTariff() {
+  try {
+    const t = await fetch("tariffs.json");
+    TARIFF = await t.json();
+  } catch (e) {
+    console.warn("tariffs.json not found");
+  }
+}
+
+async function loadDoctors() {
+  try {
+    const d = await fetch("doctors.json");
+    DOCTORS = await d.json();
+  } catch (e) {
+    console.warn("doctors.json not found");
+  }
+}
+
+/* Init select dropdowns */
+async function initDropdowns() {
+  await loadTariff();
+  await loadDoctors();
+
+  /* Room Types */
+  const rsel = $("room_type");
+  rsel.innerHTML = `<option value="">Select</option>`;
+  if (TARIFF.rooms) {
+    for (const r of TARIFF.rooms) {
+      const opt = document.createElement("option");
+      opt.value = r.name;
+      opt.textContent = r.name;
+      rsel.appendChild(opt);
     }
-};
+  }
 
-/* ============================================================================
-   UTILS: ID GENERATOR
-============================================================================ */
-function generateUHID() {
-    return "KCC" + Math.floor(100000 + Math.random() * 900000);
+  /* Doctors */
+  const dsel = $("p_doctor");
+  dsel.innerHTML = `<option value="">Select</option>`;
+  DOCTORS.forEach((dr) => {
+    const opt = document.createElement("option");
+    opt.value = dr.name;
+    opt.textContent = dr.name;
+    dsel.appendChild(opt);
+  });
+
+  /* Departments (optional) */
+  const deptSel = $("p_dept");
+  deptSel.innerHTML = `
+    <option value="">Select</option>
+    <option>Nephrology</option>
+    <option>Urology</option>
+    <option>General Medicine</option>
+    <option>Surgery</option>
+    <option>ICU</option>
+  `;
 }
 
-function generateBillNo() {
-    let n = Date.now().toString().slice(-6);
-    let r = Math.floor(100000 + Math.random() * 900000).toString();
-    return n + r;
-}
+/* ================================================================
+   AUTO GENERATE PATIENT ID
+================================================================= */
+$("p_id").value = generatePatientID();
 
-/* ============================================================================
-   UTILS: INR FORMAT
-============================================================================ */
-function inr(n) {
-    return Number(n || 0).toLocaleString("en-IN");
-}
-
-/* ============================================================================
-   UTILS: DATE & LOS CALCULATION
-============================================================================ */
-function calculateLOS(adm, dis) {
-    if (!adm || !dis) return 0;
-    let a = new Date(adm);
-    let d = new Date(dis);
-    let diff = (d - a) / (1000 * 60 * 60 * 24);
-    return diff >= 0 ? diff + 1 : 0;
-}
-
-/* ============================================================================
-   INITIALIZE UI
-============================================================================ */
-window.onload = () => {
-    loadDoctors();
-    loadTariffs();
-    newBill();
-};
-
-/* ============================================================================
-   NEW BILL SETUP
-============================================================================ */
-function newBill() {
-    bill = {
-        uhid: generateUHID(),
-        billNo: generateBillNo(),
-        patient: {
-            name: "",
-            age: "",
-            gender: "",
-            address: "",
-            doctor: "",
-            department: "",
-            admission: "",
-            discharge: "",
-            los: 0
-        },
-        rooms: [],
-        consultants: [],
-        investigations: [],
-        pharmacy: [],
-        receipts: [],
-        totals: {
-            room: 0,
-            consultant: 0,
-            investigations: 0,
-            pharmacy: 0,
-            gross: 0,
-            paid: 0,
-            balance: 0
-        }
-    };
-
-    document.getElementById("uhid").value = bill.uhid;
-    document.getElementById("billNo").value = bill.billNo;
-}
-
-/* ============================================================================
-   LOAD TARIFF DATA
-============================================================================ */
-let tariffData = {};
-let doctorData = [];
-
-function loadTariffs() {
-    fetch("data/tariffs.json")
-        .then(r => r.json())
-        .then(d => tariffData = d);
-}
-
-function loadDoctors() {
-    fetch("data/doctors.json")
-        .then(r => r.json())
-        .then(d => {
-            doctorData = d;
-            populateDoctorDropdown();
-        });
-}
-
-function populateDoctorDropdown() {
-    const sel = document.getElementById("consultantSelect");
-    sel.innerHTML = `<option value="">Select Consultant</option>`;
-    doctorData.forEach(doc => {
-        sel.innerHTML += `<option value="${doc.name}">${doc.name}</option>`;
-    });
-}
-
-/* ============================================================================
-   UPDATE PATIENT INFO
-============================================================================ */
-function updatePatientField(id, field) {
-    bill.patient[field] = document.getElementById(id).value;
-    updateLOS();
-}
-
+/* ================================================================
+   AUTO CALCULATE LOS
+================================================================= */
 function updateLOS() {
-    bill.patient.los = calculateLOS(bill.patient.admission, bill.patient.discharge);
-    document.getElementById("los").value = bill.patient.los || "";
+  const doa = $("p_doa").value;
+  const dod = $("p_dod").value;
+  $("p_los").value = calcLOS(doa, dod);
 }
 
-/* ============================================================================
-   ROOM SHIFT MODULE
-============================================================================ */
-function addRoomShift() {
-    const container = document.getElementById("roomList");
+$("p_doa").addEventListener("change", updateLOS);
+$("p_dod").addEventListener("change", updateLOS);
 
-    let html = `
-    <div class="entry-block">
-        <div class="entry-row">
-            <div>
-                <label>Room Type</label>
-                <select class="roomType" onchange="updateRoom(this)">
-                    <option value="">Select</option>
-                    ${Object.keys(tariffData.rooms || {}).map(r => `<option>${r}</option>`).join("")}
-                </select>
-            </div>
-            <div>
-                <label>From</label>
-                <input type="date" class="roomFrom" onchange="updateRoom(this)">
-            </div>
-            <div>
-                <label>To</label>
-                <input type="date" class="roomTo" onchange="updateRoom(this)">
-            </div>
-        </div>
+/* ================================================================
+   ROOM TARIFF HANDLING
+================================================================= */
+$("room_type").addEventListener("change", () => {
+  const type = $("room_type").value;
+  const room = (TARIFF.rooms || []).find((r) => r.name === type);
+  if (!room) return;
 
-        <div class="entry-row">
-            <div>
-                <label>Room Rent/day</label>
-                <input class="roomRent" disabled>
-            </div>
-            <div>
-                <label>Nursing/day</label>
-                <input class="nursing" disabled>
-            </div>
-            <div>
-                <label>RMO/DMO/day</label>
-                <input class="rmo" disabled>
-            </div>
-        </div>
+  $("room_rent").value = room.room_rent;
+  $("room_nursing").value = room.nursing;
+  $("room_rmo").value = room.rmo;
+});
 
-        <button class="remove-btn" onclick="this.parentElement.remove(); calculateTotals();">Remove</button>
-    </div>`;
+/* ROOM SHIFTING */
+$("add_room_shift").addEventListener("click", () => {
+  const box = $("room_shift_list");
 
-    container.insertAdjacentHTML("beforeend", html);
-}
+  const item = newEl("div", "list-item");
+  item.innerHTML = `
+    <label>Shifted Room Type</label>
+    <select class="shift_type"></select>
 
-function updateRoom(el) {
-    const block = el.closest(".entry-block");
-    const type = block.querySelector(".roomType").value;
+    <label>Days Stayed</label>
+    <input type="number" class="shift_days" value="1">
 
-    if (tariffData.rooms[type]) {
-        block.querySelector(".roomRent").value = tariffData.rooms[type].room;
-        block.querySelector(".nursing").value = tariffData.rooms[type].nursing;
-        block.querySelector(".rmo").value = tariffData.rooms[type].duty;
-    }
+    <label>Remove</label>
+    <button class="small-btn remove_shift">Remove</button>
+  `;
 
-    calculateTotals();
-}
+  box.appendChild(item);
 
-/* ============================================================================
-   CONSULTANT MODULE
-============================================================================ */
-function addConsultantVisit() {
-    const container = document.getElementById("consultantList");
+  /* populate dropdown */
+  const sel = item.querySelector(".shift_type");
+  sel.innerHTML = `<option value="">Select</option>`;
+  (TARIFF.rooms || []).forEach((r) => {
+    const o = document.createElement("option");
+    o.value = r.name;
+    o.textContent = r.name;
+    sel.appendChild(o);
+  });
 
-    let html = `
-    <div class="entry-block">
-        <div class="entry-row">
-            <div>
-                <label>Doctor</label>
-                <select class="consultantName">
-                    ${doctorData.map(d => `<option>${d.name}</option>`).join("")}
-                </select>
-            </div>
-            <div>
-                <label>Date</label>
-                <input type="date" class="consultantDate" onchange="calculateTotals()">
-            </div>
-            <div>
-                <label>Visits</label>
-                <input type="number" class="consultantCount" value="1" min="1" onchange="calculateTotals()">
-            </div>
-        </div>
+  item.querySelector(".remove_shift").addEventListener("click", () => {
+    item.remove();
+  });
+});
 
-        <button class="remove-btn" onclick="this.parentElement.remove(); calculateTotals();">Remove</button>
-    </div>
-    `;
-    container.insertAdjacentHTML("beforeend", html);
-}
+/* ================================================================
+   CONSULTANT VISITS
+================================================================= */
+$("add_visit").addEventListener("click", () => {
+  const box = $("visit_list");
 
-/* ============================================================================
-   INVESTIGATIONS MODULE
-============================================================================ */
-function addInvestigation() {
-    const container = document.getElementById("investigationList");
+  const item = newEl("div", "list-item");
+  item.innerHTML = `
+    <label>Select Doctor</label>
+    <select class="visit_doctor"></select>
 
-    const html = `
-    <div class="table-row">
-        <select class="invName" onchange="updateInvAmount(this)">
-            <option value="">Select Investigation</option>
-            ${(tariffData.investigations || []).map(i => `<option data-amt="${i.amount}">${i.name}</option>`).join("")}
-        </select>
-        <input class="invAmount" disabled>
-        <button class="remove-btn" onclick="this.parentElement.remove(); calculateTotals();">X</button>
-    </div>`;
+    <label>No. of Visits</label>
+    <input type="number" class="visit_count" value="1">
 
-    container.insertAdjacentHTML("beforeend", html);
-}
+    <button class="small-btn remove_visit">Remove</button>
+  `;
 
-function updateInvAmount(el) {
-    const amt = el.selectedOptions[0].dataset.amt;
-    el.closest(".table-row").querySelector(".invAmount").value = amt;
-    calculateTotals();
-}
+  box.appendChild(item);
 
-/* ============================================================================
-   PHARMACY MODULE
-============================================================================ */
-function addPharmacyItem() {
-    const container = document.getElementById("pharmacyList");
+  /* doctor dropdown */
+  const sel = item.querySelector(".visit_doctor");
+  sel.innerHTML = `<option value="">Select</option>`;
+  DOCTORS.forEach((dr) => {
+    const o = document.createElement("option");
+    o.value = dr.name;
+    o.textContent = dr.name;
+    sel.appendChild(o);
+  });
 
-    let html = `
-    <div class="table-row">
-        <select class="pharmName" onchange="updatePharmAmount(this)">
-            <option value="">Select Item</option>
-            ${(tariffData.pharmacy || []).map(i => `<option data-amt="${i.amount}">${i.name}</option>`).join("")}
-        </select>
-        <input class="pharmAmount" disabled>
-        <button class="remove-btn" onclick="this.parentElement.remove(); calculateTotals();">X</button>
-    </div>
-    `;
-    container.insertAdjacentHTML("beforeend", html);
-}
+  item.querySelector(".remove_visit").addEventListener("click", () => {
+    item.remove();
+  });
+});
 
-function updatePharmAmount(el) {
-    const amt = el.selectedOptions[0].dataset.amt;
-    el.closest(".table-row").querySelector(".pharmAmount").value = amt;
-    calculateTotals();
-}
+/* ================================================================
+   SURGERIES (Basic entry — advanced package logic later)
+================================================================= */
+$("add_surgery").addEventListener("click", () => {
+  const box = $("surgery_list");
+  const item = newEl("div", "list-item");
 
-/* ============================================================================
-   RECEIPT MODULE
-============================================================================ */
-function addReceipt() {
-    const container = document.getElementById("receiptList");
+  item.innerHTML = `
+    <label>Surgery Name</label>
+    <input type="text" class="surg_name">
 
-    let html = `
-    <div class="entry-block">
-        <div class="entry-row">
-            <div>
-                <label>Amount</label>
-                <input type="number" class="recAmount" onchange="calculateTotals()">
-            </div>
-            <div>
-                <label>Date</label>
-                <input type="date" class="recDate">
-            </div>
-            <div>
-                <label>Mode</label>
-                <select class="recMode">
-                    <option>Cash</option>
-                    <option>UPI</option>
-                    <option>Card</option>
-                    <option>Transfer</option>
-                    <option>Insurance</option>
-                </select>
-            </div>
-        </div>
+    <label>Surgery Cost</label>
+    <input type="number" class="surg_cost">
 
-        <button class="remove-btn" onclick="this.parentElement.remove(); calculateTotals();">Remove</button>
-    </div>
-    `;
-    container.insertAdjacentHTML("beforeend", html);
-}
+    <button class="small-btn remove_surg">Remove</button>
+  `;
 
-/* ============================================================================
-   TOTALS ENGINE
-============================================================================ */
+  box.appendChild(item);
+
+  item.querySelector(".remove_surg").addEventListener("click", () => {
+    item.remove();
+  });
+});
+
+/* ================================================================
+   PHARMACY
+================================================================= */
+$("add_pharmacy").addEventListener("click", () => {
+  const box = $("pharmacy_list");
+  const item = newEl("div", "list-item");
+
+  item.innerHTML = `
+    <label>Item</label>
+    <input type="text" class="ph_item">
+
+    <label>Amount</label>
+    <input type="number" class="ph_amount">
+
+    <button class="small-btn remove_ph">Remove</button>
+  `;
+
+  box.appendChild(item);
+
+  item.querySelector(".remove_ph").addEventListener("click", () => {
+    item.remove();
+  });
+});
+
+/* ================================================================
+   INVESTIGATIONS
+================================================================= */
+$("add_test").addEventListener("click", () => {
+  const box = $("test_list");
+  const item = newEl("div", "list-item");
+
+  item.innerHTML = `
+    <label>Test Name</label>
+    <input type="text" class="test_name">
+
+    <label>Amount</label>
+    <input type="number" class="test_amount">
+
+    <button class="small-btn remove_test">Remove</button>
+  `;
+
+  box.appendChild(item);
+
+  item.querySelector(".remove_test").addEventListener("click", () => {
+    item.remove();
+  });
+});
+
+/* ================================================================
+   MISC ITEMS
+================================================================= */
+$("add_misc").addEventListener("click", () => {
+  const box = $("misc_list");
+  const item = newEl("div", "list-item");
+
+  item.innerHTML = `
+    <label>Description</label>
+    <input type="text" class="misc_desc">
+
+    <label>Amount</label>
+    <input type="number" class="misc_amount">
+
+    <button class="small-btn remove_misc">Remove</button>
+  `;
+
+  box.appendChild(item);
+
+  item.querySelector(".remove_misc").addEventListener("click", () => {
+    item.remove();
+  });
+});
+
+/* ================================================================
+   RECEIPTS
+================================================================= */
+$("add_receipt").addEventListener("click", () => {
+  const box = $("receipt_list_new");
+  const item = newEl("div", "list-item");
+
+  item.innerHTML = `
+    <label>Mode</label>
+    <select class="rcpt_mode">
+      <option>Cash</option>
+      <option>UPI</option>
+      <option>Card</option>
+      <option>Bank Transfer</option>
+      <option>Insurance</option>
+    </select>
+
+    <label>Amount</label>
+    <input type="number" class="rcpt_amount">
+
+    <button class="small-btn remove_rcpt">Remove</button>
+  `;
+
+  box.appendChild(item);
+
+  item.querySelector(".remove_rcpt").addEventListener("click", () => {
+    item.remove();
+  });
+});
+
+/* ================================================================
+   CALCULATE TOTALS
+================================================================= */
 function calculateTotals() {
+  let gross = 0;
 
-    /* ---- ROOM TOTAL ---- */
-    let roomTotal = 0;
-    document.querySelectorAll("#roomList .entry-block").forEach(block => {
-        const type = block.querySelector(".roomType").value;
-        const from = block.querySelector(".roomFrom").value;
-        const to = block.querySelector(".roomTo").value;
+  /* Room charges */
+  const los = Number($("p_los").value || 0);
+  gross += (Number($("room_rent").value || 0) * los);
+  gross += (Number($("room_nursing").value || 0) * los);
+  gross += (Number($("room_rmo").value || 0) * los);
 
-        if (!type || !from || !to) return;
+  /* Room shifts */
+  document.querySelectorAll("#room_shift_list .list-item").forEach((it) => {
+    const type = it.querySelector(".shift_type").value;
+    const days = Number(it.querySelector(".shift_days").value || 0);
+    const r = (TARIFF.rooms || []).find((x) => x.name === type);
+    if (r) {
+      gross += r.room_rent * days;
+      gross += r.nursing * days;
+      gross += r.rmo * days;
+    }
+  });
 
-        const days = calculateLOS(from, to);
-        const r = tariffData.rooms[type];
+  /* Consultant visits */
+  document.querySelectorAll("#visit_list .list-item").forEach((it) => {
+    const dr = it.querySelector(".visit_doctor").value;
+    const cnt = Number(it.querySelector(".visit_count").value || 0);
+    const drObj = DOCTORS.find((d) => d.name === dr);
+    if (drObj) gross += drObj.visit_fee * cnt;
+  });
 
-        roomTotal += days * (
-            (r.room || 0) +
-            (r.nursing || 0) +
-            (r.duty || 0)
-        );
-    });
+  /* Surgeries */
+  document.querySelectorAll("#surgery_list .list-item").forEach((it) => {
+    const cost = Number(it.querySelector(".surg_cost").value || 0);
+    gross += cost;
+  });
 
-    /* ---- CONSULTANT TOTAL ---- */
-    let consultantTotal = 0;
-    document.querySelectorAll("#consultantList .entry-block").forEach(block => {
-        const doc = block.querySelector(".consultantName").value;
-        const cnt = Number(block.querySelector(".consultantCount").value);
-        const fee = (doctorData.find(d => d.name === doc)?.visit || 0);
-        consultantTotal += cnt * fee;
-    });
+  /* Pharmacy */
+  document.querySelectorAll("#pharmacy_list .list-item").forEach((it) => {
+    gross += Number(it.querySelector(".ph_amount").value || 0);
+  });
 
-    /* ---- INVESTIGATION TOTAL ---- */
-    let invTotal = 0;
-    document.querySelectorAll(".invAmount").forEach(i => {
-        invTotal += Number(i.value || 0);
-    });
+  /* Tests */
+  document.querySelectorAll("#test_list .list-item").forEach((it) => {
+    gross += Number(it.querySelector(".test_amount").value || 0);
+  });
 
-    /* ---- PHARMACY TOTAL ---- */
-    let pharmTotal = 0;
-    document.querySelectorAll(".pharmAmount").forEach(i => {
-        pharmTotal += Number(i.value || 0);
-    });
+  /* Misc */
+  document.querySelectorAll("#misc_list .list-item").forEach((it) => {
+    gross += Number(it.querySelector(".misc_amount").value || 0);
+  });
 
-    /* ---- RECEIPTS ---- */
-    let paid = 0;
-    document.querySelectorAll(".recAmount").forEach(i => {
-        paid += Number(i.value || 0);
-    });
+  /* Receipts */
+  let paid = 0;
+  document.querySelectorAll("#receipt_list_new .list-item").forEach((it) => {
+    paid += Number(it.querySelector(".rcpt_amount").value || 0);
+  });
 
-    /* ---- GROSS ---- */
-    let gross = roomTotal + consultantTotal + invTotal + pharmTotal;
+  $("total_gross").value = fmt(gross);
+  $("total_paid").value = fmt(paid);
+  $("total_balance").value = fmt(gross - paid);
 
-    bill.totals.room = roomTotal;
-    bill.totals.consultant = consultantTotal;
-    bill.totals.investigations = invTotal;
-    bill.totals.pharmacy = pharmTotal;
-    bill.totals.gross = gross;
-    bill.totals.paid = paid;
-    bill.totals.balance = gross - paid;
-
-    /* ---- UPDATE UI ---- */
-    document.getElementById("totalRoom").innerText = "₹ " + inr(roomTotal);
-    document.getElementById("totalConsult").innerText = "₹ " + inr(consultantTotal);
-    document.getElementById("totalInv").innerText = "₹ " + inr(invTotal);
-    document.getElementById("totalPharm").innerText = "₹ " + inr(pharmTotal);
-    document.getElementById("grossTotal").innerText = "₹ " + inr(gross);
-    document.getElementById("paidTotal").innerText = "₹ " + inr(paid);
-    document.getElementById("balanceTotal").innerText = "₹ " + inr(gross - paid);
+  return { gross, paid, balance: gross - paid };
 }
 
-/* ============================================================================
-   SAVE BILL TO LOCAL STORAGE
-============================================================================ */
-function saveBill() {
-    const all = JSON.parse(localStorage.getItem("kcc_bills") || "[]");
+/* Auto recalc continuously */
+setInterval(calculateTotals, 600);
 
-    // Update patient fields
-    bill.patient.name = document.getElementById("patientName").value;
-    bill.patient.age = document.getElementById("patientAge").value;
-    bill.patient.gender = document.getElementById("patientGender").value;
-    bill.patient.address = document.getElementById("patientAddress").value;
-    bill.patient.doctor = document.getElementById("patientDoctor").value;
+/* ================================================================
+   BUILD BILL OBJECT & SEND TO PRINT
+================================================================= */
+$("generate_bill").addEventListener("click", () => {
+  const totals = calculateTotals();
 
-    calculateTotals();
+  const bill = {
+    bill_no: generateBillNumber(),
+    bill_date: new Date().toLocaleDateString("en-IN"),
 
-    all.push(bill);
-    localStorage.setItem("kcc_bills", JSON.stringify(all));
+    patient: {
+      name: $("p_name").value,
+      id: $("p_id").value,
+      age: $("p_age").value,
+      gender: $("p_gender").value,
+      doctor: $("p_doctor").value,
+      admission_date: $("p_doa").value,
+      discharge_date: $("p_dod").value
+    },
 
-    alert("Bill saved successfully!");
-}
+    los: $("p_los").value,
+    payment_type: $("p_payment_type")?.value || "Self / Cash",
 
-/* ============================================================================
-   OPEN BILL IN PRINT LAYOUT
-============================================================================ */
-function openPrintPage() {
-    localStorage.setItem("kcc_current_bill", JSON.stringify(bill));
-    window.open("billing/bill-print.html", "_blank");
-}
+    /* BILL ITEMS TABLE (used by print engine) */
+    items: [],
+
+    /* Receipt summary */
+    receipts: [],
+    gross_total: totals.gross,
+    paid_total: totals.paid,
+    balance: totals.balance
+  };
+
+  /* ROOM */
+  const los = Number($("p_los").value || 0);
+  const addRow = (desc, qty, rate) => {
+    bill.items.push({
+      desc,
+      qty,
+      rate,
+      total: qty * rate
+    });
+  };
+
+  addRow($("room_type").value + " — Room Rent", los, Number($("room_rent").value || 0));
+  addRow("Nursing Charges", los, Number($("room_nursing").value || 0));
+  addRow("RMO/DMO Charges", los, Number($("room_rmo").value || 0));
+
+  /* ROOM SHIFTS */
+  document.querySelectorAll("#room_shift_list .list-item").forEach((it) => {
+    const type = it.querySelector(".shift_type").value;
+    const days = Number(it.querySelector(".shift_days").value);
+    const r = (TARIFF.rooms || []).find((x) => x.name === type);
+    if (r) {
+      addRow(type + " — Room Rent", days, r.room_rent);
+      addRow(type + " — Nursing", days, r.nursing);
+      addRow(type + " — RMO/DMO", days, r.rmo);
+    }
+  });
+
+  /* CONSULTANT VISITS */
+  document.querySelectorAll("#visit_list .list-item").forEach((it) => {
+    const dr = it.querySelector(".visit_doctor").value;
+    const cnt = Number(it.querySelector(".visit_count").value);
+    const drObj = DOCTORS.find((d) => d.name === dr);
+    if (drObj) addRow("Consultation — " + dr, cnt, drObj.visit_fee);
+  });
+
+  /* SURGERIES */
+  document.querySelectorAll("#surgery_list .list-item").forEach((it) => {
+    const name = it.querySelector(".surg_name").value;
+    const cost = Number(it.querySelector(".surg_cost").value);
+    addRow("Surgery — " + name, 1, cost);
+  });
+
+  /* PHARMACY */
+  document.querySelectorAll("#pharmacy_list .list-item").forEach((it) => {
+    const name = it.querySelector(".ph_item").value;
+    const amt = Number(it.querySelector(".ph_amount").value);
+    addRow("Pharmacy — " + name, 1, amt);
+  });
+
+  /* TESTS */
+  document.querySelectorAll("#test_list .list-item").forEach((it) => {
+    const name = it.querySelector(".test_name").value;
+    const amt = Number(it.querySelector(".test_amount").value);
+    addRow("Investigation — " + name, 1, amt);
+  });
+
+  /* MISC */
+  document.querySelectorAll("#misc_list .list-item").forEach((it) => {
+    const name = it.querySelector(".misc_desc").value;
+    const amt = Number(it.querySelector(".misc_amount").value);
+    addRow("Misc — " + name, 1, amt);
+  });
+
+  /* RECEIPTS */
+  document.querySelectorAll("#receipt_list_new .list-item").forEach((it) => {
+    bill.receipts.push({
+      mode: it.querySelector(".rcpt_mode").value,
+      amount: Number(it.querySelector(".rcpt_amount").value),
+      date: new Date().toLocaleDateString("en-IN")
+    });
+  });
+
+  /* SAVE + OPEN PRINT PAGE */
+  localStorage.setItem("billPreview", JSON.stringify(bill));
+  window.open("bill-print.html", "_blank");
+});
+
+/* ================================================================
+   INITIALIZE EVERYTHING
+================================================================= */
+initDropdowns();
