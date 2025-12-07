@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>KCC Billing OS — New Bill</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KCC Billing OS — Apollo Premium Edition</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+
 </head>
 
 <body>
 
-<!-- ======================== SIDEBAR ======================== -->
-<aside class="sidebar">
+<!-- ============================================
+     SIDEBAR (visible only on screen)
+============================================= -->
+<aside class="sidebar no-print">
   <div class="logo-block">
-    <img src="assets/logo.png" class="side-logo">
+    <img src="assets/logo.png" class="side-logo" />
     <h2>KCC Billing OS</h2>
   </div>
 
@@ -28,269 +31,247 @@
   </nav>
 </aside>
 
-<!-- ======================== MAIN CONTENT ======================== -->
+<!-- ============================================
+     MAIN CONTENT AREA
+============================================= -->
 <main class="main">
 
-  <!-- ======================== PANEL: DASHBOARD ======================== -->
-  <section id="dashboard" class="panel hidden">
-    <h1>Dashboard</h1>
-    <p>Welcome to Krishna Kidney Centre Billing OS.</p>
-  </section>
+  <!-- ======================================
+       PRINT TOOLBAR (on screen only)
+  ======================================= -->
+  <div class="toolbar no-print">
+    <button id="print_bill" class="primary-btn">🖨 Print Bill</button>
+  </div>
 
-
-  <!-- ======================== PANEL: NEW BILL ======================== -->
+  <!-- ======================================
+       PANEL: NEW BILL (MAIN BILLING PAGE)
+  ======================================= -->
   <section id="newbill" class="panel">
 
-    <h1>New Bill — Patient Admission & Billing</h1>
+    <!-- ================================
+         BEAUTIFUL APOLLO HEADER (PRINT)
+    ================================= -->
+    <div class="bill-print-area" id="billArea">
 
-    <!-- ==========================================================
-         PATIENT SECTION
-    =========================================================== -->
-    <div class="card">
-      <div class="card-header">Patient Information</div>
-      <div class="card-body grid-3">
+      <header class="bill-header">
+        <h1>KRISHNA KIDNEY CENTRE</h1>
+        <p class="sub1">Multispeciality Hospital</p>
+        <p class="sub2">ISO Certified | NABH Accredited</p>
+        <p class="sub3">Nellore, Andhra Pradesh • Tel: +91 98765 43210 • Email: support@kcc.in</p>
+      </header>
 
-        <div>
-          <label>Patient Name</label>
-          <input id="p_name" type="text" placeholder="Enter patient name">
-        </div>
-
-        <div>
-          <label>Age</label>
-          <input id="p_age" type="number" placeholder="Age">
-        </div>
-
-        <div>
-          <label>Gender</label>
-          <select id="p_gender">
-            <option value="">Select</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Patient ID (Auto)</label>
-          <input id="p_id" type="text" readonly>
-        </div>
-
-        <div>
-          <label>Department</label>
-          <select id="p_dept"></select>
-        </div>
-
-        <div>
-          <label>Consultant</label>
-          <select id="p_doctor"></select>
-        </div>
-
-      </div>
-    </div>
-
-
-    <!-- ==========================================================
-         ADMISSION SECTION
-    =========================================================== -->
-    <div class="card">
-      <div class="card-header">Admission Details</div>
-      <div class="card-body grid-3">
-
-        <div>
-          <label>Admission Date</label>
-          <input id="p_doa" type="date">
-        </div>
-
-        <div>
-          <label>Discharge Date</label>
-          <input id="p_dod" type="date">
-        </div>
-
-        <div>
-          <label>Length of Stay (Auto)</label>
-          <input id="p_los" type="text" readonly>
-        </div>
-
-      </div>
-    </div>
-
-
-    <!-- ==========================================================
-         ROOM SECTION
-    =========================================================== -->
-    <div class="card collapsible" data-box="room_box">
-      <div class="card-header collapsible-header">Room & Daily Charges</div>
-
-      <div class="card-body">
+      <!-- ================================
+           PATIENT INFORMATION
+      ================================= -->
+      <div class="card">
+        <div class="card-title">Patient Information</div>
 
         <div class="grid-3">
           <div>
-            <label>Select Room Type</label>
-            <select id="room_type"></select>
+            <label>Patient Name</label>
+            <input id="p_name" type="text" />
           </div>
 
           <div>
-            <label>Room Rent / Day</label>
-            <input id="room_rent" type="number" readonly>
+            <label>Age</label>
+            <input id="p_age" type="number" />
           </div>
 
           <div>
-            <label>Nursing / Day</label>
-            <input id="room_nursing" type="number" readonly>
+            <label>Gender</label>
+            <select id="p_gender">
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Patient ID (Auto)</label>
+            <input id="p_id" type="text" readonly />
+          </div>
+
+          <div>
+            <label>Department</label>
+            <select id="p_dept"></select>
+          </div>
+
+          <div>
+            <label>Consultant</label>
+            <select id="p_doctor"></select>
           </div>
         </div>
+      </div>
+
+      <!-- ================================
+           ADMISSION BLOCK
+      ================================= -->
+      <div class="card">
+        <div class="card-title">Admission Details</div>
 
         <div class="grid-3">
           <div>
-            <label>RMO / DMO Charges</label>
-            <input id="room_rmo" type="number" readonly>
+            <label>Date of Admission</label>
+            <input id="p_doa" type="date" />
           </div>
 
           <div>
-            <label>Select Shift to Another Room?</label>
-            <button id="add_room_shift" class="small-btn">Add Shift</button>
+            <label>Date of Discharge</label>
+            <input id="p_dod" type="date" />
           </div>
 
-          <div></div>
-        </div>
-
-        <div id="room_shift_list"></div>
-
-      </div>
-    </div>
-
-
-    <!-- ==========================================================
-         CONSULTANT VISITS
-    =========================================================== -->
-    <div class="card collapsible">
-      <div class="card-header collapsible-header">Consultant Visits</div>
-
-      <div class="card-body">
-        <button id="add_visit" class="add-btn">Add Visit</button>
-        <div id="visit_list"></div>
-      </div>
-    </div>
-
-
-    <!-- ==========================================================
-         SURGERY SECTION
-    =========================================================== -->
-    <div class="card collapsible">
-      <div class="card-header collapsible-header">Surgeries & Procedures</div>
-
-      <div class="card-body">
-        <button id="add_surgery" class="add-btn">Add Surgery</button>
-        <div id="surgery_list"></div>
-      </div>
-    </div>
-
-
-    <!-- ==========================================================
-         PHARMACY
-    =========================================================== -->
-    <div class="card collapsible">
-      <div class="card-header collapsible-header">Pharmacy</div>
-
-      <div class="card-body">
-        <button id="add_pharmacy" class="add-btn">Add Item</button>
-        <div id="pharmacy_list"></div>
-      </div>
-    </div>
-
-
-    <!-- ==========================================================
-         INVESTIGATIONS
-    =========================================================== -->
-    <div class="card collapsible">
-      <div class="card-header collapsible-header">Investigations</div>
-
-      <div class="card-body">
-        <button id="add_test" class="add-btn">Add Test</button>
-        <div id="test_list"></div>
-      </div>
-    </div>
-
-
-    <!-- ==========================================================
-         MISC
-    =========================================================== -->
-    <div class="card collapsible">
-      <div class="card-header collapsible-header">Miscellaneous Charges</div>
-
-      <div class="card-body">
-        <button id="add_misc" class="add-btn">Add Item</button>
-        <div id="misc_list"></div>
-      </div>
-    </div>
-
-
-    <!-- ==========================================================
-         RECEIPTS
-    =========================================================== -->
-    <div class="card collapsible">
-      <div class="card-header collapsible-header">Receipts / Payments</div>
-
-      <div class="card-body">
-        <button id="add_receipt" class="add-btn">Add Receipt</button>
-        <div id="receipt_list_new"></div>
-      </div>
-    </div>
-
-
-    <!-- ==========================================================
-         FINAL SUMMARY
-    =========================================================== -->
-    <div class="card">
-      <div class="card-header">Final Summary</div>
-
-      <div class="card-body grid-3">
-
-        <div>
-          <label>Gross Total</label>
-          <input id="total_gross" readonly>
-        </div>
-
-        <div>
-          <label>Total Paid</label>
-          <input id="total_paid" readonly>
-        </div>
-
-        <div>
-          <label>Balance</label>
-          <input id="total_balance" readonly>
+          <div>
+            <label>Length of Stay</label>
+            <input id="p_los" readonly />
+          </div>
         </div>
       </div>
 
-      <button id="generate_bill" class="primary-btn">Generate Final Bill</button>
+      <!-- ================================
+           ROOM & DAILY CHARGES
+      ================================= -->
+      <div class="card collapsible">
+        <div class="card-title collapsible-header">Room & Daily Charges</div>
 
-    </div>
+        <div class="card-body">
+          <div class="grid-3">
+            <div>
+              <label>Select Room Type</label>
+              <select id="room_type"></select>
+            </div>
 
-  </section>
+            <div>
+              <label>Room Rent / Day</label>
+              <input id="room_rent" readonly />
+            </div>
 
+            <div>
+              <label>Nursing / Day</label>
+              <input id="room_nursing" readonly />
+            </div>
+          </div>
 
-  <!-- ======================== PANEL: TARIFF ======================== -->
-  <section id="tariff" class="panel hidden">
-    <h1>Tariff Master</h1>
-    <p>Will be connected to tariffs.json in next step.</p>
-  </section>
+          <div class="grid-3">
+            <div>
+              <label>RMO / DMO / Duty Charges</label>
+              <input id="room_rmo" readonly />
+            </div>
 
+            <div>
+              <label>Shift to Another Room?</label>
+              <button id="add_room_shift" class="small-btn no-print">Add Shift</button>
+            </div>
+          </div>
 
-  <!-- ======================== PANEL: HISTORY ======================== -->
-  <section id="history" class="panel hidden">
-    <h1>Bill History</h1>
-  </section>
+          <div id="room_shift_list"></div>
+        </div>
+      </div>
 
+      <!-- ================================
+           CONSULTANT VISITS
+      ================================= -->
+      <div class="card collapsible">
+        <div class="card-title collapsible-header">Consultant Visits</div>
 
-  <!-- ======================== PANEL: SETTINGS ======================== -->
-  <section id="settings" class="panel hidden">
-    <h1>Settings</h1>
+        <div class="card-body">
+          <button id="add_visit" class="add-btn no-print">Add Visit</button>
+          <div id="visit_list"></div>
+        </div>
+      </div>
+
+      <!-- ================================
+           SURGERIES
+      ================================= -->
+      <div class="card collapsible">
+        <div class="card-title collapsible-header">Surgeries & Procedures</div>
+
+        <div class="card-body">
+          <button id="add_surgery" class="add-btn no-print">Add Surgery</button>
+          <div id="surgery_list"></div>
+        </div>
+      </div>
+
+      <!-- ================================
+           PHARMACY
+      ================================= -->
+      <div class="card collapsible">
+        <div class="card-title collapsible-header">Pharmacy</div>
+
+        <div class="card-body">
+          <button id="add_pharmacy" class="add-btn no-print">Add Item</button>
+          <div id="pharmacy_list"></div>
+        </div>
+      </div>
+
+      <!-- ================================
+           INVESTIGATIONS
+      ================================= -->
+      <div class="card collapsible">
+        <div class="card-title collapsible-header">Investigations</div>
+
+        <div class="card-body">
+          <button id="add_test" class="add-btn no-print">Add Test</button>
+          <div id="test_list"></div>
+        </div>
+      </div>
+
+      <!-- ================================
+           MISC
+      ================================= -->
+      <div class="card collapsible">
+        <div class="card-title collapsible-header">Miscellaneous</div>
+
+        <div class="card-body">
+          <button id="add_misc" class="add-btn no-print">Add Item</button>
+          <div id="misc_list"></div>
+        </div>
+      </div>
+
+      <!-- ================================
+           RECEIPTS
+      ================================= -->
+      <div class="card collapsible">
+        <div class="card-title collapsible-header">Receipts / Payments</div>
+
+        <div class="card-body">
+          <button id="add_receipt" class="add-btn no-print">Add Receipt</button>
+          <div id="receipt_list_new"></div>
+        </div>
+      </div>
+
+      <!-- ================================
+           FINAL SUMMARY
+      ================================= -->
+      <div class="card">
+        <div class="card-title">Final Summary</div>
+
+        <div class="grid-3">
+          <div>
+            <label>Gross Total</label>
+            <input id="total_gross" readonly />
+          </div>
+
+          <div>
+            <label>Total Paid</label>
+            <input id="total_paid" readonly />
+          </div>
+
+          <div>
+            <label>Balance</label>
+            <input id="total_balance" readonly />
+          </div>
+        </div>
+      </div>
+
+    </div><!-- bill-print-area end -->
+
   </section>
 
 </main>
 
+<!-- Load JS -->
 <script src="app.js"></script>
-<script src="data/tariffs.js"></script>
 
 </body>
 </html>
