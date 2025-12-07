@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Patient Registration — KCC Billing OS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- DESIGN SYSTEM -->
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/patient.css">
 </head>
@@ -12,81 +13,110 @@
 <body>
 
 <header class="topbar">
-  <img src="assets/logo.png" class="logo">
+  <img src="assets/logo.png" class="logo" />
   <h1>Patient Registration</h1>
 </header>
 
 <div class="page">
 
-  <form id="patientForm" class="form-card">
+  <!-- MAIN FORM CARD -->
+  <form id="patientForm" class="patient-card">
+    
+    <!-- Auto Generated IDs -->
+    <div class="form-grid">
 
-    <div class="form-row">
-      <label>UHID</label>
-      <input type="text" id="uhid" readonly>
+      <div class="form-col">
+        <label>UHID</label>
+        <input type="text" id="uhid" readonly class="readonly">
+      </div>
+
+      <div class="form-col">
+        <label>IP Number</label>
+        <input type="text" id="ipNo" readonly class="readonly">
+      </div>
+
     </div>
 
-    <div class="form-row">
-      <label>IP Number</label>
-      <input type="text" id="ipNo" readonly>
+    <!-- Patient Information -->
+    <h2 class="section-title">Patient Information</h2>
+
+    <div class="form-grid">
+
+      <div class="form-col">
+        <label>Patient Name</label>
+        <input type="text" id="pName" required>
+      </div>
+
+      <div class="form-col">
+        <label>Age</label>
+        <input type="number" id="pAge" required>
+      </div>
+
+      <div class="form-col">
+        <label>Gender</label>
+        <select id="pGender">
+          <option>Male</option>
+          <option>Female</option>
+        </select>
+      </div>
+
     </div>
 
-    <div class="form-row">
-      <label>Patient Name</label>
-      <input type="text" id="pName">
+    <!-- Practitioner Section -->
+    <h2 class="section-title">Medical Details</h2>
+
+    <div class="form-grid">
+
+      <div class="form-col">
+        <label>Practitioner</label>
+        <input type="text" id="pDoc">
+      </div>
+
+      <div class="form-col">
+        <label>Speciality</label>
+        <input type="text" id="pSpec">
+      </div>
+
+      <div class="form-col">
+        <label>Payor</label>
+        <select id="pPayor">
+          <option>Self Pay</option>
+          <option>Insurance</option>
+        </select>
+      </div>
+
     </div>
 
-    <div class="form-row">
-      <label>Age</label>
-      <input type="number" id="pAge">
+    <!-- Admission Details -->
+    <h2 class="section-title">Admission Details</h2>
+
+    <div class="form-grid">
+
+      <div class="form-col">
+        <label>Admission Date</label>
+        <input type="datetime-local" id="admDate" required>
+      </div>
+
+      <div class="form-col">
+        <label>Bed Type</label>
+        <select id="bedType">
+          <option>General</option>
+          <option>Semi-Private</option>
+          <option>Private</option>
+          <option>Deluxe</option>
+        </select>
+      </div>
+
+      <div class="form-col">
+        <label>Nursing Unit</label>
+        <input type="text" id="nursingUnit">
+      </div>
+
     </div>
 
-    <div class="form-row">
-      <label>Gender</label>
-      <select id="pGender">
-        <option>Male</option>
-        <option>Female</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label>Practitioner</label>
-      <input type="text" id="pDoc">
-    </div>
-
-    <div class="form-row">
-      <label>Speciality</label>
-      <input type="text" id="pSpec">
-    </div>
-
-    <div class="form-row">
-      <label>Payor</label>
-      <select id="pPayor">
-        <option>Self Pay</option>
-        <option>Insurance</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label>Admission Date</label>
-      <input type="datetime-local" id="admDate">
-    </div>
-
-    <div class="form-row">
-      <label>Bed Type</label>
-      <select id="bedType">
-        <option>General</option>
-        <option>Semi-Private</option>
-        <option>Private</option>
-        <option>Deluxe</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label>Nursing Unit</label>
-      <input type="text" id="nursingUnit">
-    </div>
-
-    <button type="button" id="savePatientBtn" class="btn-primary">Save Patient</button>
+    <button type="button" id="savePatientBtn" class="btn-primary full">
+      Save Patient
+    </button>
 
   </form>
 
