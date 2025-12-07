@@ -1,21 +1,88 @@
-#roomTariffs div,
-#miscTariffs div,
-#otTariffs div,
-#packageList div,
-#investigationList div {
-  background: var(--card);
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 10px;
+:root {
+  --bg: #fafafa;
+  --card: #ffffff;
+  --line: #e5e7eb;
+  --text: #0f172a;
+  --sub: #475569;
+  --blue: #0B63C5;
+  --blue-light: #0ea5e9;
+  --radius: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --font: "Manrope", "Inter", Helvetica, sans-serif;
 }
 
-input {
-  width: 100%;
-  margin-top: 8px;
+/* RESET */
+* { margin:0; padding:0; box-sizing:border-box; font-family:var(--font); }
+body { background:var(--bg); color:var(--text); }
+
+/* TOPBAR */
+.topbar {
+  display:flex; align-items:center; gap:12px;
+  background:white; padding:14px 20px;
+  border-bottom:1px solid var(--line);
+  box-shadow:var(--shadow);
+}
+.topbar .logo { width:48px; }
+
+/* PAGE */
+.page { padding:24px; }
+
+/* CARDS */
+.card-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:20px;
+}
+.card {
+  padding:20px; background:white;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  text-decoration:none; color:var(--text);
+}
+.card:hover { border-color:var(--blue); }
+
+/* FORM ELEMENTS */
+.form-card {
+  background:white; padding:20px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  max-width:650px;
+}
+.form-row { margin-bottom:18px; display:flex; flex-direction:column; }
+.form-row label { font-size:13px; margin-bottom:6px; color:var(--sub); }
+input, select, textarea {
+  padding:11px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  font-size:14px;
 }
 
-.export-bar {
-  display: flex;
-  gap: 10px;
+/* BUTTONS */
+.btn-primary {
+  background:var(--blue);
+  color:white;
+  border:none;
+  padding:12px;
+  border-radius:var(--radius);
+  cursor:pointer;
 }
+.btn-secondary {
+  background:#e2e8f0;
+  color:var(--text);
+  border:none;
+  padding:12px;
+  border-radius:var(--radius);
+}
+.full { width:100%; }
+
+/* SECTIONS */
+.section {
+  background:white;
+  padding:20px;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  margin-bottom:20px;
+}
+.section h2 { margin-bottom:12px; font-size:18px; }
