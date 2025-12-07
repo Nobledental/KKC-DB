@@ -1,15 +1,22 @@
 /* ============================================================================
-   PATIENT REGISTRATION LOGIC — KCC Billing OS
+   PATIENT REGISTRATION MODULE — KCC BILLING OS (UPGRADED)
 ============================================================================ */
 
+/* AUTO-FILL UHID + IP ON LOAD */
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("uhid").value = generateUHID();
   document.getElementById("ipNo").value = generateIP();
 });
 
-/* -------------------------------------------
-   SAVE PATIENT
-------------------------------------------- */
+/* VALIDATION HELPER */
+function validatePatient(p) {
+  if (!p.name) return "Enter patient name.";
+  if (!p.age) return "Enter patient age.";
+  if (!p.admDate) return "Select admission date.";
+  return null;
+}
+
+/* SAVE PATIENT ------------------------------------------------------------- */
 document.getElementById("savePatientBtn").onclick = async () => {
 
   const p = {
@@ -26,6 +33,16 @@ document.getElementById("savePatientBtn").onclick = async () => {
     nursingUnit: document.getElementById("nursingUnit").value.trim()
   };
 
+  /* VALIDATE */
+  const err = validatePatient(p);
+  if (err) return alert(err);
+
   await storeSet("patients", p);
-  alert("Patient Saved");
+
+  alert("Patient Saved Successfully");
+  
+  /* Generate next UHID/IP ready for next entry */
+  document.getElementById("uhid").value = generateUHID();
+  document.getElementById("ipNo").value = generateIP();
+  document.getElementById("patientForm").reset();
 };
