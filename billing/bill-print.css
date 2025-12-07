@@ -1,176 +1,195 @@
-/* ================= GLOBAL ================= */
+/* ============================================================================
+   BILL PRINT — PREMIUM A4 STYLE (L3 HYBRID)
+   Krishna Kidney Centre
+============================================================================ */
+
 body {
   margin: 0;
   padding: 0;
+  background: #f0f3f7;
   font-family: "Manrope", sans-serif;
-  background: #ffffff;
-  color: #1a1a1a;
+  color: #1e2a32;
 }
 
-.page {
-  width: 820px;
+.print-wrapper {
+  width: 100%;
+  max-width: 900px;
   margin: auto;
-  padding: 20px 0 40px;
+  padding: 30px;
+  box-sizing: border-box;
 }
 
-/* ================= HEADER ================= */
-
-.bill-header {
+/* ---------------- HEADER ---------------- */
+.print-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 18px;
-  border-bottom: 2px solid #e3e3e3;
-  margin-bottom: 25px;
+  padding: 28px;
+  background: rgba(255,255,255,0.75);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  margin-bottom: 35px;
 }
 
-.hospital-logo {
-  width: 70px;
-  margin-right: 18px;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.header-left h1 {
+.print-header h1 {
   margin: 0;
-  font-size: 22px;
   font-weight: 800;
-  color: #0b3b4a;
+  font-size: 26px;
+  color: #0a4d56;
 }
 
-.header-left .sub {
-  margin: 0;
-  color: #3f6f7c;
-  font-weight: 600;
+.print-header p {
+  margin: 3px 0;
+  font-weight: 500;
+  color: #246b72;
 }
 
-.header-left .addr {
-  margin: 0;
-  font-size: 14px;
-  color: #555;
-}
-
-.header-right {
-  text-align: right;
-}
-
-.header-right .label {
-  font-size: 12px;
+.print-header .sub {
+  font-size: 13px;
   opacity: 0.7;
 }
 
-.header-right .value {
-  margin-top: -2px;
-  font-weight: 700;
+.logo-circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle at top, #0ea6ad, #056d71);
+  border: 2px solid rgba(255,255,255,0.65);
+  box-shadow: inset 0 0 12px rgba(255,255,255,0.5), 0 6px 20px rgba(0,0,0,0.15);
 }
 
-.bold {
+/* ---------------- CARDS ---------------- */
+.glass-card {
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 26px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+}
+
+/* ---------------- PATIENT INFO ---------------- */
+.patient-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.patient-card h3 {
+  margin: 0 0 15px;
+  font-weight: 800;
+  color: #0b555d;
+}
+
+.pc-left, .pc-right {
+  width: 48%;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.label {
+  color: #2d6b74;
+  font-weight: 600;
+}
+
+.value {
+  font-weight: 700;
+  color: #133c42;
+}
+
+/* ---------------- BILL SUMMARY ---------------- */
+.charge-summary h3 {
+  margin-bottom: 18px;
+  color: #0a4d56;
   font-weight: 800;
 }
 
-/* ================= CARDS ================= */
-
-.section-card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 20px 24px;
-  border: 1px solid #e4e4e4;
-  margin-bottom: 25px;
-}
-
-.section-card h2 {
-  margin: 0 0 16px;
-  font-size: 18px;
-  font-weight: 800;
-  color: #0b3b4a;
-}
-
-/* ================= GRID ================= */
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px 30px;
-}
-
-label {
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-.field {
-  margin-top: 3px;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-/* ================= TABLE ================= */
-
-.bill-table {
+.summary-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  margin-bottom: 22px;
 }
 
-.bill-table th {
-  background: #f1f5f9;
-  padding: 10px;
-  border-bottom: 2px solid #e2e8f0;
+.summary-table th {
   text-align: left;
-  font-weight: 700;
+  background: #d8e9ef;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px 8px 0 0;
 }
 
-.bill-table td {
-  padding: 10px;
-  border-bottom: 1px solid #e5e7eb;
+.summary-table td {
+  padding: 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #e3e7eb;
 }
 
 .right {
   text-align: right;
 }
 
-.total-box {
-  margin-top: 18px;
-  padding: 12px 20px;
-  background: #0f172a;
-  color: white;
-  border-radius: 10px;
+.summary-total {
   display: flex;
   justify-content: space-between;
+  padding: 14px 0;
   font-size: 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.summary-total .value {
   font-weight: 800;
 }
 
-/* ================= RECEIPTS ================= */
-
-.summary-box {
-  margin-top: 18px;
-  padding: 16px 20px;
-  background: #f8fafc;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
+.summary-total.final {
+  font-size: 18px;
+  color: #0a6f79;
+  border-bottom: none;
 }
 
-.summary-box .row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-}
-
-.balance {
-  font-size: 17px;
-  color: #ac0000;
-}
-
-/* ================= FOOTER ================= */
-
-.footer {
-  margin-top: 40px;
+/* ---------------- FOOTER ---------------- */
+.print-footer {
   text-align: center;
-  font-size: 13px;
-  opacity: 0.7;
+  margin-top: 40px;
+  color: #5c7380;
+  font-size: 14px;
+}
+
+/* ============================================================================
+   PRINT MODE OPTIMIZED — AUTO PAGE SPLIT
+============================================================================ */
+@media print {
+  body {
+    background: white;
+  }
+
+  .print-wrapper {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .glass-card,
+  .print-header {
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .bill-print-area {
+    page-break-inside: auto;
+  }
+
+  section, div, table {
+    page-break-inside: avoid;
+  }
+
+  .summary-table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
 }
