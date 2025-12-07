@@ -1,268 +1,503 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>KCC Billing OS — Single Page System</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KCC Billing OS — V21</title>
+
+    <!-- GOOGLE FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- JS -->
     <script defer src="app.js"></script>
 </head>
 
 <body>
 
-    <!-- =========================================================
-         FIXED TOP TABS — GOOGLE MATERIAL STYLE
-    ========================================================== -->
-    <header class="top-tabs">
-        <div class="tab active" data-tab="patient">Patient</div>
-        <div class="tab" data-tab="tariff">Tariff</div>
-        <div class="tab" data-tab="billing">Billing</div>
-        <div class="tab" data-tab="summary">Summary</div>
-        <div class="tab" data-tab="print">Print</div>
-    </header>
+<!-- ============================================================
+     FIXED TOP TABS (Google Underline U1)
+============================================================ -->
+<header class="top-tabs">
+    <div class="tab active" data-tab="patient">Patient</div>
+    <div class="tab" data-tab="tariff">Tariff</div>
+    <div class="tab" data-tab="billing">Billing</div>
+    <div class="tab" data-tab="summary">Summary</div>
+    <div class="tab" data-tab="history">History</div>
+    <div class="tab" data-tab="print">Print</div>
+</header>
 
-    <!-- =========================================================
-         MAIN WRAPPER
-    ========================================================== -->
-    <div class="page-wrapper">
+<!-- ============================================================
+     PAGE CONTAINER
+============================================================ -->
+<div class="page-wrapper">
 
-        <!-- =====================================================
-             TAB 1 — PATIENT SECTION
-        ====================================================== -->
-        <section id="patient" class="tab-section active">
+<!-- ============================================================
+     TAB: PATIENT
+============================================================ -->
+<section id="patient" class="tab-section active">
 
-            <h1 class="section-title">Patient Details</h1>
+    <h1 class="section-title">Patient Registration</h1>
 
-            <div class="card">
-                <div class="row-2">
-                    <div>
-                        <label>UHID</label>
-                        <input id="uhid" readonly>
-                    </div>
+    <!-- Patient Form Card -->
+    <div class="card">
 
-                    <div>
-                        <label>IP Number</label>
-                        <input id="ipNo" readonly>
-                    </div>
-                </div>
+        <div class="form-row">
+            <label>UHID</label>
+            <input type="text" id="uhid" readonly>
+            <button class="btn mini" onclick="generateUHID()">Generate</button>
+        </div>
 
-                <div class="row-2">
-                    <div>
-                        <label>Patient Name</label>
-                        <input id="pname">
-                    </div>
-                    <div>
-                        <label>Age / Gender</label>
-                        <input id="agegender" placeholder="78 / Female">
-                    </div>
-                </div>
+        <div class="form-row">
+            <label>IP Number</label>
+            <input type="text" id="ipNo" readonly>
+            <button class="btn mini" onclick="generateIP()">Generate</button>
+        </div>
 
-                <div class="row-2">
-                    <div>
-                        <label>Admission Date</label>
-                        <input type="date" id="admDate">
-                    </div>
-                    <div>
-                        <label>Run Date</label>
-                        <input type="datetime-local" id="runDate">
-                    </div>
-                </div>
+        <div class="form-row">
+            <label>Invoice Number</label>
+            <input type="text" id="invoiceNo" readonly>
+            <button class="btn mini" onclick="generateInvoice()">Generate</button>
+        </div>
 
-                <div class="row-2">
-                    <div>
-                        <label>Practitioner</label>
-                        <input id="doctor" placeholder="Dr. Shama Shetty">
-                    </div>
-                    <div>
-                        <label>Speciality</label>
-                        <input id="speciality" placeholder="Head & Neck Surgery, ENT">
-                    </div>
-                </div>
+        <div class="form-row">
+            <label>Patient Name</label>
+            <input type="text" id="p_name">
+        </div>
 
-                <div class="row-2">
-                    <div>
-                        <label>Bed Category</label>
-                        <input id="bedCat" placeholder="GENERAL">
-                    </div>
-                    <div>
-                        <label>Nursing Unit</label>
-                        <input id="nursingUnit" placeholder="Pre Op Area">
-                    </div>
-                </div>
-
-                <button class="btn-blue" id="genPatient">Generate UHID / IP</button>
+        <div class="row-2col">
+            <div>
+                <label>Age</label>
+                <input type="number" id="p_age">
             </div>
-
-        </section>
-
-        <!-- =====================================================
-             TAB 2 — TARIFF SECTION
-        ====================================================== -->
-        <section id="tariff" class="tab-section">
-
-            <h1 class="section-title">Tariff Management</h1>
-
-            <div class="card">
-                <h2 class="sub-title">Daily Charges</h2>
-                <div class="row-4">
-                    <div>
-                        <label>Room Rent (General)</label>
-                        <input id="t_room" type="number" value="1200">
-                    </div>
-
-                    <div>
-                        <label>Nursing Charge</label>
-                        <input id="t_nursing" type="number" value="400">
-                    </div>
-
-                    <div>
-                        <label>RMO/DMO Charge</label>
-                        <input id="t_rmo" type="number" value="300">
-                    </div>
-
-                    <div>
-                        <label>Consultation Charge</label>
-                        <input id="t_consult" type="number" value="500">
-                    </div>
-                </div>
-
-                <h2 class="sub-title">OT Charges</h2>
-                <div class="row-3">
-                    <div>
-                        <label>OT Base</label>
-                        <input id="t_otbase" type="number" value="18000">
-                    </div>
-                    <div>
-                        <label>OT Hourly Additional</label>
-                        <input id="t_othour" type="number" value="2000">
-                    </div>
-                    <div>
-                        <label>Anesthesia (per 30m)</label>
-                        <input id="t_anes" type="number" value="30">
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- =====================================================
-             TAB 3 — BILLING SECTION
-        ====================================================== -->
-        <section id="billing" class="tab-section">
-
-            <h1 class="section-title">Billing Items</h1>
-
-            <div class="card">
-                <h2 class="sub-title">Daily Charges Auto Generator</h2>
-                <button id="genDaily" class="btn-blue">Generate Daily Billing</button>
-            </div>
-
-            <div class="card">
-                <h2 class="sub-title">Add Surgical Package</h2>
-
-                <select id="packageSelect">
-                    <option value="">Choose Package</option>
-                    <option value="thyroid">Thyroidectomy Package</option>
-                    <option value="turb">TURP Package</option>
-                    <option value="hernia">Hernia Repair Package</option>
-                    <option value="appendix">Appendectomy Package</option>
+            <div>
+                <label>Gender</label>
+                <select id="p_gender">
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
                 </select>
-
-                <button id="loadPackage" class="btn-blue">Load Package</button>
             </div>
+        </div>
 
+        <div class="form-row">
+            <label>Admission Date & Time</label>
+            <input type="datetime-local" id="admissionDate">
+        </div>
 
-            <div class="card">
-                <h2 class="sub-title">Manual Items</h2>
-                <button id="addManual" class="btn-blue">Add Item</button>
-                <div id="billRows"></div>
+        <div class="form-row">
+            <label>Practitioner</label>
+            <input type="text" id="practitioner">
+        </div>
+
+        <div class="form-row">
+            <label>Speciality</label>
+            <input type="text" id="speciality">
+        </div>
+
+        <div class="row-2col">
+            <div>
+                <label>Bed Category</label>
+                <input type="text" id="bedCategory">
             </div>
-
-        </section>
-
-        <!-- =====================================================
-             TAB 4 — SUMMARY SECTION
-        ====================================================== -->
-        <section id="summary" class="tab-section">
-
-            <h1 class="section-title">Summary</h1>
-
-            <div class="card">
-                <h2 class="sub-title">Totals</h2>
-
-                <div class="summary-item">
-                    <span>Gross Total</span>
-                    <span id="grossTotal">₹0.00</span>
-                </div>
-
-                <div class="summary-item">
-                    <span>GST Total</span>
-                    <span id="gstTotal">₹0.00</span>
-                </div>
-
-                <div class="summary-item">
-                    <span>Returns</span>
-                    <span id="returnTotal">₹0.00</span>
-                </div>
-
-                <div class="summary-item">
-                    <span>Receipts</span>
-                    <span id="receiptTotal">₹0.00</span>
-                </div>
-
-                <div class="summary-final">
-                    <span>Final Payable</span>
-                    <span id="finalTotal">₹0.00</span>
-                </div>
-
-                <button id="goPrint" class="btn-blue">Go to Print Page</button>
+            <div>
+                <label>Nursing Unit</label>
+                <input type="text" id="nursingUnit">
             </div>
+        </div>
 
-        </section>
+        <div class="form-row">
+            <label>Payor Category</label>
+            <select id="payorCategory">
+                <option value="Self Pay">Self Pay</option>
+                <option value="Insurance">Insurance</option>
+                <option value="Corporate">Corporate</option>
+            </select>
+        </div>
 
-        <!-- =====================================================
-             TAB 5 — PRINT SECTION (VISIBLE ONLY IN SCREEN PREVIEW)
-        ====================================================== -->
-        <section id="print" class="tab-section">
+        <button class="btn primary" onclick="savePatient()">Save Patient</button>
+    </div>
 
-            <h1 class="section-title">Print Preview</h1>
-            <button id="printBill" class="btn-green">Print Bill</button>
+</section>
 
-            <div id="printArea" class="print-a4">
-                <h1 class="print-title">Krishna Kidney Centre</h1>
-                <h2 class="print-sub">IP Tax Invoice — Cash</h2>
+  <!-- ============================================================
+     TAB: TARIFF MANAGEMENT
+============================================================ -->
+<section id="tariff" class="tab-section">
 
-                <div id="printDetails"></div>
+    <h1 class="section-title">Tariff Management</h1>
 
-                <table class="print-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Rate</th>
-                            <th>Qty</th>
-                            <th>Gross</th>
-                            <th>GST</th>
-                            <th>Net</th>
-                        </tr>
-                    </thead>
-                    <tbody id="printRows"></tbody>
-                </table>
+    <!-- ========== ROOM TARIFF CARD ========== -->
+    <div class="card">
+        <h2 class="card-title">Room Tariff</h2>
 
-                <div class="print-summary">
-                    <p><strong>Gross Total:</strong> <span id="p_gross"></span></p>
-                    <p><strong>GST Total:</strong> <span id="p_gst"></span></p>
-                    <p><strong>Returns:</strong> <span id="p_return"></span></p>
-                    <p><strong>Receipts:</strong> <span id="p_receipts"></span></p>
-                    <h2><strong>Final Payable: <span id="p_final"></span></strong></h2>
-                </div>
+        <div class="row-3col">
+            <div>
+                <label>General Ward (per day)</label>
+                <input type="number" id="t_general" value="1200">
             </div>
+            <div>
+                <label>Semi-Private (per day)</label>
+                <input type="number" id="t_semi" value="2000">
+            </div>
+            <div>
+                <label>Private (per day)</label>
+                <input type="number" id="t_private" value="3000">
+            </div>
+        </div>
 
-        </section>
+        <div class="row-3col">
+            <div>
+                <label>Deluxe (per day)</label>
+                <input type="number" id="t_deluxe" value="4500">
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== DAILY CHARGES CARD ========== -->
+    <div class="card">
+        <h2 class="card-title">Daily Charges</h2>
+
+        <div class="row-3col">
+            <div>
+                <label>Nursing (per day)</label>
+                <input type="number" id="t_nursing" value="400">
+            </div>
+            <div>
+                <label>RMO/DMO (per day)</label>
+                <input type="number" id="t_rmo" value="300">
+            </div>
+            <div>
+                <label>Consultation (per visit)</label>
+                <input type="number" id="t_consult" value="500">
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SURGICAL PACKAGES ========== -->
+    <div class="card">
+        <h2 class="card-title">Surgical Packages</h2>
+
+        <div class="form-row">
+            <label>Package Name</label>
+            <input type="text" id="pkg_name" placeholder="Ex: Laparoscopic Appendectomy">
+        </div>
+
+        <div id="packageItems"></div>
+
+        <button class="btn mini" onclick="addPackageItem()">Add Item</button>
+        <button class="btn mini red" onclick="clearPackageItems()">Clear Items</button>
+
+        <button class="btn primary" onclick="savePackage()">Save Package</button>
+
+        <h3 class="sub-title">Existing Packages</h3>
+        <ul id="packageList" class="pkg-list"></ul>
+    </div>
+
+    <!-- ========== INVESTIGATIONS / PHARMACY ========== -->
+    <div class="card">
+        <h2 class="card-title">Investigations & Pharmacy</h2>
+
+        <div class="form-row">
+            <label>Default Pharmacy GST %</label>
+            <input type="number" id="t_pharmacy_gst" value="5">
+        </div>
+
+        <div class="form-row">
+            <label>Default Lab GST %</label>
+            <input type="number" id="t_lab_gst" value="12">
+        </div>
+
+        <button class="btn primary" onclick="saveTariff()">Save Tariff</button>
+    </div>
+
+</section>
+
+<!-- ============================================================
+     TAB: BILLING
+============================================================ -->
+<section id="billing" class="tab-section">
+
+    <h1 class="section-title">Billing Engine</h1>
+
+    <!-- ================= DAILY CHARGE GENERATOR ================= -->
+    <div class="card">
+        <h2 class="card-title">Daily Charge Generator</h2>
+
+        <div class="row-3col">
+            <div>
+                <label>From Date</label>
+                <input type="date" id="daily_from">
+            </div>
+            <div>
+                <label>To Date</label>
+                <input type="date" id="daily_to">
+            </div>
+            <div>
+                <label>Bed Category</label>
+                <select id="daily_bed">
+                    <option value="general">General</option>
+                    <option value="semi">Semi-Private</option>
+                    <option value="private">Private</option>
+                    <option value="deluxe">Deluxe</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn primary" onclick="generateDailyCharges()">Generate Daily Charges</button>
+    </div>
+
+    <!-- ================= SURGICAL PACKAGE ADDER ================= -->
+    <div class="card">
+        <h2 class="card-title">Add Surgical Package</h2>
+
+        <div class="form-row">
+            <label>Select Package</label>
+            <select id="pkg_select"></select>
+        </div>
+
+        <button class="btn primary" onclick="addPackageToBill()">Add Package</button>
+    </div>
+
+    <!-- ================= MANUAL CHARGE ENTRY ================= -->
+    <div class="card">
+        <h2 class="card-title">Add Manual Item</h2>
+
+        <div class="row-3col">
+            <div>
+                <label>Date</label>
+                <input type="date" id="m_date">
+            </div>
+            <div>
+                <label>Description</label>
+                <input type="text" id="m_desc">
+            </div>
+            <div>
+                <label>Rate</label>
+                <input type="number" id="m_rate">
+            </div>
+        </div>
+
+        <div class="row-3col">
+            <div>
+                <label>Qty</label>
+                <input type="number" id="m_qty" value="1">
+            </div>
+            <div>
+                <label>GST %</label>
+                <input type="number" id="m_gst" value="0">
+            </div>
+            <div>
+                <button class="btn primary full" onclick="addManualItem()">Add Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= RETURNS ================= -->
+    <div class="card">
+        <h2 class="card-title">Add Return Item</h2>
+
+        <div class="row-3col">
+            <div>
+                <label>Date</label>
+                <input type="date" id="r_date">
+            </div>
+            <div>
+                <label>Description</label>
+                <input type="text" id="r_desc">
+            </div>
+            <div>
+                <label>Amount</label>
+                <input type="number" id="r_amount">
+            </div>
+        </div>
+
+        <button class="btn red" onclick="addReturn()">Add Return</button>
+    </div>
+
+    <!-- ================= RECEIPTS ================= -->
+    <div class="card">
+        <h2 class="card-title">Add Receipt</h2>
+
+        <div class="row-3col">
+            <div>
+                <label>Date</label>
+                <input type="date" id="rcpt_date">
+            </div>
+            <div>
+                <label>Amount</label>
+                <input type="number" id="rcpt_amount">
+            </div>
+            <div>
+                <label>Mode</label>
+                <select id="rcpt_mode">
+                    <option>Cash</option>
+                    <option>Card</option>
+                    <option>UPI</option>
+                    <option>Bank Transfer</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn primary" onclick="addReceipt()">Add Receipt</button>
+    </div>
+
+    <!-- ================= BILLING TABLE ================= -->
+    <div class="card">
+        <h2 class="card-title">Billing Items</h2>
+
+        <table id="billTable" class="bill-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th class="right">Rate</th>
+                    <th class="right">Qty</th>
+                    <th class="right">Gross</th>
+                    <th class="right">GST %</th>
+                    <th class="right">Net</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="billBody"></tbody>
+        </table>
+    </div>
+
+</section>
+
+<!-- ============================================================
+     TAB: SUMMARY
+============================================================ -->
+<section id="summary" class="tab-section">
+    <h1 class="section-title">Bill Summary</h1>
+
+    <div class="card">
+        <div class="summary-row">
+            <span>Gross Total</span>
+            <strong id="sum_gross">₹0</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>GST Total</span>
+            <strong id="sum_gst">₹0</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Returns</span>
+            <strong id="sum_returns">₹0</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Receipts</span>
+            <strong id="sum_receipts">₹0</strong>
+        </div>
+
+        <div class="summary-row total">
+            <span>Final Payable</span>
+            <strong id="sum_final">₹0</strong>
+        </div>
+
+        <button class="btn primary" onclick="saveBill()">Save Bill</button>
+    </div>
+</section>
+
+<!-- ============================================================
+     TAB: HISTORY
+============================================================ -->
+<section id="history" class="tab-section">
+
+    <h1 class="section-title">Billing History</h1>
+
+    <div class="card">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Invoice No</th>
+                    <th>UHID</th>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+    </div>
+
+</section>
+
+<!-- ============================================================
+     TAB: PRINT (A4 TEMPLATE)
+============================================================ -->
+<section id="print" class="tab-section print-section">
+
+    <div class="print-container">
+
+        <!-- MINIMAL HEADER (P1) -->
+        <h1 class="print-hospital">KRISHNA KIDNEY CENTRE</h1>
+        <p class="print-sub">Nellore · Andhra Pradesh · India</p>
+
+        <h2 class="print-title">IP TAX INVOICE — CASH</h2>
+
+        <div class="print-meta">
+            <div><strong>Bill No:</strong> <span id="pr_invoice"></span></div>
+            <div><strong>Run Date:</strong> <span id="pr_date"></span></div>
+            <div><strong>UHID:</strong> <span id="pr_uhid"></span></div>
+            <div><strong>IP No:</strong> <span id="pr_ip"></span></div>
+        </div>
+
+        <!-- PATIENT DETAILS -->
+        <h3 class="pt-title">Patient Details</h3>
+        <div class="print-grid">
+            <div><label>Patient Name</label><p id="pr_name"></p></div>
+            <div><label>Age / Gender</label><p id="pr_age_gender"></p></div>
+            <div><label>Admission Date</label><p id="pr_admit"></p></div>
+            <div><label>Practitioner</label><p id="pr_doc"></p></div>
+            <div><label>Speciality</label><p id="pr_spec"></p></div>
+            <div><label>Nursing Unit</label><p id="pr_unit"></p></div>
+        </div>
+
+        <!-- BILLING TABLE -->
+        <h3 class="pt-title">Billing Items</h3>
+
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th class="right">Rate</th>
+                    <th class="right">Qty</th>
+                    <th class="right">Gross</th>
+                    <th class="right">GST %</th>
+                    <th class="right">Net</th>
+                </tr>
+            </thead>
+            <tbody id="pr_billBody"></tbody>
+        </table>
+
+        <!-- TOTALS -->
+        <div class="print-summary">
+            <div><strong>Gross Total:</strong> <span id="pr_gross"></span></div>
+            <div><strong>GST Total:</strong> <span id="pr_gst"></span></div>
+            <div><strong>Returns:</strong> <span id="pr_returns"></span></div>
+            <div><strong>Receipts:</strong> <span id="pr_receipts"></span></div>
+            <div class="final"><strong>Final Payable:</strong> <span id="pr_final"></span></div>
+        </div>
+
+        <p class="print-footer">This is a computer-generated invoice. No signature required.</p>
 
     </div>
 
-</body>
+</section>
 
+<!-- ============================================================
+     END PAGE WRAPPER
+============================================================ -->
+</div> <!-- end .page-wrapper -->
+
+</body>
 </html>
+ 
