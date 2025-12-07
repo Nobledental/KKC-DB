@@ -1,283 +1,217 @@
-/* ============================================================================
+/* ===========================================================
    GLOBAL
-============================================================================ */
+=========================================================== */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Manrope", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  background: #f4f7fb;
-  color: #1b2533;
-  display: flex;
+    font-family: "Manrope", sans-serif;
+    background: #f1f5f9;
 }
 
-/* ============================================================================
-   LAYOUT: SIDEBAR
-============================================================================ */
-.sidebar {
-  width: 260px;
-  background: #ffffff;
-  border-right: 1px solid #dce3ec;
-  padding: 20px;
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  overflow-y: auto;
+/* ===========================================================
+   FIXED TOP TABS (GOOGLE MATERIAL U1)
+=========================================================== */
+.top-tabs {
+    display: flex;
+    gap: 32px;
+    padding: 18px 32px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 99;
 }
 
-.sidebar .logo-block {
-  text-align: center;
-  margin-bottom: 25px;
+.tab {
+    cursor: pointer;
+    padding-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #475569;
 }
 
-.side-logo {
-  width: 70px;
-  margin-bottom: 10px;
+.tab.active {
+    color: #0ea5e9;
+    border-bottom: 3px solid #0ea5e9;
 }
 
-.sidebar-nav button {
-  display: block;
-  width: 100%;
-  padding: 12px 15px;
-  margin-bottom: 12px;
-  border: none;
-  border-radius: 10px;
-  background: #eef2f5;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.2s;
+/* ===========================================================
+   WRAPPER
+=========================================================== */
+.page-wrapper {
+    max-width: 1050px;
+    margin: 30px auto;
 }
 
-.sidebar-nav button.active {
-  background: #0ea5e9;
-  color: #fff;
+/* ===========================================================
+   SECTION TITLES
+=========================================================== */
+.section-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #0f172a;
 }
 
-.sidebar-nav button:hover {
-  background: #dce7ff;
-}
-
-/* ============================================================================
-   MAIN
-============================================================================ */
-.main {
-  margin-left: 260px;
-  padding: 30px;
-  width: calc(100% - 260px);
-}
-
-/* ============================================================================
-   TOOLBAR
-============================================================================ */
-.toolbar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-
-.primary-btn {
-  background: #0ea5e9;
-  color: #fff;
-  padding: 12px 22px;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.small-btn,
-.add-btn {
-  background: #0ea5e9;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.add-btn {
-  margin-top: 10px;
-}
-
-/* ============================================================================
-   PANELS
-============================================================================ */
-.panel {
-  display: block;
-}
-
-.hidden {
-  display: none;
-}
-
-/* ============================================================================
-   CARD SYSTEM
-============================================================================ */
+/* ===========================================================
+   CARDS
+=========================================================== */
 .card {
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(18px);
-  padding: 22px 26px;
-  border-radius: 18px;
-  margin-bottom: 25px;
-  border: 1px solid rgba(255,255,255,0.6);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    background: white;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    margin-bottom: 30px;
 }
 
-.card-title {
-  font-weight: 800;
-  font-size: 18px;
-  margin-bottom: 18px;
-  color: #0f3559;
+.sub-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 14px;
 }
 
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 20px;
+.row-2, .row-3, .row-4 {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 18px;
 }
 
-.card input,
-.card select {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #d8e0ea;
-  font-size: 14px;
+.row-2 { grid-template-columns: repeat(2, 1fr); }
+.row-3 { grid-template-columns: repeat(3, 1fr); }
+.row-4 { grid-template-columns: repeat(4, 1fr); }
+
+label {
+    font-size: 12px;
+    color: #475569;
+    font-weight: 600;
 }
 
-/* ============================================================================
-   COLLAPSIBLE
-============================================================================ */
-.collapsible-header {
-  cursor: pointer;
-  padding-bottom: 10px;
-}
-
-.collapsible .card-body {
-  display: none;
-}
-
-.collapsible.open .card-body {
-  display: block;
-}
-
-/* ============================================================================
-   BILL PRINT HEADER
-============================================================================ */
-.bill-header {
-  text-align: center;
-  padding: 25px 10px;
-  margin-bottom: 20px;
-}
-
-.bill-header h1 {
-  font-size: 30px;
-  font-weight: 800;
-  color: #0e3248;
-}
-
-.bill-header p {
-  margin-top: 4px;
-  font-size: 15px;
-  opacity: 0.8;
-}
-
-.bill-header .sub1 {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.bill-header .sub2 {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.bill-header .sub3 {
-  font-size: 13px;
-}
-
-/* ============================================================================
-   LIST BLOCKS
-============================================================================ */
-.list-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 10px;
-  background: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #e3e8ef;
-  margin-bottom: 10px;
-}
-
-/* ============================================================================
-   PRINT AREA
-============================================================================ */
-.bill-print-area {
-  width: 100%;
-  max-width: 900px;
-  margin: auto;
-}
-
-/* ============================================================================
-   PRINT MODE
-============================================================================ */
-@media print {
-
-  body {
-    background: white !important;
-  }
-
-  .no-print {
-    display: none !important;
-  }
-
-  .sidebar {
-    display: none !important;
-  }
-
-  .main {
-    margin: 0 !important;
+input, select {
     width: 100%;
-    padding: 0;
-  }
-
-  .bill-print-area {
-    width: 900px !important;
-    margin: 0 auto !important;
-    padding: 0 20px;
-  }
-
-  .card {
-    box-shadow: none !important;
-    border: 1px solid #d4d4d4;
-  }
-
-  .collapsible .card-body {
-    display: block !important;
-  }
+    padding: 10px;
+    margin-top: 4px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
 }
 
-/* ============================================================================
-   RESPONSIVE
-============================================================================ */
-@media (max-width: 900px) {
-  .grid-3 {
-    grid-template-columns: 1fr;
-  }
+input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 2px rgba(14,165,233,0.2);
+}
 
-  .main {
-    padding: 15px;
-    margin-left: 0;
-  }
+/* ===========================================================
+   BUTTONS
+=========================================================== */
+.btn-blue {
+    background: #0ea5e9;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
 
-  .sidebar {
-    display: none;
-  }
+.btn-green {
+    background: #10b981;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ===========================================================
+   BILL ROWS
+=========================================================== */
+#billRows .billrow {
+    display: grid;
+    grid-template-columns: 130px 1fr 110px 80px 90px 90px 90px 40px;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* ===========================================================
+   SUMMARY
+=========================================================== */
+.summary-item,
+.summary-final {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 16px;
+}
+
+.summary-final {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0ea5e9;
+}
+
+/* ===========================================================
+   PRINT A4
+=========================================================== */
+.print-a4 {
+    background: white;
+    padding: 28px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 20px auto;
+}
+
+.print-title {
+    font-size: 26px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.print-sub {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.print-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.print-table th {
+    background: #e2e8f0;
+    padding: 10px;
+    font-size: 13px;
+}
+
+.print-table td {
+    padding: 8px;
+    border-bottom: 1px solid #cbd5e1;
+}
+
+.print-summary {
+    margin-top: 20px;
+}
+
+@media print {
+    header, .section-title, .btn-green, .btn-blue, .tab, .top-tabs {
+        display: none !important;
+    }
+    #patient, #tariff, #billing, #summary {
+        display: none !important;
+    }
+    #printArea {
+        display: block !important;
+        page-break-after: always;
+    }
 }
