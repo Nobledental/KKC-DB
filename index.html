@@ -1,277 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KCC Billing OS — Apollo Premium Edition</title>
+  <meta charset="UTF-8">
+  <title>KCC Billing OS — Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
 </head>
 
 <body>
 
-<!-- ============================================
-     SIDEBAR (visible only on screen)
-============================================= -->
-<aside class="sidebar no-print">
-  <div class="logo-block">
-    <img src="assets/logo.png" class="side-logo" />
-    <h2>KCC Billing OS</h2>
+<header class="topbar">
+  <img src="assets/logo.png" class="logo">
+  <h1>Krishna Kidney Centre — Billing OS</h1>
+</header>
+
+<div class="page">
+
+  <div class="card-grid">
+
+    <a href="patient.html" class="card">
+      <h2>Patient Registration</h2>
+      <p>Create UHID / IP No, Manage Patient Records</p>
+    </a>
+
+    <a href="tariff.html" class="card">
+      <h2>Tariff Manager</h2>
+      <p>Edit Rooms, Nursing, OT, Packages, Investigations</p>
+    </a>
+
+    <a href="billing.html" class="card">
+      <h2>Billing Editor</h2>
+      <p>Generate Bill, Daily Charges, Packages, Receipts</p>
+    </a>
+
+    <a href="print.html" class="card">
+      <h2>Print Preview</h2>
+      <p>A4 Invoice Layout</p>
+    </a>
+
   </div>
 
-  <nav class="sidebar-nav">
-    <button data-panel="dashboard">Dashboard</button>
-    <button data-panel="newbill" class="active">New Bill</button>
-    <button data-panel="tariff">Tariff Master</button>
-    <button data-panel="history">Bill History</button>
-    <button data-panel="settings">Settings</button>
-  </nav>
-</aside>
-
-<!-- ============================================
-     MAIN CONTENT AREA
-============================================= -->
-<main class="main">
-
-  <!-- ======================================
-       PRINT TOOLBAR (on screen only)
-  ======================================= -->
-  <div class="toolbar no-print">
-    <button id="print_bill" class="primary-btn">🖨 Print Bill</button>
-  </div>
-
-  <!-- ======================================
-       PANEL: NEW BILL (MAIN BILLING PAGE)
-  ======================================= -->
-  <section id="newbill" class="panel">
-
-    <!-- ================================
-         BEAUTIFUL APOLLO HEADER (PRINT)
-    ================================= -->
-    <div class="bill-print-area" id="billArea">
-
-      <header class="bill-header">
-        <h1>KRISHNA KIDNEY CENTRE</h1>
-        <p class="sub1">Multispeciality Hospital</p>
-        <p class="sub2">ISO Certified | NABH Accredited</p>
-        <p class="sub3">Nellore, Andhra Pradesh • Tel: +91 98765 43210 • Email: support@kcc.in</p>
-      </header>
-
-      <!-- ================================
-           PATIENT INFORMATION
-      ================================= -->
-      <div class="card">
-        <div class="card-title">Patient Information</div>
-
-        <div class="grid-3">
-          <div>
-            <label>Patient Name</label>
-            <input id="p_name" type="text" />
-          </div>
-
-          <div>
-            <label>Age</label>
-            <input id="p_age" type="number" />
-          </div>
-
-          <div>
-            <label>Gender</label>
-            <select id="p_gender">
-              <option value="">Select</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Patient ID (Auto)</label>
-            <input id="p_id" type="text" readonly />
-          </div>
-
-          <div>
-            <label>Department</label>
-            <select id="p_dept"></select>
-          </div>
-
-          <div>
-            <label>Consultant</label>
-            <select id="p_doctor"></select>
-          </div>
-        </div>
-      </div>
-
-      <!-- ================================
-           ADMISSION BLOCK
-      ================================= -->
-      <div class="card">
-        <div class="card-title">Admission Details</div>
-
-        <div class="grid-3">
-          <div>
-            <label>Date of Admission</label>
-            <input id="p_doa" type="date" />
-          </div>
-
-          <div>
-            <label>Date of Discharge</label>
-            <input id="p_dod" type="date" />
-          </div>
-
-          <div>
-            <label>Length of Stay</label>
-            <input id="p_los" readonly />
-          </div>
-        </div>
-      </div>
-
-      <!-- ================================
-           ROOM & DAILY CHARGES
-      ================================= -->
-      <div class="card collapsible">
-        <div class="card-title collapsible-header">Room & Daily Charges</div>
-
-        <div class="card-body">
-          <div class="grid-3">
-            <div>
-              <label>Select Room Type</label>
-              <select id="room_type"></select>
-            </div>
-
-            <div>
-              <label>Room Rent / Day</label>
-              <input id="room_rent" readonly />
-            </div>
-
-            <div>
-              <label>Nursing / Day</label>
-              <input id="room_nursing" readonly />
-            </div>
-          </div>
-
-          <div class="grid-3">
-            <div>
-              <label>RMO / DMO / Duty Charges</label>
-              <input id="room_rmo" readonly />
-            </div>
-
-            <div>
-              <label>Shift to Another Room?</label>
-              <button id="add_room_shift" class="small-btn no-print">Add Shift</button>
-            </div>
-          </div>
-
-          <div id="room_shift_list"></div>
-        </div>
-      </div>
-
-      <!-- ================================
-           CONSULTANT VISITS
-      ================================= -->
-      <div class="card collapsible">
-        <div class="card-title collapsible-header">Consultant Visits</div>
-
-        <div class="card-body">
-          <button id="add_visit" class="add-btn no-print">Add Visit</button>
-          <div id="visit_list"></div>
-        </div>
-      </div>
-
-      <!-- ================================
-           SURGERIES
-      ================================= -->
-      <div class="card collapsible">
-        <div class="card-title collapsible-header">Surgeries & Procedures</div>
-
-        <div class="card-body">
-          <button id="add_surgery" class="add-btn no-print">Add Surgery</button>
-          <div id="surgery_list"></div>
-        </div>
-      </div>
-
-      <!-- ================================
-           PHARMACY
-      ================================= -->
-      <div class="card collapsible">
-        <div class="card-title collapsible-header">Pharmacy</div>
-
-        <div class="card-body">
-          <button id="add_pharmacy" class="add-btn no-print">Add Item</button>
-          <div id="pharmacy_list"></div>
-        </div>
-      </div>
-
-      <!-- ================================
-           INVESTIGATIONS
-      ================================= -->
-      <div class="card collapsible">
-        <div class="card-title collapsible-header">Investigations</div>
-
-        <div class="card-body">
-          <button id="add_test" class="add-btn no-print">Add Test</button>
-          <div id="test_list"></div>
-        </div>
-      </div>
-
-      <!-- ================================
-           MISC
-      ================================= -->
-      <div class="card collapsible">
-        <div class="card-title collapsible-header">Miscellaneous</div>
-
-        <div class="card-body">
-          <button id="add_misc" class="add-btn no-print">Add Item</button>
-          <div id="misc_list"></div>
-        </div>
-      </div>
-
-      <!-- ================================
-           RECEIPTS
-      ================================= -->
-      <div class="card collapsible">
-        <div class="card-title collapsible-header">Receipts / Payments</div>
-
-        <div class="card-body">
-          <button id="add_receipt" class="add-btn no-print">Add Receipt</button>
-          <div id="receipt_list_new"></div>
-        </div>
-      </div>
-
-      <!-- ================================
-           FINAL SUMMARY
-      ================================= -->
-      <div class="card">
-        <div class="card-title">Final Summary</div>
-
-        <div class="grid-3">
-          <div>
-            <label>Gross Total</label>
-            <input id="total_gross" readonly />
-          </div>
-
-          <div>
-            <label>Total Paid</label>
-            <input id="total_paid" readonly />
-          </div>
-
-          <div>
-            <label>Balance</label>
-            <input id="total_balance" readonly />
-          </div>
-        </div>
-      </div>
-
-    </div><!-- bill-print-area end -->
-
-  </section>
-
-</main>
-
-<!-- Load JS -->
-<script src="app.js"></script>
+</div>
 
 </body>
 </html>
