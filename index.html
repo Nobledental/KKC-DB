@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>KCC Billing OS — Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- GLOBAL DESIGN SYSTEM -->
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/dashboard.css">
 </head>
@@ -12,37 +13,58 @@
 <body>
 
 <header class="topbar">
-  <img src="assets/logo.png" class="logo">
+  <img src="assets/logo.png" class="logo" />
   <h1>Krishna Kidney Centre — Billing OS</h1>
 </header>
 
-<div class="page">
+<div class="page dashboard">
 
-  <div class="card-grid">
+  <!-- GRID WRAPPER -->
+  <div class="dash-grid">
 
-    <a href="patient.html" class="card">
+    <a href="patient.html" class="dash-card">
+      <div class="icon-circle">
+        <span class="material-icon">person_add</span>
+      </div>
       <h2>Patient Registration</h2>
-      <p>Create UHID / IP No, Manage Patient Records</p>
+      <p>Create UHID / IP No, manage patient records.</p>
     </a>
 
-    <a href="tariff.html" class="card">
+    <a href="tariff.html" class="dash-card">
+      <div class="icon-circle blue">
+        <span class="material-icon">price_change</span>
+      </div>
       <h2>Tariff Manager</h2>
-      <p>Edit Rooms, Nursing, OT, Packages, Investigations</p>
+      <p>Edit Rooms, Nursing, OT, Packages, Investigations.</p>
     </a>
 
-    <a href="billing.html" class="card">
+    <a href="billing.html" class="dash-card">
+      <div class="icon-circle teal">
+        <span class="material-icon">receipt_long</span>
+      </div>
       <h2>Billing Editor</h2>
-      <p>Generate Bill, Daily Charges, Packages, Receipts</p>
+      <p>Daily charges, packages, receipts, totals.</p>
     </a>
 
-    <a href="print.html" class="card">
-      <h2>Print Preview</h2>
-      <p>A4 Invoice Layout</p>
+    <a href="print.html" class="dash-card">
+      <div class="icon-circle slate">
+        <span class="material-icon">print</span>
+      </div>
+      <h2>Print Invoice</h2>
+      <p>A4-format final medical invoice layout.</p>
     </a>
 
   </div>
-
 </div>
+
+<!-- Material Icon Fallback -->
+<style>
+.material-icon {
+  font-family: 'Material Symbols Outlined';
+  font-size: 28px;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 
 </body>
 </html>
