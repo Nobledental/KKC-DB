@@ -1,0 +1,64 @@
+{
+  "rooms": {
+    "General Ward": {
+      "room": 1200,
+      "nursing": 400,
+      "duty": 300
+    },
+    "Semi Private": {
+      "room": 2000,
+      "nursing": 600,
+      "duty": 400
+    },
+    "Private": {
+      "room": 3500,
+      "nursing": 900,
+      "duty": 500
+    },
+    "Deluxe": {
+      "room": 5000,
+      "nursing": 1200,
+      "duty": 700
+    },
+    "ICU": {
+      "room": 8500,
+      "nursing": 2000,
+      "duty": 1500
+    },
+    "HDU": {
+      "room": 6000,
+      "nursing": 1500,
+      "duty": 1000
+    }
+  },
+
+  "investigations": [
+    { "name": "CBC", "amount": 350 },
+    { "name": "LFT", "amount": 900 },
+    { "name": "RFT", "amount": 750 },
+    { "name": "Blood Sugar (Fasting)", "amount": 120 },
+    { "name": "Blood Sugar (PP)", "amount": 140 },
+    { "name": "Urine Routine", "amount": 180 },
+    { "name": "Chest X-Ray", "amount": 450 },
+    { "name": "ECG", "amount": 300 },
+    { "name": "Ultrasound Abdomen", "amount": 1400 },
+    { "name": "CT Scan Abdomen", "amount": 5500 },
+    { "name": "MRI Brain", "amount": 7500 },
+    { "name": "Dialysis Lab Panel", "amount": 1600 }
+  ],
+
+  "pharmacy": [
+    { "name": "Injection Ceftriaxone", "amount": 180 },
+    { "name": "Injection Pantoprazole", "amount": 95 },
+    { "name": "IV Set", "amount": 60 },
+    { "name": "Normal Saline 500ml", "amount": 90 },
+    { "name": "Ryle's Tube", "amount": 150 },
+    { "name": "Syringe 5ml", "amount": 12 },
+    { "name": "Syringe 10ml", "amount": 15 },
+    { "name": "Catheter Foley", "amount": 120 },
+    { "name": "Dressing Pack", "amount": 100 },
+    { "name": "Heparin", "amount": 220 },
+    { "name": "Dialyzer Reuse Kit", "amount": 450 },
+    { "name": "Insulin Human", "amount": 160 }
+  ]
+}
