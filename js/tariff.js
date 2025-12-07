@@ -1,17 +1,19 @@
 /* ============================================================================
-   TARIFF MANAGEMENT — KCC Billing OS
+   TARIFF MANAGEMENT — KCC BILLING OS (UPGRADED)
 ============================================================================ */
 
 let tariffData = {
   id: "MASTER",
   rooms: [],
-  misc: {},
-  ot: {},
+  misc: { nursing: 0, rmo: 0, consult: 0 },
+  ot: { base: 0, hourly: 0, anes30: 0 },
   packages: [],
   investigations: []
 };
 
-/* LOAD SAVED TARIFF */
+/* -------------------------------------------
+   LOAD TARIFF FROM DB
+------------------------------------------- */
 (async () => {
   const saved = await storeGet("tariffs", "MASTER");
   if (saved) tariffData = saved;
@@ -23,88 +25,119 @@ let tariffData = {
 ------------------------------------------- */
 function renderTariff() {
 
-  /* ROOMS */
+  /* ========== ROOMS ========== */
   const rt = document.getElementById("roomTariffs");
   rt.innerHTML = "";
+
   tariffData.rooms.forEach((r, i) => {
     rt.innerHTML += `
-      <div>
+      <div class="tariff-item">
         <label>Room Type</label>
-        <input value="${r.name}" oninput="tariffData.rooms[${i}].name=this.value">
-        <label>Rate</label>
-        <input value="${r.rate}" type="number" oninput="tariffData.rooms[${i}].rate=this.value">
+        <input value="${r.name}" 
+               oninput="tariffData.rooms[${i}].name=this.value">
+
+        <label>Rate (per day)</label>
+        <input type="number" value="${r.rate}" 
+               oninput="tariffData.rooms[${i}].rate=+this.value">
+
+        <button class="delete-btn" onclick="deleteRoom(${i})">Delete</button>
       </div>
     `;
   });
 
-  /* MISC */
-  const misc = document.getElementById("miscTariffs");
-  misc.innerHTML = `
-    <label>Nursing Charge</label>
-    <input type="number" value="${tariffData.misc.nursing || 0}"
-      oninput="tariffData.misc.nursing=this.value">
+  /* ========== MISC CHARGES ========== */
+  document.getElementById("miscTariffs").innerHTML = `
+    <div class="tariff-item">
+      <label>Nursing Charge (per day)</label>
+      <input type="number" value="${tariffData.misc.nursing}"
+        oninput="tariffData.misc.nursing=+this.value">
 
-    <label>RMO/DMO Charge</label>
-    <input type="number" value="${tariffData.misc.rmo || 0}"
-      oninput="tariffData.misc.rmo=this.value">
+      <label>RMO/DMO Charge (per day)</label>
+      <input type="number" value="${tariffData.misc.rmo}"
+        oninput="tariffData.misc.rmo=+this.value">
 
-    <label>Consultation Charge</label>
-    <input type="number" value="${tariffData.misc.consult || 0}"
-      oninput="tariffData.misc.consult=this.value">
+      <label>Consultation Charge (per session)</label>
+      <input type="number" value="${tariffData.misc.consult}"
+        oninput="tariffData.misc.consult=+this.value">
+    </div>
   `;
 
-  /* OT */
-  const ot = document.getElementById("otTariffs");
-  ot.innerHTML = `
-    <label>OT Base Rate</label>
-    <input type="number" value="${tariffData.ot.base || 0}"
-      oninput="tariffData.ot.base=this.value">
+  /* ========== OT TARIFF ========== */
+  document.getElementById("otTariffs").innerHTML = `
+    <div class="tariff-item">
+      <label>OT Base Rate</label>
+      <input type="number" value="${tariffData.ot.base}"
+        oninput="tariffData.ot.base=+this.value">
 
-    <label>OT Hourly Rate</label>
-    <input type="number" value="${tariffData.ot.hourly || 0}"
-      oninput="tariffData.ot.hourly=this.value">
+      <label>OT Hourly Rate</label>
+      <input type="number" value="${tariffData.ot.hourly}"
+        oninput="tariffData.ot.hourly=+this.value">
 
-    <label>Anesthesia per 30 min</label>
-    <input type="number" value="${tariffData.ot.anes30 || 0}"
-      oninput="tariffData.ot.anes30=this.value">
+      <label>Anesthesia (per 30 min)</label>
+      <input type="number" value="${tariffData.ot.anes30}"
+        oninput="tariffData.ot.anes30=+this.value">
+    </div>
   `;
 
-  /* PACKAGES */
+  /* ========== PACKAGES ========== */
   const pk = document.getElementById("packageList");
   pk.innerHTML = "";
+
   tariffData.packages.forEach((p, i) => {
     pk.innerHTML += `
-      <div>
+      <div class="tariff-item">
         <label>Package Name</label>
         <input value="${p.name}" 
-          oninput="tariffData.packages[${i}].name=this.value">
+               oninput="tariffData.packages[${i}].name=this.value">
 
-        <label>Items (JSON)</label>
-        <textarea oninput="tariffData.packages[${i}].items=JSON.parse(this.value)">${JSON.stringify(p.items)}</textarea>
+        <label>Package Items (JSON array)</label>
+        <textarea oninput="updatePackage(${i}, this.value)">
+${JSON.stringify(p.items, null, 2)}</textarea>
+
+        <button class="delete-btn" onclick="deletePackage(${i})">Delete</button>
       </div>
     `;
   });
 
-  /* INVESTIGATIONS */
+  /* ========== INVESTIGATIONS ========== */
   const inv = document.getElementById("investigationList");
   inv.innerHTML = "";
+
   tariffData.investigations.forEach((r, i) => {
     inv.innerHTML += `
-      <div>
+      <div class="tariff-item">
         <label>Description</label>
         <input value="${r.desc}" oninput="tariffData.investigations[${i}].desc=this.value">
 
         <label>Rate</label>
         <input type="number" value="${r.rate}" 
-          oninput="tariffData.investigations[${i}].rate=this.value">
+               oninput="tariffData.investigations[${i}].rate=+this.value">
 
         <label>GST %</label>
         <input type="number" value="${r.gst}" 
-          oninput="tariffData.investigations[${i}].gst=this.value">
+               oninput="tariffData.investigations[${i}].gst=+this.value">
+
+        <button class="delete-btn" onclick="deleteInvestigation(${i})">Delete</button>
       </div>
     `;
   });
 }
+
+/* -------------------------------------------
+   UPDATE PACKAGE JSON SAFELY
+------------------------------------------- */
+function updatePackage(i, txt) {
+  try {
+    tariffData.packages[i].items = JSON.parse(txt);
+  } catch (e) {}
+}
+
+/* -------------------------------------------
+   DELETE FUNCTIONS
+------------------------------------------- */
+function deleteRoom(i){ tariffData.rooms.splice(i,1); renderTariff(); }
+function deletePackage(i){ tariffData.packages.splice(i,1); renderTariff(); }
+function deleteInvestigation(i){ tariffData.investigations.splice(i,1); renderTariff(); }
 
 /* -------------------------------------------
    ADD NEW ITEMS
@@ -128,7 +161,7 @@ document.getElementById("addInvestigationBtn").onclick = () => {
    EXPORT JSON
 ------------------------------------------- */
 document.getElementById("exportTariff").onclick = () => {
-  const blob = new Blob([JSON.stringify(tariffData)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify(tariffData, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "tariff.json";
@@ -145,13 +178,18 @@ document.getElementById("importTariffBtn").onclick = () => {
 document.getElementById("importTariff").onchange = async function () {
   const file = this.files[0];
   if (!file) return;
-  const txt = await file.text();
-  tariffData = JSON.parse(txt);
-  await storeSet("tariffs", tariffData);
-  renderTariff();
+
+  try {
+    const txt = await file.text();
+    tariffData = JSON.parse(txt);
+    await storeSet("tariffs", tariffData);
+    renderTariff();
+  } catch (e) {
+    alert("Invalid JSON file");
+  }
 };
 
 /* -------------------------------------------
-   SAVE ON CHANGE
+   AUTO SAVE BEFORE LEAVING
 ------------------------------------------- */
 window.onbeforeunload = () => storeSet("tariffs", tariffData);
