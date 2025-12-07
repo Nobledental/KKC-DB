@@ -1,92 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>KCC — Final Bill Print</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>KCC — Final Bill (A4 Print)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="bill-print.css">
+<link rel="stylesheet" href="bill-print.css">
 </head>
 
 <body>
 
-<div class="print-wrapper bill-print-area">
+<div class="a4">
 
-  <!-- ===================== HEADER ===================== -->
-  <header class="print-header">
-    <div class="title-block">
-      <h1>FINAL DISCHARGE BILL</h1>
-      <p>Krishna Kidney Centre — Multispeciality Hospital</p>
-      <p class="sub">ISO Certified | NABH Accredited</p>
+    <!-- HEADER -->
+    <header class="bill-header">
+        <img src="assets/logo.png" class="logo">
+        <div class="head-text">
+            <h1>KRISHNA KIDNEY CENTRE</h1>
+            <p>Multi-Speciality Hospital & Advanced Renal Care</p>
+            <p class="sub">Hyderabad · Telangana</p>
+        </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <!-- PATIENT INFO -->
+    <section class="sec">
+        <h2>Patient Information</h2>
+
+        <div class="grid-2">
+            <div class="info-block">
+                <label>Name</label>
+                <span id="bp_name"></span>
+            </div>
+
+            <div class="info-block">
+                <label>Age / Gender</label>
+                <span id="bp_age_gender"></span>
+            </div>
+
+            <div class="info-block">
+                <label>Patient ID</label>
+                <span id="bp_uhid"></span>
+            </div>
+
+            <div class="info-block">
+                <label>Consultant</label>
+                <span id="bp_doctor"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMISSION INFO -->
+    <section class="sec">
+        <h2>Admission Details</h2>
+
+        <div class="grid-3">
+            <div class="info-block">
+                <label>Admission Date</label>
+                <span id="bp_doa"></span>
+            </div>
+
+            <div class="info-block">
+                <label>Discharge Date</label>
+                <span id="bp_dod"></span>
+            </div>
+
+            <div class="info-block">
+                <label>Length of Stay</label>
+                <span id="bp_los"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- BILL SUMMARY -->
+    <section class="sec">
+        <h2>Billing Summary</h2>
+
+        <table class="bill-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th class="right">Amount</th>
+                </tr>
+            </thead>
+            <tbody id="bp_items"></tbody>
+        </table>
+    </section>
+
+    <!-- TOTALS -->
+    <section class="sec totals">
+        <div class="tot-row">
+            <span>Gross Total</span>
+            <span id="bp_gross"></span>
+        </div>
+
+        <div class="tot-row">
+            <span>Total Paid</span>
+            <span id="bp_paid"></span>
+        </div>
+
+        <div class="tot-row balance">
+            <span>Balance</span>
+            <span id="bp_balance"></span>
+        </div>
+    </section>
+
+    <div class="footer">
+        <p>Thank you for choosing Krishna Kidney Centre.</p>
+        <p>This document is computer generated and valid without signature.</p>
     </div>
-
-    <div class="logo-circle"></div>
-  </header>
-
-  <!-- ===================== PATIENT INFO ===================== -->
-  <section class="patient-card glass-card">
-    <div class="pc-left">
-      <h3>Patient Details</h3>
-
-      <div class="row"><span class="label">Name</span> <span class="value" id="bp_name"></span></div>
-      <div class="row"><span class="label">Age / Gender</span> <span class="value" id="bp_age_gender"></span></div>
-      <div class="row"><span class="label">UHID</span> <span class="value" id="bp_uhid"></span></div>
-      <div class="row"><span class="label">Doctor</span> <span class="value" id="bp_doctor"></span></div>
-    </div>
-
-    <div class="pc-right">
-      <h3>Admission Info</h3>
-
-      <div class="row"><span class="label">Admission Date</span> <span class="value" id="bp_doa"></span></div>
-      <div class="row"><span class="label">Discharge Date</span> <span class="value" id="bp_dod"></span></div>
-      <div class="row"><span class="label">Length of Stay</span> <span class="value" id="bp_los"></span></div>
-      <div class="row"><span class="label">Bill No</span> <span class="value" id="bp_billno"></span></div>
-    </div>
-  </section>
-
-  <!-- ===================== SUMMARY ===================== -->
-  <section class="charge-summary glass-card">
-    <h3>Billing Summary</h3>
-
-    <table class="summary-table" id="bp_table">
-      <thead>
-        <tr>
-          <th>Description</th>
-          <th class="right">Amount (₹)</th>
-        </tr>
-      </thead>
-      <tbody id="bp_items">
-      </tbody>
-    </table>
-
-    <div class="summary-total">
-      <div><strong>Gross Total</strong></div>
-      <div class="value" id="bp_gross"></div>
-    </div>
-
-    <div class="summary-total">
-      <div><strong>Total Paid</strong></div>
-      <div class="value" id="bp_paid"></div>
-    </div>
-
-    <div class="summary-total final">
-      <div><strong>Balance</strong></div>
-      <div class="value" id="bp_balance"></div>
-    </div>
-  </section>
-
-  <!-- ===================== FOOTER ===================== -->
-  <footer class="print-footer">
-    <p>Thank you for choosing Krishna Kidney Centre</p>
-    <p>For any queries, contact the Billing Department</p>
-  </footer>
 
 </div>
 
 <script src="bill-print.js"></script>
-
 </body>
 </html>
