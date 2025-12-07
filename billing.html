@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>Billing Editor — KCC Billing OS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/billing.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <img src="assets/logo.png" class="logo">
+  <h1>Billing Editor</h1>
+</header>
+
+<div class="page billing-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-block">
+
+      <label>Search Patient</label>
+      <input type="text" id="searchPatient">
+
+      <div id="patientResults"></div>
+    </div>
+
+    <div class="sidebar-block">
+      <button id="loadPatientBtn" class="btn-primary full">Load Patient</button>
+    </div>
+
+    <div class="sidebar-block">
+      <button id="generateDailyBtn" class="btn-secondary full">Generate Daily Charges</button>
+      <button id="addPackageBtn" class="btn-secondary full">Add Package</button>
+      <button id="addBillItemBtn" class="btn-secondary full">Add Bill Item</button>
+      <button id="addReturnBtn" class="btn-secondary full">Add Return</button>
+      <button id="addReceiptBtn" class="btn-secondary full">Add Receipt</button>
+    </div>
+
+    <div class="sidebar-block">
+      <button id="saveBillBtn" class="btn-primary full">Save Bill</button>
+      <a href="print.html" class="btn-primary full">Open Print View</a>
+    </div>
+
+  </aside>
+
+  <main class="bill-area">
+
+    <div id="patientSummary" class="patient-summary"></div>
+
+    <div class="bill-table" id="billTable"></div>
+
+    <div class="totals">
+      <div><span>Gross</span> <strong id="tGross">0</strong></div>
+      <div><span>GST</span> <strong id="tGST">0</strong></div>
+      <div><span>Returns</span> <strong id="tReturns">0</strong></div>
+      <div><span>Receipts</span> <strong id="tReceipts">0</strong></div>
+      <div class="final"><span>Final Payable</span> <strong id="tFinal">0</strong></div>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/billing.js"></script>
+
+</body>
+</html>
