@@ -1,0 +1,274 @@
+/* ============================================================
+   GLOBAL RESET + THEME
+============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: "Manrope", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* LIGHT THEME ------------------------------------------------ */
+:root[data-theme="light"] {
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --text: #0c1a2b;
+  --subtext: #5a6a80;
+  --border: #d8e0ea;
+  --accent: #0066ff;
+}
+
+/* DARK THEME ------------------------------------------------- */
+:root[data-theme="dark"] {
+  --bg: #0c1116;
+  --card: #161b22;
+  --text: #e6ecf5;
+  --subtext: #8899aa;
+  --border: #2a333d;
+  --accent: #3ea6ff;
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+.app-header {
+  width: 100%;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.app-header .left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 48px;
+  height: auto;
+}
+
+.app-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.app-header .right button {
+  margin-left: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.app-header .right button:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ============================================================
+   MAIN BILLING SHELL
+============================================================ */
+.billing-shell {
+  width: 100%;
+  max-width: 1000px;
+  margin: 24px auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ============================================================
+   CARDS
+============================================================ */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+}
+
+.section-title {
+  font-size: 18px;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   FORMS
+============================================================ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.form-grid .wide {
+  grid-column: span 4;
+}
+
+label {
+  font-size: 14px;
+  color: var(--subtext);
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-size: 14px;
+  color: var(--text);
+  margin-top: 4px;
+}
+
+textarea {
+  height: 60px;
+}
+
+/* ============================================================
+   TABLE BOX
+============================================================ */
+.table-box {
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table-box table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-box th {
+  background: var(--accent);
+  color: #fff;
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.table-box td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.table-box tr:last-child td {
+  border-bottom: none;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn-add {
+  padding: 8px 12px;
+  background: var(--accent);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.btn-add:hover {
+  opacity: 0.9;
+}
+
+/* ============================================================
+   FINAL SUMMARY
+============================================================ */
+.final-summary {
+  background: var(--card);
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.final-summary p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* ============================================================
+   PRINT MODE
+============================================================ */
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  .app-header,
+  #printBtn,
+  #pdfBtn,
+  #themeToggle,
+  .btn-add {
+    display: none !important;
+  }
+
+  .billing-shell {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+
+  /* Page numbering */
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+
+  footer.print-footer {
+    position: fixed;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .page-number:after {
+    content: counter(page);
+  }
+}
+
+/* ============================================================
+   OPTIONAL PRINT FOOTER
+============================================================ */
+.print-footer {
+  display: none;
+}
+
+@media print {
+  .print-footer {
+    display: block !important;
+  }
+}
