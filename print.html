@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Print Invoice — KCC Billing OS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -12,27 +12,33 @@
 
 <div id="printArea" class="a4">
 
+  <!-- HEADER -->
   <header class="print-header">
     <img src="assets/logo.png" class="p-logo">
     <div>
       <h1>KRISHNA KIDNEY CENTRE</h1>
       <p>Nellore · Andhra Pradesh · India</p>
+      <p class="sub">Hospital Billing Invoice</p>
     </div>
   </header>
 
+  <!-- PATIENT DETAILS -->
   <section id="pDetails" class="p-details"></section>
 
+  <!-- BILLING TABLE -->
   <section id="pTable" class="p-table"></section>
 
-  <div class="footer">
+  <!-- FOOTER -->
+  <footer class="footer">
     <svg id="barcode"></svg>
-    <p>Thank you for choosing Krishna Kidney Centre</p>
-  </div>
+    <p class="thanks">Thank you for choosing Krishna Kidney Centre</p>
+  </footer>
 
 </div>
 
 <script src="vendor/JsBarcode.min.js"></script>
 <script src="js/storage.js"></script>
+<script src="js/utils.js"></script>
 <script src="js/print.js"></script>
 
 </body>
