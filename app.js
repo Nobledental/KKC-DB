@@ -14,7 +14,6 @@ function save(key, val) {
     localStorage.setItem(key, JSON.stringify(val));
 }
 
-// Load tariff from localStorage first, then fallback to window.TARIFF
 let tariff = (function() {
     const LOCAL_KEY = "kcc-tariff-v2";
     let stored = load(LOCAL_KEY);
@@ -31,7 +30,6 @@ let tariff = (function() {
 let billItems = [];
 let receipts = [];
 
-/* CATEGORY MAP */
 const CATEGORY_MAP = {
     "Consultation": "opd_charges",
     "Pharmacy": "pharmacy",
@@ -51,9 +49,10 @@ function getNextSequence(key, length) {
 }
 
 function generateNewPatientIDs() {
-    document.getElementById('ui_uhid').value = 'UHID-' + getNextSequence('uhid_sequence', 6);
-    document.getElementById('ui_ip').value = 'IP-' + getNextSequence('ip_sequence', 6);
-    // Bill number is generated only upon final print/save
+    document.getElementById('ui_uhid').value = getNextSequence('uhid_sequence', 6);
+    document.getElementById('ui_ip').value = getNextSequence('ip_sequence', 6);
+    updateReceiptNumber();
+    updatePatientDetails();
 }
 
 /* ------------------------------------------------------------
@@ -77,7 +76,7 @@ function createBillItem(cat, date, desc, rate, qty) {
 }
 
 /* ------------------------------------------------------------
-    DROPDOWN LOADING
+    DROPDOWN & UI UPDATES
 ------------------------------------------------------------ */
 function loadDropdowns() {
     if (!tariff || !tariff.rooms || !tariff.doctors) return;
@@ -106,9 +105,6 @@ function loadDropdowns() {
     /* CATEGORY → description changes */
     const catSel = document.getElementById("ui_cat");
     catSel.onchange = updateDescriptionDropdown;
-
-    // Initial run to populate receipt number
-    updateReceiptNumber();
     updateDescriptionDropdown();
 }
 
@@ -174,16 +170,37 @@ function updateDescriptionDropdown() {
     }
 }
 
+function updatePatientDetails() {
+    const name = document.getElementById('ui_name').value;
+    const age = document.getElementById('ui_age').value;
+    const gender = document.getElementById('ui_gender').value;
+    const doa = document.getElementById('ui_doa').value;
+    const dod = document.getElementById('ui_dod').value;
+    const room = document.getElementById('ui_roomCat').options[document.getElementById('ui_roomCat').selectedIndex].text;
+    const doc = document.getElementById('ui_doc').value;
+    
+    document.getElementById('p_name').innerText = name;
+    document.getElementById('p_age_gender').innerText = `${age} / ${gender}`;
+    document.getElementById('p_doa').innerText = doa;
+    document.getElementById('p_dod').innerText = dod;
+    document.getElementById('p_room').innerText = room;
+    document.getElementById('p_doc').innerText = doc;
+
+    // Trigger full render to ensure calculations update if dates/room changed
+    renderUI();
+}
+
 /* ------------------------------------------------------------
     TARIFF EDITOR ACTIONS (Placeholder for required functionality)
 ------------------------------------------------------------ */
-function updateTariffKey(sec, oldKey, newKey) { /* Logic omitted for brevity */ renderUI(); }
-function updateTariffValue(sec, key, fld, val) { /* Logic omitted for brevity */ renderUI(); }
-function deleteTariffItem(sec, key) { /* Logic omitted for brevity */ renderUI(); }
-function addRoom() { /* Logic omitted for brevity */ renderUI(); }
-function updateDoctor(i, val) { /* Logic omitted for brevity */ renderUI(); }
-function deleteDoctor(i) { /* Logic omitted for brevity */ renderUI(); }
-function addDoctor() { /* Logic omitted for brevity */ renderUI(); }
+function renderTariff() { /* UI not built, placeholder */ }
+function updateTariffKey(sec, oldKey, newKey) { /* Logic omitted */ renderUI(); }
+function updateTariffValue(sec, key, fld, val) { /* Logic omitted */ renderUI(); }
+function deleteTariffItem(sec, key) { /* Logic omitted */ renderUI(); }
+function addRoom() { /* Logic omitted */ renderUI(); }
+function updateDoctor(i, val) { /* Logic omitted */ renderUI(); }
+function deleteDoctor(i) { /* Logic omitted */ renderUI(); }
+function addDoctor() { /* Logic omitted */ renderUI(); }
 function saveTariff() { 
     save("kcc-tariff-v2", tariff);
     alert("Tariff saved.");
@@ -208,7 +225,7 @@ function addRoomDays() {
         x.desc !== tariff.miscellaneous.MRD_CHARGE.name
     );
 
-    const roomKey = Object.keys(tariff.rooms).find(k => tariff.rooms[k].id === roomId);
+    const roomKey = document.getElementById('ui_roomCat').options[document.getElementById('ui_roomCat').selectedIndex].text;
     const r = tariff.rooms[roomKey];
 
     const start = new Date(doa);
@@ -225,8 +242,9 @@ function addRoomDays() {
         billItems.push(createBillItem("Room Rent", d, `Room: ${roomKey}`, r.tariff_per_day, 1));
         billItems.push(createBillItem("Nursing", d, "Nursing Charge per day", r.nursing_per_day, 1));
 
-        // Consultant Charges: 2 per day (r.consultant_per_visit * 2)
-        billItems.push(createBillItem("Doctor Visit", d, "Consultant Visit (x2)", r.consultant_per_visit * 2, 1));
+        // Consultant Charges: 2 per day (consultant + super specialist, as per previous logic)
+        const docFee = new Decimal(r.consultant_per_visit).plus(new Decimal(r.super_specialist_per_visit)).toNumber();
+        billItems.push(createBillItem("Doctor Visit", d, "Consultant Visit (x2)", docFee * 2, 1));
     }
 
     // 2. Bill Remaining Hours (Final Day Logic)
@@ -234,7 +252,6 @@ function addRoomDays() {
         let roomRate = new Decimal(r.tariff_per_day);
         let nurRate = new Decimal(r.nursing_per_day);
 
-        // Apply Half-Day Rule (<= 6 hours)
         if (rem <= rules.full_day_hours) {
             roomRate = roomRate.mul(rules.half_day_multiplier);
             nurRate = nurRate.mul(rules.half_day_multiplier);
@@ -244,8 +261,8 @@ function addRoomDays() {
         billItems.push(createBillItem("Room Rent", finalDate, `Room: ${roomKey} (Final Day)`, roomRate.toNumber(), 1));
         billItems.push(createBillItem("Nursing", finalDate, "Nursing Charge (Final Day)", nurRate.toNumber(), 1));
 
-        // Final day doctor visit (x1)
-        billItems.push(createBillItem("Doctor Visit", finalDate, "Consultant Visit (x1)", r.consultant_per_visit, 1));
+        const docFee = new Decimal(r.consultant_per_visit).plus(new Decimal(r.super_specialist_per_visit)).toNumber();
+        billItems.push(createBillItem("Doctor Visit", finalDate, "Consultant Visit (x1)", docFee, 1));
     }
 
     /* 3. Add MRD Fee (One time per admission) */
@@ -267,19 +284,19 @@ function clearBillingItems() {
 
 function newBill() {
     if (confirm("Start a new bill? Current data will be cleared.")) {
-        // Clear state
         billItems = [];
         receipts = [];
         // Generate new sequential IDs
         generateNewPatientIDs();
         // Clear form fields
-        document.getElementById('ui_name').value = '';
-        document.getElementById('ui_age').value = '';
+        document.getElementById('ui_name').value = 'New Patient';
+        document.getElementById('ui_age').value = '30';
         document.getElementById('ui_spec').value = 'Urology';
         document.getElementById('ui_doa').value = new Date().toISOString().split('T')[0];
         document.getElementById('ui_dod').value = new Date().toISOString().split('T')[0];
         // Reset UI
         updateReceiptNumber();
+        updatePatientDetails();
         renderUI();
     }
 }
@@ -357,7 +374,7 @@ function addReceipt() {
     const amt = new Decimal(document.getElementById("ui_ramt").value || 0);
     const rNo = document.getElementById("ui_rno").value;
 
-    if (amt.lte(0) || rNo.length < 5) return alert("Enter valid Amount and Receipt Number.");
+    if (amt.lte(0) || rNo.length < 5) return alert("Enter valid Amount and Receipt Number (minimum 5 characters).");
 
     const paid = receipts.reduce((a,b) => a.plus(new Decimal(b.amt)), new Decimal(0));
     const net = billItems.reduce((a,b) => a.plus(new Decimal(b.net)), new Decimal(0));
@@ -402,10 +419,9 @@ function calculateTotals() {
         paid = paid.plus(new Decimal(r.amt));
     });
 
-    // Apply overall percentage discount (from patient details grid, assuming this is where it goes)
-    // NOTE: This assumes a fixed % discount field is added to the UI, 
-    // but here we use a placeholder of 0 since the field was removed from the provided HTML.
-    
+    // Display run date
+    document.getElementById("b_run_date").innerText = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB');
+
     document.getElementById("ui_s_gross").innerText = "₹" + gross.toFixed(2);
     document.getElementById("ui_totalDiscount").innerText = "- ₹" + disc.toFixed(2);
     document.getElementById("ui_s_net_bill").innerText = "₹" + net.toFixed(2);
@@ -430,7 +446,6 @@ function updateItemDiscount(i, val) {
     }
 
     calculateTotals();
-    // Re-render required to show updated value in the cell if input loses focus
     renderUI();
 }
 
@@ -443,13 +458,7 @@ function renderUI() {
     let currentCat = '';
     
     // Update Patient Details Grid
-    document.getElementById('p_name').innerText = document.getElementById('ui_name').value;
-    document.getElementById('p_age_gender').innerText = `${document.getElementById('ui_age').value} / ${document.getElementById('ui_gender').value}`;
-    document.getElementById('p_doa').innerText = document.getElementById('ui_doa').value;
-    document.getElementById('p_dod').innerText = document.getElementById('ui_dod').value;
-    document.getElementById('p_doc').innerText = document.getElementById('ui_doc').value;
-    document.getElementById('p_room').innerText = document.getElementById('ui_roomCat').options[document.getElementById('ui_roomCat').selectedIndex].text;
-    document.getElementById('p_discount').innerText = (document.getElementById('ui_billDiscount') ? document.getElementById('ui_billDiscount').value : '0') + '%';
+    updatePatientDetails();
 
 
     // Render Bill Items Table
@@ -471,8 +480,7 @@ function renderUI() {
             <div class="r">${x.gross}</div>
             <div class="r"><input type="number" class="discount-input" value="${x.discount}"
                 onchange="updateItemDiscount(${i},this.value)"></div>
-            <div class="r" style="padding-right: 12px;"><strong>${x.net}</strong></div>
-            <div style="text-align: center;"><button onclick="deleteItem(${i})" class="delete-btn">X</button></div>
+            <div class="r" style="padding-right: 12px;"><button onclick="deleteItem(${i})" class="delete-btn">X</button></div>
         </div>`;
     });
     
@@ -513,8 +521,10 @@ function preparePrint() {
     INIT
 ------------------------------------------------------------ */
 (function init() {
-    generateNewPatientIDs();
     loadDropdowns();
+    // Default ID generation is moved to the button click for the user
+    // Generate an initial set of IDs on load to fill the fields
+    generateNewPatientIDs(); 
     // Default dates are set in HTML.
     renderUI();
 })();
