@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tariff Master — Krishna Kidney Centre</title>
+
+<link rel="stylesheet" href="tariff.css">
+<script defer src="engine.js"></script>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- ===============================================
+         SIDEBAR
+    =============================================== -->
+    <aside class="sidebar">
+        <div class="sb-title">KCC Billing OS</div>
+
+        <a href="billing.html" class="sb-link">Billing</a>
+        <a href="tariff.html" class="sb-link active">Tariff Master</a>
+        <a href="#" class="sb-link">Settings</a>
+    </aside>
+
+
+    <!-- ===============================================
+         MAIN CONTENT AREA
+    =============================================== -->
+    <div class="content">
+
+        <h1 class="page-title">Tariff Master</h1>
+        <p class="page-sub">Manage hospital tariffs, room rates, surgical procedures, pharmacy & investigation charges.</p>
+
+        <button class="add-btn" onclick="openTariffModal()">+ Add Tariff Item</button>
+
+        <div id="tariffContainer"></div>
+    </div>
+</div>
+
+
+<!-- ==================================================
+     TARIFF MODAL
+================================================== -->
+<div id="tariffModal" class="modal">
+    <div class="modal-box">
+
+        <h3 id="tmTitle">Add Tariff Item</h3>
+
+        <label>Category</label>
+        <select id="tm_category">
+            <option>Rooms</option>
+            <option>Nursing</option>
+            <option>ICU</option>
+            <option>Professional Visit</option>
+            <option>Consultant Visit</option>
+            <option>Investigations</option>
+            <option>Pharmacy</option>
+            <option>Surgical Procedure</option>
+            <option>Package</option>
+        </select>
+
+        <label>Item Name</label>
+        <input type="text" id="tm_name">
+
+        <label>Rate (₹)</label>
+        <input type="number" id="tm_rate">
+
+        <div class="modal-actions">
+            <button id="tm_save">SAVE</button>
+            <button onclick="closeTariffModal()">CANCEL</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
