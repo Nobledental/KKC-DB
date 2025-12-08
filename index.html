@@ -8,26 +8,24 @@
 <link rel="stylesheet" href="compact_v7_5.css">
 
 <script>
-/* *** DECIMAL.JS LIBRARY CODE GOES HERE ***
-    To run this offline, replace this comment block with the FULL minified code 
-    from decimal.min.js (or ensure it's loaded via <script src="vendor/decimal.min.js"></script>
-    if using a vendor folder).
+/* ⚠️ NOTE: DECIMAL.JS LIBRARY CODE MUST BE PASTED HERE
+   To run this offline, replace this entire script block with the FULL minified code 
+   from decimal.min.js to define window.Decimal.
 */
 if (typeof Decimal === 'undefined') {
-    // Basic fallback for development testing only
-    console.error("Decimal.js not loaded. Financial calculations will be inaccurate.");
-    // Define a dummy Decimal to prevent hard crash during development
+    // Dummy definition to prevent hard crash during development
     window.Decimal = function(value) {
+        let v = Number(value || 0);
         return {
-            toNumber: () => Number(value),
-            plus: (other) => new Decimal(Number(value) + Number(other)),
-            mul: (other) => new Decimal(Number(value) * Number(other)),
-            toFixed: (d) => Number(value).toFixed(d),
-            lte: (other) => Number(value) <= Number(other),
-            gt: (other) => Number(value) > Number(other),
-            lt: (other) => Number(value) < Number(other),
-            div: (other) => new Decimal(Number(value) / Number(other)),
-            minus: (other) => new Decimal(Number(value) - Number(other))
+            toNumber: () => v,
+            plus: (other) => new Decimal(v + Number(other.toFixed ? other.toNumber() : other)),
+            mul: (other) => new Decimal(v * Number(other.toFixed ? other.toNumber() : other)),
+            div: (other) => new Decimal(v / Number(other.toFixed ? other.toNumber() : other)),
+            minus: (other) => new Decimal(v - Number(other.toFixed ? other.toNumber() : other)),
+            toFixed: (d) => v.toFixed(d),
+            lte: (other) => v <= Number(other.toFixed ? other.toNumber() : other),
+            gt: (other) => v > Number(other.toFixed ? other.toNumber() : other),
+            toString: () => String(v)
         };
     };
 }
@@ -50,75 +48,62 @@ if (typeof Decimal === 'undefined') {
                 </div>
             </div>
             <div class="invoice-block">
-                <span class="invoice-label">IP TAX INVOICE — CASH</span>
+                <span class="invoice-label">DISCHARGE FINAL BILL</span>
                 <p class="small-meta">Bill No: <strong id="b_invoice_no">PROVISIONAL</strong></p>
                 <p class="small-meta">Run Date: <strong id="b_run_date">-</strong></p>
+                <button onclick="newBill()" class="btn-compact print-btn" style="background: #e38d13;">New Bill</button>
             </div>
         </div>
 
         <div class="compact-line"> 
-            <input type="text" id="ui_uhid" placeholder="UHID" value="KCC001045"> &nbsp;•&nbsp; 
-            <input type="text" id="ui_ip" placeholder="IP No" value="KCC-IPD-0045"> &nbsp;•&nbsp; 
+            UHID: <input type="text" id="ui_uhid" placeholder="UHID (6 Digit)" style="width: 80px;"> &nbsp;•&nbsp; 
+            IP No: <input type="text" id="ui_ip" placeholder="IP No (6 Digit)" style="width: 80px;"> &nbsp;•&nbsp; 
             Age: <input type="number" id="ui_age" placeholder="Age" value="55" style="width: 40px;"> / <select id="ui_gender" style="width: 70px;"><option>Male</option><option>Female</option></select> &nbsp;•&nbsp; 
-            Room: <select id="ui_roomCat" style="width: 120px;"></select>
+            Room Category: <select id="ui_roomCat" style="width: 120px;"></select>
             <button onclick="addRoomDays()" class="btn-compact">Auto-Charge</button>
             <button onclick="preparePrint()" class="btn-compact print-btn">Export PDF</button>
         </div>
+        <div class="compact-line" style="margin-top: 5px;">
+             Admission Date: <input type="date" id="ui_doa" value="2025-11-28" style="width: 120px;"> 
+             Discharge Date: <input type="date" id="ui_dod" value="2025-11-30" style="width: 120px;">
+             <button onclick="clearBillingItems()" class="btn-compact delete-btn">Clear All Items</button>
+        </div>
+
 
         <div class="section">
             <div class="column-title">Patient & Billing Details</div>
-            <div class="details-grid">
+            <div class="details-grid" id="patientDetailsGrid">
+                <div> <label>Patient Name</label> <p id="p_name">Mr. RAHUL</p> </div>
+                <div> <label>Age / Gender</label> <p id="p_age_gender">55 / Male</p> </div>
+                <div> <label>Admission Date</label> <p id="p_doa">2025-11-28</p> </div>
+                <div> <label>Discharge Date</label> <p id="p_dod">2025-11-30</p> </div>
+                <div> <label>Practitioner</label> <p id="p_doc">Dr. B.K. Srinivasan</p> </div>
+                <div> <label>Speciality</label> <p id="p_spec">Urology</p> </div>
+                <div> <label>Room Category</label> <p id="p_room">GENERAL WARD</p> </div> 
+                <div> <label>Payment Mode</label> <p id="p_mode">Cash</p> </div>
+                <div> <label>Insurance</label> <p id="p_insurance">Self Pay</p> </div>
+            </div>
+        </div>
+
+        <div class="section" style="border: 1px dashed #ccc; padding: 15px; border-radius: 6px;">
+            <div class="column-title" style="margin-top: 0; background: #fff; padding: 0;">Add Item Manually</div>
+             <div class="details-grid" style="padding: 10px 0; grid-template-columns: 1fr 1fr 1fr 1fr;">
+                <div> <label>Consultant</label> <select id="ui_doc"></select> </div>
+                <div> <label>Category</label> <select id="ui_cat"></select> </div>
+                <div> <label>Description/Package</label> <select id="ui_desc"></select> </div>
+                <div> <label>Rate (Auto/Manual)</label> <input type="number" id="ui_rate"> </div>
                 <div> 
-                    <label>Patient Name</label> 
-                    <input type="text" id="ui_name" placeholder="Name" value="Mr. RAHUL">
-                </div>
-                <div> 
-                    <label>Admission Date</label> 
-                    <input type="date" id="ui_doa" value="2025-11-28">
-                </div>
-                <div> 
-                    <label>Discharge Date</label> 
-                    <input type="date" id="ui_dod" value="2025-11-30">
-                </div>
-                <div> 
-                    <label>Practitioner</label> 
-                    <select id="ui_doc"></select>
-                </div>
-                <div> 
-                    <label>Speciality</label> 
-                    <input type="text" id="ui_spec" value="Urology">
-                </div>
-                <div> 
-                    <label>Discount (%)</label> 
-                    <input type="number" id="ui_billDiscount" placeholder="0" value="0">
-                </div>
-                <div> 
-                    <label>Bill Item Category</label> 
-                    <select id="ui_cat">
-                        <option value="Consultation">Consultation</option>
-                        <option value="Pharmacy">Pharmacy</option>
-                        <option value="Investigation">Investigation</option>
-                        <option value="Package">Package</option>
-                        <option value="Miscellaneous">Miscellaneous</option>
-                        <option value="Returns">Returns</option>
-                    </select>
-                </div>
-                <div> 
-                    <label>Item Description / Rate</label> 
-                    <select id="ui_desc"></select>
-                </div>
-                <div> 
-                    <label>Qty / Add Item</label> 
+                    <label>Qty / Action</label> 
                     <input type="number" id="ui_qty" value="1" style="width: 40px;">
-                    <button onclick="addItem()" class="btn-compact">Add</button>
+                    <button onclick="addItem()" class="btn-compact" style="background: #28aa28;">Add Item</button>
                 </div>
             </div>
         </div>
 
         <div class="section">
             <div class="column-title">Billing Items</div>
-            <div class="column-header-row">
-                <div class="column-header">Category</div>
+            <div class="column-header-row" id="billHeaderRow"> 
+                <div class="column-header">S.No</div>
                 <div class="column-header">Date</div>
                 <div class="column-header">Description</div>
                 <div class="column-header">Rate</div>
@@ -132,19 +117,36 @@ if (typeof Decimal === 'undefined') {
         </div>
 
         <div class="section">
+            <div class="column-title">Receipts and Payments</div>
+            <div class="summary-box">
+                <div id="receiptLines">
+                    </div>
+                
+                <div style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;">
+                    <label>Receipt No (Editable):</label>
+                    <input type="text" id="ui_rno" style="width: 100px;">
+                    <input type="number" id="ui_ramt" placeholder="Amount" style="width: 100px;">
+                    <input type="date" id="ui_rdate" style="width: 120px;">
+                    <select id="ui_rmode" style="width: 80px;"><option>Cash</option><option>UPI</option></select>
+                    <button onclick="addReceipt()" class="btn-compact">Add Payment</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="section">
             <div class="column-title">Summary</div>
             <div class="summary-box">
                 <div class="sum-line"><span>Total Gross</span> <strong id="ui_s_gross">₹0.00</strong></div>
                 <div class="sum-line"><span>Total Discount</span> <strong id="ui_totalDiscount">- ₹0.00</strong></div>
                 <div class="sum-line"><span>Taxable Amount</span> <strong id="ui_s_net_bill">₹0.00</strong></div>
-                <div class="sum-line total"><span>Final Amount Payable</span> <strong id="ui_s_final">₹0.00</strong></div>
                 
-                <div class="sum-line" style="margin-top: 10px;"><span>Receipts Paid</span> <strong id="ui_s_rec">₹0.00</strong></div>
-                <input type="number" id="ui_ramt" placeholder="Add Receipt Amt" style="width: 100px;">
-                <select id="ui_rmode" style="width: 80px;"><option>Cash</option><option>UPI</option></select>
-                <button onclick="addReceipt()" class="btn-compact">Pay</button>
+                <div class="sum-line" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;"><span>Receipts Paid</span> <strong id="ui_s_rec">₹0.00</strong></div>
+                
+                <div class="sum-line total"><span>Balance Due</span> <strong id="ui_s_final">₹0.00</strong></div>
             </div>
         </div>
+
     </div>
 </body>
 </html>
