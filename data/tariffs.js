@@ -1,4 +1,7 @@
-{
+// This file replaces seed-tariff.json and must be placed in the data/ directory.
+// It is loaded via <script src="data/tariffs.js"></script> in index.html.
+
+const TARIFF_DATA = {
   "currency_unit": "INR",
   "billing_cycle": "24_HOURS_FROM_ADMISSION",
   "billing_rules": {
@@ -111,4 +114,4 @@
     "MLC_DOC_CHARGE": { "name": "MLC Documentation Charge", "rate": 1000 },
     "REG_FEE": { "name": "Registration Fee (OPD)", "rate": 0 }
   }
-}
+};
