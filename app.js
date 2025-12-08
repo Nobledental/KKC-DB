@@ -1,6 +1,6 @@
 /* ============================================================
     CORE UTILITIES & INITIALIZATION
-    - DEPENDENCY: Requires Decimal.js to be loaded in index.html
+    - DEPENDENCY: Requires Decimal.js and data/tariffs.js (which defines TARIFF_DATA)
 ============================================================ */
 
 function load(key) {
@@ -21,7 +21,7 @@ let tariff = null;
 let history = load("history") || [];
 
 const TARIFF_KEY = "kcc-tariff-v2";
-const TARIFF_FILE = "./data/seed-tariff.json";
+// const TARIFF_FILE = "./data/seed-tariff.json"; // REMOVED - NO LONGER USED
 
 const CATEGORY_MAP = {
     'Consultation': 'opd_charges',
@@ -31,6 +31,10 @@ const CATEGORY_MAP = {
     'Miscellaneous': 'miscellaneous'
 };
 
+/**
+ * FIXED loadTariff: Checks for localStorage first, then the global TARIFF_DATA 
+ * exposed by tariffs.js.
+ */
 async function loadTariff() {
     if (typeof Decimal === 'undefined') {
         alert("CRITICAL ERROR: Decimal.js library not loaded.");
@@ -42,19 +46,19 @@ async function loadTariff() {
         tariff = storedTariff;
         return true;
     }
-
-    try {
-        const response = await fetch(TARIFF_FILE);
-        if (!response.ok) throw new Error("Network response was not ok");
-        const jsonTariff = await response.json();
-        tariff = jsonTariff;
-        save(TARIFF_KEY, tariff);
+    
+    // --- FIX APPLIED HERE ---
+    // Check for the global variable defined in data/tariffs.js
+    if (typeof TARIFF_DATA !== 'undefined') {
+        tariff = TARIFF_DATA;
+        save(TARIFF_KEY, tariff); // Save the seed data to local storage for future runs
         return true;
-    } catch (error) {
-        console.error("CRITICAL ERROR: Failed to load tariff data.", error);
+    } else {
+        console.error("CRITICAL ERROR: TARIFF_DATA not found. Ensure data/tariffs.js is loaded BEFORE app.js.");
         alert("Billing system cannot start. Tariff data missing.");
         return false;
     }
+    // --- END FIX ---
 }
 
 function createBillItem(cat, date, desc, rate, qty) {
@@ -208,7 +212,6 @@ function renderTariff() {
         const sub = tariff.surgical_packages[cat];
         Object.keys(sub).forEach(pkgName => {
             const pkg = sub[pkgName];
-            // Render a block for each package
             let breakupHtml = '';
             if(pkg.breakup_template){
                 breakupHtml = Object.keys(pkg.breakup_template).map(k => `<div><small>${k}: ${pkg.breakup_template[k]}</small></div>`).join('');
