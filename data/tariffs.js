@@ -1,6 +1,6 @@
 /* ============================================================================
     KCC BILLING OS — TARIFF MASTER (GLOBAL VARIABLE VERSION)
-    Loads instantly offline. Access using:  window.TARIFF
+    - Updated: Added tax_rate_percent.
 ============================================================================ */
 
 window.TARIFF = {
@@ -10,6 +10,9 @@ window.TARIFF = {
 
   billing_rules: {
     emergency_surcharge: 0.50,
+    
+    // NEW: Global Tax Rate (e.g., GST or VAT)
+    tax_rate_percent: 5.0, // 5% GST/VAT applied to Taxable Amount
 
     multiple_surgery_rule: {
       higher_charged: 1.00,
