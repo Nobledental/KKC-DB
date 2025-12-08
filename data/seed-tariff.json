@@ -1,0 +1,50 @@
+{
+  "rooms": {
+    "General Ward": {
+      "room": 1200,
+      "nursing": 400,
+      "doctor": 600
+    },
+    "Semi Private": {
+      "room": 2000,
+      "nursing": 600,
+      "doctor": 800
+    },
+    "Private": {
+      "room": 3500,
+      "nursing": 800,
+      "doctor": 1200
+    },
+    "Deluxe": {
+      "room": 5000,
+      "nursing": 1200,
+      "doctor": 1500
+    }
+  },
+
+  "doctors": [
+    "Dr. B.K. Srinivasan",
+    "Dr. Rajesh",
+    "Dr. Kumar"
+  ],
+
+  "packages": {
+    "URS Procedure": {
+      "package": 50000,
+      "breakup": [
+        { "d": "Surgeon Fees", "r": 50000, "q": 1 },
+        { "d": "Assistant Surgeon Fees", "r": 16000, "q": 1 },
+        { "d": "DJ Stenting", "r": 12000, "q": 1 },
+        { "d": "Anaesthesia Fees", "r": 10000, "q": 1 },
+        { "d": "OT Charge", "r": 12000, "q": 1 }
+      ]
+    },
+    "PCNL": {
+      "package": 75000,
+      "breakup": [
+        { "d": "Surgeon Fees", "r": 60000, "q": 1 },
+        { "d": "OT Charge", "r": 15000, "q": 1 }
+      ]
+    }
+  }
+}
