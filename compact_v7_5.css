@@ -1,0 +1,243 @@
+/* =========================================== BASE =========================================== */ 
+body { 
+    font-family: Helvetica, sans-serif; 
+    font-size: 13px; 
+    background: #fafafa; 
+    padding: 20px 0; 
+} 
+.container { 
+    max-width: 680px; 
+    margin: 0 auto; 
+    background: white; 
+    padding: 25px; 
+    border-radius: 10px; 
+    box-shadow: 0 0 15px rgba(0,0,0,0.08); 
+} 
+
+/* Styles for inputs embedded directly in the compact line */
+.compact-line input, .compact-line select {
+    padding: 2px 4px;
+    height: 24px;
+    border: 1px dashed #ccc;
+    font-size: 11px;
+}
+.btn-compact {
+    padding: 3px 8px;
+    font-size: 11px;
+    background: #0B63C5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.print-btn {
+    background: #218838;
+}
+
+/* =========================================== HEADER =========================================== */ 
+.header-flex { 
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 12px; 
+} 
+.logo-area { 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+} 
+.logotype { 
+    background: #000; 
+    color: #fff; 
+    width: 75px; 
+    height: 75px; 
+    line-height: 75px; 
+    text-align: center; 
+    font-size: 11px; 
+    border-radius: 4px; 
+} 
+.h-title { 
+    font-size: 18px; 
+    font-weight: 800; 
+    margin: 0; 
+} 
+.h-sub { 
+    margin: 3px 0 0; 
+    opacity: 0.7; 
+    font-size: 12px; 
+} 
+.invoice-block { 
+    text-align: right; 
+} 
+.invoice-label { 
+    background: #0B63C5; 
+    color: white; 
+    padding: 6px 10px; 
+    font-size: 11px; 
+    border-radius: 4px; 
+    display: inline-block; 
+} 
+.small-meta { 
+    margin-top: 6px; 
+} 
+/* =========================================== COMPACT LINE =========================================== */ 
+.compact-line { 
+    margin-top: 12px; 
+    font-size: 12px; 
+    padding: 10px; 
+    background: #f4f6f8; 
+    border-radius: 6px; 
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+} 
+/* =========================================== SECTION STYLES =========================================== */ 
+.section { 
+    margin-top: 25px; 
+} 
+.column-title { 
+    background: #eee; 
+    text-transform: uppercase; 
+    padding: 12px 10px; 
+    font-size: 11px; 
+    font-weight: 700; 
+} 
+/* =========================================== PATIENT DETAILS GRID (Compact) =========================================== */ 
+.details-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 14px; 
+    padding: 15px 0; 
+} 
+.details-grid label { 
+    font-size: 10px; 
+    text-transform: uppercase; 
+    opacity: 0.7; 
+} 
+.details-grid p { 
+    margin-top: 2px; 
+    font-size: 13px; 
+    font-weight: 700; 
+} 
+/* =========================================== BILL TABLE =========================================== */ 
+/* Modified grid template to include dynamic Action column */
+.column-header-row, .row { 
+    display: grid; 
+    grid-template-columns: 100px 70px 1fr 60px 40px 60px 60px 40px; 
+} 
+.column-header { 
+    background: #eee; 
+    text-transform: uppercase; 
+    padding: 12px; 
+    font-size: 11px; 
+    font-weight: 700; 
+    border-right: 1px solid #eee; 
+} 
+.column-detail { 
+    border-top: 1px solid #eee; 
+} 
+.cat-strip { 
+    background: #f2f6ff; 
+    padding: 8px 12px; 
+    font-weight: 700; 
+    border-bottom: 1px solid #eee; 
+    grid-column: 1 / span 8; /* Span all columns in the grid */
+} 
+.row { 
+    padding: 7px 12px; 
+    border-bottom: 1px solid #eee; 
+} 
+.row div { 
+    display: flex; 
+    align-items: center; 
+} 
+.r { 
+    text-align: right; 
+} 
+.r input {
+    border: 1px dashed #ccc;
+    width: 90%;
+    padding: 2px;
+    text-align: right;
+    font-size: 12px;
+}
+/* Style for Delete button */
+.delete-btn {
+    background: #d9534f;
+    color: white;
+    padding: 2px 6px;
+    font-size: 10px;
+    border-radius: 3px;
+}
+
+/* =========================================== SUMMARY =========================================== */ 
+.summary-box { 
+    padding: 15px; 
+    border: 1px solid #eee; 
+    border-radius: 6px; 
+} 
+.sum-line { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 6px 0; 
+} 
+.sum-line.total { 
+    font-weight: 700; 
+    border-top: 1px solid #eee; 
+    margin-top: 8px; 
+    padding-top: 8px; 
+} 
+.sum-final { 
+    margin-top: 12px; 
+    padding-top: 10px; 
+    border-top: 2px solid #ddd; 
+    font-size: 15px; 
+    font-weight: 800; 
+}
+
+/* =========================================== PRINT MODE =========================================== */ 
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .container, .container * {
+        visibility: visible;
+    }
+    .container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        box-shadow: none;
+    }
+    
+    /* Hide all input fields and buttons in print mode */
+    .compact-line input, .compact-line select, .btn-compact, .delete-btn {
+        display: none !important;
+    }
+    
+    /* Replace input with simple text values for printing */
+    .compact-line {
+        display: block !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .compact-line strong, .compact-line span {
+        display: inline !important;
+    }
+    
+    /* Ensure action column and input fields don't take space */
+    .column-header-row, .row { 
+        grid-template-columns: 120px 80px 1fr 60px 40px 60px 60px !important; /* Remove action column space */
+    }
+    .row > div:last-child { 
+        display: none !important; 
+    }
+    .r input {
+        border: none !important;
+        background: transparent !important;
+    }
+}
