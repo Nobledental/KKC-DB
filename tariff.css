@@ -1,0 +1,226 @@
+/* ============================================================
+   GLOBAL LAYOUT
+============================================================ */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Helvetica, Arial, sans-serif;
+  background: #eef2f5;
+  color: #222;
+}
+
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+.sidebar {
+  width: 240px;
+  background: #0B63C5;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sb-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.sb-link {
+  color: white;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  display: block;
+}
+
+.sb-link:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.sb-link.active {
+  background: rgba(255,255,255,0.35);
+}
+
+/* ============================================================
+   MAIN CONTENT
+============================================================ */
+.content {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.page-sub {
+  font-size: 14px;
+  opacity: 0.75;
+  margin-bottom: 20px;
+}
+
+/* ============================================================
+   ADD BUTTON
+============================================================ */
+.add-btn {
+  background: #1aaa55;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.add-btn:hover {
+  background: #158a45;
+}
+
+/* ============================================================
+   TARIFF LIST
+============================================================ */
+.tariff-group {
+  margin-bottom: 28px;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.06);
+}
+
+.group-title {
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.tariff-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 6px;
+  border-bottom: 1px solid #eee;
+}
+
+.tariff-item:nth-child(even) {
+  background: #fafafa;
+}
+
+.t-name {
+  font-weight: 600;
+}
+
+.t-rate {
+  font-weight: 700;
+}
+
+.t-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.t-edit, .t-del {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.t-edit {
+  background: #ffc107;
+}
+
+.t-del {
+  background: #dc3545;
+  color: white;
+}
+
+/* ============================================================
+   MODAL
+============================================================ */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.35);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  width: 360px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.modal-box h3 {
+  margin-top: 0;
+}
+
+.modal-box label {
+  font-size: 12px;
+  font-weight: 700;
+  display: block;
+  margin-top: 10px;
+}
+
+.modal-box input,
+.modal-box select {
+  width: 100%;
+  padding: 7px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+}
+
+.modal-actions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-actions button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+#tm_save {
+  background: #0B63C5;
+  color: white;
+}
+
+.modal-actions button:last-child {
+  background: #ccc;
+}
+
+/* ============================================================
+   SCROLLBAR
+============================================================ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #ddd;
+}
+::-webkit-scrollbar-thumb {
+  background: #0B63C5;
+  border-radius: 8px;
+}
