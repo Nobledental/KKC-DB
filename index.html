@@ -91,21 +91,8 @@
             }
         }
     </style>
-    <!-- Dependencies -->
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+    <!-- Removed Firebase Import -->
     <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global variables provided by the Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-kcc-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let db, auth, userId;
-        window.firebaseInitialized = false;
         
         // --- Decimal.js Library (Crucial for Financial Accuracy) ---
         if (typeof Decimal === 'undefined') {
@@ -163,15 +150,21 @@
         };
         const CATEGORY_ORDER = { "Room Rent": 10, "Nursing": 20, "Doctor Visit": 30, "Surgical": 40, "Package": 45, "Investigation": 50, "Pharmacy": 60, "Miscellaneous": 90, "Consultation": 30 };
         const ALL_PATIENT_INPUTS = ['ui_uhid', 'ui_ip', 'ui_name', 'ui_age', 'ui_gender', 'ui_roomCat', 'ui_doa', 'ui_dod', 'ui_doc', 'ui_spec', 'ui_insurance', 'ui_billDiscount'];
+        
+        // --- LOCAL STORAGE KEYS ---
+        const TARIFF_KEY = 'kcc_tariff_master';
+        const BILL_KEY = 'kcc_current_bill';
+        const SEQUENCE_KEY_PREFIX = 'kcc_seq_';
+
 
         // =========================================================================
-        // 1. CORE UTILITY FUNCTIONS & FIREBASE HELPERS (Must be defined first)
+        // 1. CORE UTILITY FUNCTIONS
         // =========================================================================
 
         function getNextSequence(key, length) {
-            let sequence = Number(localStorage.getItem(key) || 1);
+            let sequence = Number(localStorage.getItem(SEQUENCE_KEY_PREFIX + key) || 1);
             let nextId = String(sequence).padStart(length, '0');
-            localStorage.setItem(key, sequence + 1);
+            localStorage.setItem(SEQUENCE_KEY_PREFIX + key, sequence + 1);
             return nextId;
         }
         
@@ -215,20 +208,50 @@
             });
         }
         
-        // Firestore path helpers
-        function getTariffDocRef() { return doc(db, 'artifacts', appId, 'public', 'data', 'tariffs', 'master'); }
-        function getBillCollectionRef() { return collection(db, 'artifacts', appId, 'users', userId, 'bills'); }
+        // =========================================================================
+        // 2. LOCAL PERSISTENCE FUNCTIONS
+        // =========================================================================
 
-        async function saveCurrentBillToDB(bill) {
-            // FIX: Moved this function definition up.
-            if (!window.firebaseInitialized || !bill.billData.uhid) return;
-            const docRef = doc(getBillCollectionRef(), bill.billData.uhid);
-            await setDoc(docRef, bill, { merge: true });
+        function saveTariffToLocal() {
+            // Saves window.tariff to local storage
+            localStorage.setItem(TARIFF_KEY, JSON.stringify(window.tariff));
+            loadDropdowns();
+            renderUI();
+        }
+        
+        function loadTariffFromLocal() {
+            const storedTariff = localStorage.getItem(TARIFF_KEY);
+            if (storedTariff) {
+                window.tariff = JSON.parse(storedTariff);
+            } else {
+                // If not found, save the default structure
+                saveTariffToLocal(); 
+            }
+        }
+        
+        function saveCurrentBillToLocal(bill) {
+            // Saves the entire current bill object
+            localStorage.setItem(BILL_KEY, JSON.stringify(bill));
+        }
+
+        function loadCurrentBillFromLocal() {
+            const storedBill = localStorage.getItem(BILL_KEY);
+            if (storedBill) {
+                const latestBill = JSON.parse(storedBill);
+                window.billItems = latestBill.items;
+                window.receipts = latestBill.receipts;
+                
+                // Restore UI inputs from billData
+                ALL_PATIENT_INPUTS.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && latestBill.billData[id]) el.value = latestBill.billData[id];
+                });
+            }
         }
 
 
         // =========================================================================
-        // 2. UI & CALCULATION FUNCTIONS (Depend on #1)
+        // 3. UI & CALCULATION FUNCTIONS (Depend on #1, calls #2)
         // =========================================================================
         
         function calculateTotals() {
@@ -335,7 +358,7 @@
             billData.lastUpdated = new Date().toISOString();
 
             const currentBill = { billData: billData, items: window.billItems, receipts: window.receipts };
-            saveCurrentBillToDB(currentBill);
+            saveCurrentBillToLocal(currentBill);
         }
         
         function updateReceiptNumber() {
@@ -378,53 +401,9 @@
         }
         
         // =========================================================================
-        // 3. BUSINESS LOGIC & FIREBASE ASYNC CALLS (Depend on #2)
+        // 4. BUSINESS LOGIC (Depends on #3)
         // =========================================================================
         
-        async function loadTariffFromDB() {
-            const docRef = getTariffDocRef();
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                window.tariff = docSnap.data();
-            } else {
-                // Calls saveTariffToDB which in turn calls renderUI
-                await saveTariffToDB(); 
-            }
-            loadDropdowns();
-        }
-
-        async function saveTariffToDB() {
-            // FIX: This function previously called renderUI() which calls saveCurrentBillToDB(),
-            // but saveCurrentBillToDB() was defined later. Now both are correctly sequenced.
-            if (!window.firebaseInitialized) return;
-            const docRef = getTariffDocRef();
-            await setDoc(docRef, window.tariff);
-            loadDropdowns();
-            renderUI();
-        }
-        
-        async function loadLatestBill() {
-            if (!window.firebaseInitialized) return;
-            const billsQuery = getBillCollectionRef();
-            const querySnapshot = await getDocs(billsQuery);
-
-            if (!querySnapshot.empty) {
-                const allBills = querySnapshot.docs.map(doc => doc.data());
-                allBills.sort((a, b) => new Date(b.billData.lastUpdated) - new Date(a.billData.lastUpdated));
-                const latestBill = allBills[0];
-
-                window.billItems = latestBill.items;
-                window.receipts = latestBill.receipts;
-                
-                ALL_PATIENT_INPUTS.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el && latestBill.billData[id]) el.value = latestBill.billData[id];
-                });
-            }
-            generateNewIDs();
-            renderUI();
-        }
-
         function newBill() { 
             if (confirm("Start a new bill? All current data will be cleared.")) { 
                 window.billItems = []; 
@@ -722,25 +701,25 @@
         function updateTariffValue(section, key, field, value) {
             if (window.tariff[section] && window.tariff[section][key]) {
                 window.tariff[section][key][field] = Number(value);
-                saveTariffToDB();
+                saveTariffToLocal();
             }
         }
         function updatePackageRate(speciality, pkgKey, roomType, value) {
             window.tariff.surgical_packages[speciality][pkgKey][roomType] = Number(value);
-            saveTariffToDB();
+            saveTariffToLocal();
         }
         function updatePackageBreakup(speciality, pkgKey, breakupItem, value) {
             window.tariff.surgical_packages[speciality][pkgKey].breakup_template[breakupItem] = Number(value) / 100;
-            saveTariffToDB();
+            saveTariffToLocal();
         }
         function updateDoctorName(index, name) {
             window.tariff.doctors[index] = name;
-            saveTariffToDB();
+            saveTariffToLocal();
         }
         function deleteDoctor(index) {
              if (confirm("Delete this doctor?")) {
                 window.tariff.doctors.splice(index, 1);
-                saveTariffToDB();
+                saveTariffToLocal();
             }
         }
         function addDoctor() {
@@ -749,43 +728,30 @@
                 if (!window.tariff.doctors) window.tariff.doctors = [];
                 window.tariff.doctors.push(name);
                 document.getElementById('newDoctorName').value = '';
-                saveTariffToDB();
+                saveTariffToLocal();
             }
         }
 
 
         // =========================================================================
-        // 4. INIT BLOCK (Must be last to ensure all functions are defined)
+        // 5. INIT BLOCK (Must be last to ensure all functions are defined)
         // =========================================================================
-        function getTariffDocRef() { return doc(db, 'artifacts', appId, 'public', 'data', 'tariffs', 'master'); }
-        function getBillCollectionRef() { return collection(db, 'artifacts', appId, 'users', userId, 'bills'); }
+        
+        function initLocal() {
+            // 1. Load data from local storage
+            loadTariffFromLocal();
+            loadCurrentBillFromLocal();
 
-        async function initFirebase() {
-            try {
-                if (!firebaseConfig.apiKey) { throw new Error("Firebase config is missing API key."); }
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                if (initialAuthToken) { await signInWithCustomToken(auth, initialAuthToken); } else { await signInAnonymously(auth); }
-
-                onAuthStateChanged(auth, async (user) => {
-                    userId = user ? user.uid : crypto.randomUUID();
-                    window.firebaseInitialized = true;
-                    await loadTariffFromDB();
-                    loadLatestBill(); 
-                });
-            } catch (error) {
-                console.error("Firebase Initialization Failed:", error);
-                window.firebaseInitialized = false;
-                window.tariff = JSON.parse(localStorage.getItem('kcc-tariff-v2') || JSON.stringify(window.TARIFF));
-                loadDropdowns();
-                generateNewIDs();
-                renderUI();
-            }
+            // 2. Initialize UI components (dropdowns, IDs)
+            loadDropdowns();
+            generateNewIDs(); // Ensure new IDs if none were loaded
+            
+            // 3. Render final state
+            renderUI();
         }
         
         window.onload = () => {
-            initFirebase(); 
+            initLocal(); 
             document.getElementById("ui_rdate").value = new Date().toISOString().split('T')[0];
         };
         
@@ -824,7 +790,7 @@
             <div id="tariffBody" class="grid grid-cols-2 gap-4">
                 <!-- Tariff details rendered here -->
             </div>
-            <p class="mt-4 text-xs text-gray-500">Changes are saved automatically to Firestore. Close to apply changes.</p>
+            <p class="mt-4 text-xs text-gray-500">Changes are saved automatically to Local Storage. Close to apply changes.</p>
         </div>
     </div>
     
