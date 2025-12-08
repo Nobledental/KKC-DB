@@ -129,24 +129,59 @@
         /* --- CSS: PRINT MEDIA QUERY --- */
         @media print {
             @page { size: A4; margin: 10mm; }
-            body { background: white; font-size: 10pt; color: black !important; }
+            body { 
+                background: white; 
+                font-size: 10pt; 
+                color: black !important; 
+                display: block !important; /* Fix for Flexbox print issues */
+            }
             .text-red-600, .text-blue-600, .text-gray-500, .text-gray-900 { color: black !important; }
-            .container-main { box-shadow: none; margin: 0; width: 100%; max-width: 100%; min-height: auto; }
+            .container-main { 
+                box-shadow: none; 
+                margin: 0; 
+                width: 100%; 
+                max-width: 100%; 
+                min-height: auto; 
+                display: block !important; /* Fix for Flexbox print issues */
+            }
             .no-print { display: none !important; }
+            
             .section-header { background-color: #f3f4f6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; border-top: 1px solid #000; border-bottom: 1px solid #000; }
+            
             .bill-grid-header, .bill-grid-row { grid-template-columns: 30px 70px 1fr 70px 30px 60px 80px 0px; }
             .bill-grid-row > div:last-child { display: none; }
+            
             input, select { display: none !important; }
             .print-value-display { display: inline-block !important; }
             .input-desc-edit { display: none !important; }
             .print-desc-display { display: inline-block !important; width: 100%; }
+            
             .bill-grid-header { border-bottom: 2px solid #000 !important; }
             .bill-grid-row { border-bottom: 1px solid #eee !important; }
-            footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 8pt; color: black !important; border-top: 1px solid #000; padding-top: 8px; }
+            
+            /* Enhanced Footer Positioning for Print */
+            footer { 
+                position: fixed; 
+                bottom: 0; 
+                left: 0; 
+                right: 0; 
+                text-align: center; 
+                font-size: 8pt; 
+                color: black !important; 
+                border-top: 1px solid #000; 
+                padding-top: 8px; 
+                background: white;
+                z-index: 100;
+            }
+            
             .p-8 { padding: 1.5rem !important; }
             .mb-6 { margin-bottom: 1rem !important; }
             .gap-8 { gap: 1rem !important; }
+            
             #financialSummarySection .text-lg, #financialSummarySection .text-2xl, #financialSummarySection .text-base { font-size: 10pt !important; }
+            
+            /* Ensure signature doesn't overlap footer */
+            #signatureSection { margin-bottom: 50px !important; } 
         }
     </style>
 </head>
@@ -186,7 +221,7 @@
                         Discharge Final Bill
                     </span>
                     <div class="text-sm">Bill No: <span id="b_invoice_no" class="font-bold text-red-600">PROVISIONAL</span></div>
-                    <div class="text-sm text-gray-500">Print Date: <span id="b_run_date" class="font-medium text-gray-900"></span></div>
+                    <div class="text-sm text-gray-500">Run Date: <span id="b_run_date" class="font-medium text-gray-900"></span></div>
                 </div>
             </div>
             <hr class="mt-4 border-gray-200">
@@ -377,7 +412,7 @@
         </div>
 
         <!-- SIGNATURE SECTION -->
-        <div class="px-8 mt-auto mb-4">
+        <div class="px-8 mt-auto mb-4" id="signatureSection">
             <div class="flex justify-between items-end pt-8 pb-4">
                 <div class="text-center">
                     <div class="w-40 border-t border-black mb-1"></div>
