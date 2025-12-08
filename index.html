@@ -1,16 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<title>KCC Billing OS — Krishna Kidney Centre</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KCC Billing OS — Krishna Kidney Centre</title>
 
-<script src="vendor/decimal.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 
-<script src="data/tariffs.js"></script> 
+    <link rel="stylesheet" href="style.css" />
 
-<script defer src="app.js"></script>
+    <script src="vendor/decimal.min.js"></script>
+
+    <script src="vendor/html2canvas.min.js"></script>
+    <script src="vendor/jspdf.umd.min.js"></script>
+    <script src="vendor/jspdf.autotable.min.js"></script>
+    <script src="vendor/JsBarcode.min.js"></script>
+    <script src="vendor/qrcode.min.js"></script>
+
+    <script src="data/tariffs.js"></script>
+
+    <script defer src="app.js"></script>
 
 </head>
 
@@ -92,16 +101,14 @@
 
                 <div><label>Date</label><input id="ui_date" type="date"></div>
                 <div><label>Description/Item</label>
-                    <select id="ui_desc">
-                        <option value="">-- Select Category First --</option> 
-                    </select>
+                    <select id="ui_desc"><option value="">-- Select Category First --</option></select>
                 </div>
                 <div><label>Rate (Manual/Tariff)</label><input id="ui_rate" type="number" placeholder="0.00"></div>
             </div>
 
             <div class="ui-row-3">
-                <div><label>Qty</label><input id="ui_qty" type="number" value="1" placeholder="1"></div>
-                <div><label>Copay % (Not Implemented)</label><input id="ui_copay" type="number" value="0" disabled></div>
+                <div><label>Qty</label><input id="ui_qty" type="number" value="1"></div>
+                <div><label>Copay % (Not Implemented)</label><input id="ui_copay" type="number" disabled></div>
                 <div><button class="btn primary full" onclick="addItem()">Add Item</button></div>
             </div>
         </div>
@@ -112,7 +119,7 @@
 
             <div class="ui-row-3">
                 <div><label>Date</label><input id="ui_rdate" type="date"></div>
-                <div><label>Amount (₹)</label><input id="ui_ramt" type="number" placeholder="0.00"></div>
+                <div><label>Amount (₹)</label><input id="ui_ramt" type="number"></div>
                 <div><label>Mode</label>
                     <select id="ui_rmode"><option>Cash</option><option>UPI</option><option>Card</option></select>
                 </div>
@@ -120,14 +127,15 @@
 
             <button class="btn primary" onclick="addReceipt()">Add Receipt</button>
         </div>
-        
+
+
         <div class="ui-card">
             <h2>Bill Discount</h2>
 
             <div class="ui-row-3">
                 <div>
                     <label>Overall Discount (₹)</label>
-                    <input id="ui_billDiscount" type="number" value="0" placeholder="0.00">
+                    <input id="ui_billDiscount" type="number" value="0">
                 </div>
 
                 <div>
@@ -167,6 +175,7 @@
 
         <div class="ui-card summary-card">
             <h2>Summary</h2>
+
             <div class="sum-ui-row"><span>Total Gross</span><strong id="ui_s_gross">₹0.00</strong></div>
             <div class="sum-ui-row"><span>Total Discount</span><strong id="ui_totalDiscount_summary">₹0.00</strong></div>
             <div class="sum-ui-row"><span>Net Bill Amount</span><strong id="ui_s_net_bill">₹0.00</strong></div>
@@ -199,15 +208,12 @@
 
         <div class="ui-card">
             <h2>Surgical Packages</h2>
-            <p class="note-text">
-                Edit existing packages below. Package breakups are defined by percentage templates.
-            </p>
+            <p class="note-text">Edit package names in tariffs.js for this version.</p>
             <div id="tariff_packages" class="tariff-grid-container" style="flex-direction: column;"></div>
-            <button class="btn primary" onclick="alert('Please add packages directly in the JSON file for this version.')">+ Add Package (JSON)</button>
         </div>
-        
+
         <div class="save-tariff-container">
-             <button class="btn success huge" onclick="saveTariff()">✅ Save All Tariff Changes</button>
+            <button class="btn success huge" onclick="saveTariff()">✅ Save All Tariff Changes</button>
         </div>
     </section>
 
@@ -228,7 +234,6 @@
     </section>
 
 </main>
-
 
 
 <div class="container print-page" id="billContainerFinal">
@@ -301,8 +306,8 @@
 <div class="container receipt-container print-page" id="receiptContainer">
     <div class="header-flex">
         <div class="logo-area">
-             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////Li4uKk9QrwAAAAJ0Uk5T/wDltzBKAAAAKklEQVR42u3MgQAAAAQEof7/qwcKQAAAAAAAAAAAAAAAAAAAAAAAAd4AGLpAAaVz+mEAAAAASUVORK5CYII=" alt="Hospital Logo" class="logo-img">
-             <div class="h-info"><h1 class="h-title">KRISHNA KIDNEY CENTRE</h1></div>
+            <img src="assets/logo.png" class="logo-img">
+            <div class="h-info"><h1 class="h-title">KRISHNA KIDNEY CENTRE</h1></div>
         </div>
         <div class="invoice-block"><span class="invoice-label">PAYMENT BREAKDOWN</span></div>
     </div>
