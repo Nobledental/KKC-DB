@@ -27,7 +27,7 @@
             font-family: 'Inter', sans-serif; 
             background-color: #eef2f6; 
             color: var(--text-main);
-            font-size: 13px; /* Slightly smaller base font for compactness */
+            font-size: 13px;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -44,18 +44,17 @@
             border-bottom: 1px solid #d1d5db;
             color: #111827;
             font-weight: 700;
-            padding: 4px 12px; /* Reduced padding */
+            padding: 4px 12px;
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.02em;
         }
 
-        /* Grid for Bill Rows: Adjusted to remove Gross Column */
-        /* SNo(30) Date(70) Desc(Auto) Rate(70) Qty(30) Disc(60) Total(80) Action(30) */
+        /* Grid for Bill Rows */
         .bill-grid-header, .bill-grid-row {
             display: grid;
             grid-template-columns: 30px 70px 1fr 70px 30px 60px 80px 30px; 
-            gap: 4px; /* Reduced gap */
+            gap: 4px;
             align-items: center;
         }
 
@@ -69,16 +68,13 @@
         }
 
         .bill-grid-row {
-            padding: 4px 12px; /* Reduced padding for compact rows */
+            padding: 4px 12px;
             border-bottom: 1px solid #f3f4f6;
             font-size: 12px;
         }
         
-        /* Alignments */
-        .text-right-col { text-align: right; justify-content: flex-end; display: flex; }
-        .text-left-col { text-align: left; justify-content: flex-start; display: flex; }
-        
-        .bill-grid-row .text-right-col { font-variant-numeric: tabular-nums; }
+        .bill-grid-row .text-right-col { text-align: right; justify-content: flex-end; display: flex; font-variant-numeric: tabular-nums; }
+        .bill-grid-row .text-left-col { text-align: left; justify-content: flex-start; display: flex; }
 
         /* Input Styling */
         input, select { 
@@ -104,7 +100,7 @@
         .input-desc-edit:hover { border: 1px solid #e5e7eb; background: #fff; }
         .input-desc-edit:focus { border: 1px solid var(--primary-blue); background: #fff; }
 
-        /* Category Group Header in Table */
+        /* Category Group Header */
         .category-row {
             grid-column: 1 / -1;
             background-color: #f9fafb;
@@ -133,79 +129,24 @@
         /* --- CSS: PRINT MEDIA QUERY --- */
         @media print {
             @page { size: A4; margin: 10mm; }
-            
-            body { 
-                background: white; 
-                font-size: 10pt; 
-                color: black !important; /* Force Black Text */
-            }
-            
-            /* Force all text to black including headers and totals */
-            .text-red-600, .text-blue-600, .text-gray-500, .text-gray-900 {
-                color: black !important;
-            }
-
-            .container-main {
-                box-shadow: none;
-                margin: 0;
-                width: 100%;
-                max-width: 100%;
-                min-height: auto;
-            }
-
+            body { background: white; font-size: 10pt; color: black !important; }
+            .text-red-600, .text-blue-600, .text-gray-500, .text-gray-900 { color: black !important; }
+            .container-main { box-shadow: none; margin: 0; width: 100%; max-width: 100%; min-height: auto; }
             .no-print { display: none !important; }
-
-            /* Print Aesthetics */
-            .section-header { 
-                background-color: #f3f4f6 !important; 
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact;
-                border-top: 1px solid #000;
-                border-bottom: 1px solid #000;
-            }
-
-            /* Grid Adjustments for Print (Hide Action Column) */
-            .bill-grid-header, .bill-grid-row {
-                grid-template-columns: 30px 70px 1fr 70px 30px 60px 80px 0px;
-            }
-            .bill-grid-row > div:last-child { display: none; } /* Hide 'X' button container */
-
-            /* Hide Inputs, Show Values */
+            .section-header { background-color: #f3f4f6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; border-top: 1px solid #000; border-bottom: 1px solid #000; }
+            .bill-grid-header, .bill-grid-row { grid-template-columns: 30px 70px 1fr 70px 30px 60px 80px 0px; }
+            .bill-grid-row > div:last-child { display: none; }
             input, select { display: none !important; }
             .print-value-display { display: inline-block !important; }
-            
-            /* Ensure editable description prints correctly */
             .input-desc-edit { display: none !important; }
             .print-desc-display { display: inline-block !important; width: 100%; }
-            
-            /* Clean Table Lines */
             .bill-grid-header { border-bottom: 2px solid #000 !important; }
             .bill-grid-row { border-bottom: 1px solid #eee !important; }
-
-            /* Footer Positioning */
-            footer {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                text-align: center;
-                font-size: 8pt;
-                color: black !important;
-                border-top: 1px solid #000;
-                padding-top: 8px;
-            }
-            
-            /* Compact Spacing for Print */
+            footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 8pt; color: black !important; border-top: 1px solid #000; padding-top: 8px; }
             .p-8 { padding: 1.5rem !important; }
             .mb-6 { margin-bottom: 1rem !important; }
             .gap-8 { gap: 1rem !important; }
-            
-            /* Standardize Font Sizes in Summary */
-            #financialSummarySection .text-lg, 
-            #financialSummarySection .text-2xl,
-            #financialSummarySection .text-base {
-                font-size: 10pt !important; /* Force same font size */
-            }
+            #financialSummarySection .text-lg, #financialSummarySection .text-2xl, #financialSummarySection .text-base { font-size: 10pt !important; }
         }
     </style>
 </head>
@@ -220,7 +161,7 @@
                 <div class="nav-tab" onclick="switchView('history')" id="tab-history">History</div>
                 <div class="nav-tab" onclick="switchView('tariff')" id="tab-tariff">Tariff Master</div>
             </div>
-            <div class="text-xs text-gray-500" id="authStatus">Connecting...</div>
+            <div class="text-xs text-gray-500 font-bold" id="authStatus">Initializing...</div>
         </div>
     </div>
 
@@ -231,7 +172,7 @@
         <header class="p-8 pb-2">
             <div class="flex justify-between items-start">
                 <div class="flex items-center gap-4">
-                    <!-- HOSPITAL LOGO (Updated to IMG tag) -->
+                    <!-- HOSPITAL LOGO -->
                     <div class="w-16 h-16 flex items-center justify-center">
                         <img src="logo.png" alt="Logo" class="max-w-full max-h-full object-contain" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-xs font-bold text-gray-400\'>LOGO</span>'">
                     </div>
@@ -253,8 +194,8 @@
 
         <!-- CONTROLS (Screen Only) -->
         <div class="px-8 mb-2 no-print flex gap-2">
-            <button onclick="generateNewIDs()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded">NEW BILL</button>
-            <button onclick="newBill()" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded">RESET</button>
+            <button onclick="generateNewIDs()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded">GENERATE NEW ID</button>
+            <button onclick="newBill()" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded">CLEAR FORM</button>
             <div class="ml-auto text-xs text-gray-400 self-center hidden" id="saveStatus">Saved</div>
         </div>
 
@@ -339,7 +280,8 @@
                     </div>
                     <div class="flex-[2]">
                         <label class="text-[9px] text-gray-500 font-bold uppercase">Description</label>
-                        <input type="text" id="ui_desc" class="bg-white" placeholder="Type description...">
+                        <input type="text" id="ui_desc" class="bg-white" placeholder="Type or Select..." list="desc_list">
+                        <datalist id="desc_list"></datalist>
                     </div>
                     <div class="w-16">
                         <label class="text-[9px] text-gray-500 font-bold uppercase">Rate</label>
@@ -358,13 +300,11 @@
         <!-- SUMMARY SECTION -->
         <div class="px-8 mt-2 mb-20" id="financialSummarySection">
             <div class="grid grid-cols-2 gap-8">
-                
-                <!-- LEFT: Receipts (Hidden in print if needed, but keeping logic) -->
+                <!-- LEFT: Receipts -->
                 <div>
                     <div class="section-header rounded-t-sm">Receipts & Payments</div>
                     <div class="border border-t-0 border-gray-200 p-3 min-h-[100px] flex flex-col justify-between">
                         <div id="receiptLines" class="space-y-1 text-xs"></div>
-                        
                         <div class="no-print mt-2 pt-2 border-t border-dashed border-gray-200">
                             <div class="flex gap-2 mb-2">
                                 <input type="text" id="ui_rno" placeholder="R.No" class="w-20">
@@ -389,14 +329,11 @@
                         </div>
 
                         <div class="space-y-2 text-sm">
-                            <!-- ONLY SHOW Total Gross, Final Bill, Balance Due -->
-                            
                             <div class="flex justify-between">
                                 <span class="text-gray-600 font-bold">Total Gross Amount</span>
                                 <span class="font-bold font-mono" id="ui_s_gross">0.00</span>
                             </div>
-                            
-                            <!-- Hidden rows (still in DOM for logic but hidden visually) -->
+                            <!-- Hidden rows -->
                             <div class="flex justify-between text-red-600 text-xs hidden">
                                 <span>Item Discounts</span>
                                 <span class="font-mono" id="ui_itemDiscount">- 0.00</span>
@@ -405,23 +342,18 @@
                                 <span>Global Discount Applied</span>
                                 <span class="font-mono" id="ui_globalDiscount">- 0.00</span>
                             </div>
-
-                            <!-- Final Bill Amount -->
                             <div class="flex justify-between items-center pt-1 border-t border-gray-100">
                                 <span class="font-bold text-gray-800">Final Bill Amount</span>
                                 <span class="font-bold font-mono text-base" id="ui_s_net_bill">0.00</span>
                             </div>
-
                             <div class="hidden flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-200 mt-2">
                                 <span class="font-black text-gray-900 uppercase">**Grand Total**</span>
                                 <span class="font-black font-mono text-lg text-gray-900" id="ui_s_grand_total">0.00</span>
                             </div>
-
                             <div class="hidden flex justify-between text-gray-600 pt-2">
                                 <span>Less: Receipts Paid</span>
                                 <span class="font-mono" id="ui_s_rec">0.00</span>
                             </div>
-
                             <!-- Balance Due -->
                             <div class="flex justify-between items-center pt-2 border-t-2 border-gray-300 mt-2">
                                 <span class="font-black text-red-600 text-lg uppercase">Balance Due</span>
@@ -430,12 +362,12 @@
                         </div>
                         
                         <div class="mt-4 flex gap-2 justify-end no-print">
-                            <button onclick="saveBillToCloud()" class="bg-green-600 text-white font-bold px-4 py-2 rounded shadow hover:bg-green-700 transition flex items-center gap-2 justify-center text-xs">
+                            <button onclick="saveBill()" class="bg-green-600 text-white font-bold px-4 py-2 rounded shadow hover:bg-green-700 transition flex items-center gap-2 justify-center text-xs">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                                 SAVE
                             </button>
                             <button onclick="preparePrint()" class="bg-[#1e3a8a] text-white font-bold px-4 py-2 rounded shadow hover:bg-blue-900 transition flex items-center gap-2 justify-center text-xs">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z"></path></svg>
                                 PRINT FINAL INVOICE
                             </button>
                         </div>
@@ -494,18 +426,20 @@
             <button onclick="openAddTariffModal()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">+ ADD ITEM</button>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tariffGrid">
-            <!-- Tariff Cards will go here -->
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tariffGrid"></div>
     </div>
 
     <!-- TARIFF ADD/EDIT MODAL -->
     <div id="tariffAddModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
         <div class="bg-white p-6 rounded shadow-lg w-96">
-            <h3 class="font-bold mb-4">Add Tariff Item</h3>
+            <h3 class="font-bold mb-4" id="tm_title">Add Tariff Item</h3>
             <input id="tm_category" class="mb-2 border p-2 w-full text-xs" placeholder="Category (e.g. SURGEON FEES)">
             <input id="tm_description" class="mb-2 border p-2 w-full text-xs" placeholder="Description">
             <input id="tm_rate" type="number" class="mb-4 border p-2 w-full text-xs" placeholder="Rate">
+            <!-- Hidden index for editing -->
+            <input type="hidden" id="tm_edit_index" value="-1">
+            <input type="hidden" id="tm_edit_cat" value="">
+            
             <div class="flex justify-end gap-2">
                 <button onclick="document.getElementById('tariffAddModal').classList.add('hidden')" class="px-3 py-1 bg-gray-200 rounded text-xs">Cancel</button>
                 <button onclick="saveTariffItem()" class="px-3 py-1 bg-blue-600 text-white rounded text-xs">Save</button>
@@ -515,63 +449,88 @@
 
     <!-- --- JAVASCRIPT LOGIC --- -->
     <script type="module">
+        // Import Firebase (will fail gracefully if offline/not configured)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 1. FIREBASE SETUP
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        let currentUser = null;
-
-        // AUTH & INIT
-        const initAuth = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
-        };
-        initAuth();
-
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) {
-                document.getElementById('authStatus').innerText = "Online";
-                document.getElementById('authStatus').className = "text-xs text-green-600 font-bold";
-                // Load Data
-                loadTariffFromCloud();
-                loadHistoryFromCloud();
-            }
-        });
-
-        // 2. DATA & STATE
-        // Default Tariff Structure if cloud is empty
-        let localTariff = {
-            "SURGEON FEES": [],
-            "ASSISTANT SURGEON FEES": [],
-            "DJ STENTING": [],
-            "ANAESTHESIA FEES": [],
-            "ICU CHARGE": [],
-            "DOCTOR CHARGE": [],
-            "SPECIALTY DOCTOR ICU VISIT CHARGE": [],
-            "BED CHARGE": [],
-            "NURSING CHARGES": [],
-            "OT CHARGE": [],
-            "PREANESTHETIC CHECKUP": [],
-            "MEDICINE CHARGE": [],
-            "ROOM RENT": [],
-            "MISC": []
-        };
-
+        // GLOBAL STATE
         window.billItems = [];
         window.receipts = [];
-        window.currentBillId = null; // Tracks if we are editing an existing bill
+        window.currentBillId = null;
+        let isOnline = false;
+        let db, auth, appId;
+        let currentUser = null;
 
-        // 3. DECIMAL CONFIG
+        // DEFAULT DATA (Fallback)
+        let localTariff = {
+            "SURGEON FEES": [], "ASSISTANT SURGEON FEES": [], "DJ STENTING": [], "ANAESTHESIA FEES": [],
+            "ICU CHARGE": [], "DOCTOR CHARGE": [], "SPECIALTY DOCTOR ICU VISIT CHARGE": [], "BED CHARGE": [],
+            "NURSING CHARGES": [], "OT CHARGE": [], "PREANESTHETIC CHECKUP": [], "MEDICINE CHARGE": [],
+            "ROOM RENT": [], "MISC": []
+        };
+
+        // --- 1. INITIALIZATION & AUTH HANDLER ---
+        async function initApp() {
+            const statusEl = document.getElementById('authStatus');
+            try {
+                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+                    throw new Error("Local Mode");
+                }
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    if (user) {
+                        isOnline = true;
+                        statusEl.innerText = "Online (Cloud)";
+                        statusEl.className = "text-xs text-green-600 font-bold";
+                        loadTariffFromCloud();
+                        loadHistoryFromCloud();
+                    }
+                });
+            } catch (e) {
+                console.log("Running in Offline/Local Mode");
+                isOnline = false;
+                statusEl.innerText = "Offline (Local)";
+                statusEl.className = "text-xs text-amber-600 font-bold";
+                loadLocalData();
+            }
+            
+            // Ensure UI is ready regardless of connection
+            updateDropdowns();
+            renderTariffMasterUI();
+            generateNewIDs();
+            renderUI();
+        }
+
+        // --- 2. DATA LOADING (HYBRID) ---
+        function loadLocalData() {
+            const storedTariff = localStorage.getItem('kcc_tariff');
+            if(storedTariff) localTariff = JSON.parse(storedTariff);
+            
+            const storedBills = localStorage.getItem('kcc_bills');
+            if(storedBills) {
+                renderHistoryTable(JSON.parse(storedBills));
+            }
+        }
+
+        function saveLocalData() {
+            localStorage.setItem('kcc_tariff', JSON.stringify(localTariff));
+        }
+
+        // --- 3. CORE FUNCTIONS EXPORTED TO WINDOW ---
+        // Decimal Wrapper
         if (typeof Decimal === 'undefined') {
             window.Decimal = class {
                 constructor(value) { this.v = Number(value || 0); }
@@ -584,11 +543,8 @@
                 gt(other) { return this.v > new Decimal(other).toNumber(); }
                 toFixed(d) { return this.v.toFixed(d); }
             };
-        } else {
-            window.Decimal = Decimal;
-        }
+        } else { window.Decimal = Decimal; }
 
-        // 4. CORE BILLING FUNCTIONS
         window.formatMoney = (amount) => new Decimal(amount).toFixed(2);
         window.formatDate = (dateStr) => {
             if (!dateStr) return '';
@@ -602,6 +558,26 @@
             return result;
         };
 
+        // --- 4. BILLING LOGIC ---
+        window.generateNewIDs = () => {
+            window.currentBillId = null;
+            document.getElementById('ui_uhid').value = "KCC" + Math.floor(Math.random() * 10000);
+            document.getElementById('ui_ip').value = "IP" + Math.floor(Math.random() * 10000);
+            document.getElementById('b_invoice_no').innerText = window.generateUniqueBillNo();
+            renderUI();
+        };
+
+        window.addItem = () => {
+            const cat = document.getElementById('ui_cat').value;
+            const desc = document.getElementById('ui_desc').value;
+            const rate = document.getElementById('ui_rate').value;
+            const qty = document.getElementById('ui_qty').value;
+            const date = document.getElementById('ui_dod').value; 
+            if(!rate || !qty) return;
+            window.billItems.push({ category: cat, desc: desc, rate: rate, qty: qty, date: date, discount: 0 });
+            renderUI();
+        };
+
         window.calculateTotals = () => {
             let gross = new Decimal(0);
             let totalItemDisc = new Decimal(0);
@@ -610,10 +586,8 @@
             window.billItems.forEach(item => {
                 const g = new Decimal(item.rate).mul(item.qty);
                 const d = new Decimal(item.discount || 0);
-                
                 item.gross = g.toFixed(2);
                 item.total = g.minus(d).toFixed(2);
-                
                 gross = gross.plus(g);
                 totalItemDisc = totalItemDisc.plus(d);
                 netAfterItemDisc = netAfterItemDisc.plus(g.minus(d));
@@ -621,15 +595,11 @@
 
             const globalDiscPercent = new Decimal(document.getElementById('ui_billDiscount').value || 0);
             let globalDiscVal = new Decimal(0);
-            if(globalDiscPercent.gt(0)) {
-                globalDiscVal = netAfterItemDisc.mul(globalDiscPercent.div(100));
-            }
+            if(globalDiscPercent.gt(0)) globalDiscVal = netAfterItemDisc.mul(globalDiscPercent.div(100));
 
             const finalBill = netAfterItemDisc.minus(globalDiscVal);
-            
             let totalPaid = new Decimal(0);
             window.receipts.forEach(r => totalPaid = totalPaid.plus(r.amount));
-            
             const balance = finalBill.minus(totalPaid);
 
             document.getElementById('ui_s_gross').innerText = formatMoney(gross.toNumber());
@@ -642,19 +612,18 @@
         };
 
         window.renderUI = () => {
+            // Update Headers
             const fields = ['uhid', 'ip', 'name', 'doa', 'dod', 'roomCat', 'doc', 'insurance'];
             fields.forEach(f => {
                 const val = document.getElementById('ui_' + f).value;
                 const display = document.getElementById('print_' + f);
-                if (display) display.innerText = (f === 'doa' || f === 'dod') ? formatDate(val) : val;
+                if (display) display.innerText = (f === 'doa' || f === 'dod') ? window.formatDate(val) : val;
             });
-            
-            const dodVal = document.getElementById('ui_dod').value;
-            document.getElementById('b_run_date').innerText = formatDate(dodVal);
+            document.getElementById('b_run_date').innerText = window.formatDate(document.getElementById('ui_dod').value);
 
+            // Render Rows
             const tbody = document.getElementById('ui_billBody');
             tbody.innerHTML = '';
-            
             const sortedItems = [...window.billItems].sort((a, b) => a.category.localeCompare(b.category) || a.date.localeCompare(b.date));
             let currentCat = null;
             let sno = 1;
@@ -669,7 +638,7 @@
                 row.className = 'bill-grid-row group hover:bg-blue-50';
                 row.innerHTML = `
                     <div class="text-left-col text-gray-500">${sno++}</div>
-                    <div class="text-left-col">${formatDate(item.date)}</div>
+                    <div class="text-left-col">${window.formatDate(item.date)}</div>
                     <div class="text-left-col">
                         <input type="text" class="input-desc-edit" value="${item.desc}" onchange="updateItemDesc(${originalIdx}, this.value)">
                         <span class="print-desc-display hidden">${item.desc}</span>
@@ -688,32 +657,19 @@
                 tbody.appendChild(row);
             });
 
+            // Render Receipts
             const rContainer = document.getElementById('receiptLines');
             rContainer.innerHTML = window.receipts.map((r, i) => `
                 <div class="flex justify-between border-b border-dashed border-gray-200 py-1">
-                    <span>${r.no} <span class="text-gray-400 text-[10px]">(${formatDate(r.date)})</span> <span class="bg-gray-100 px-1 rounded text-[10px]">${r.mode}</span></span>
+                    <span>${r.no} <span class="text-gray-400 text-[10px]">(${window.formatDate(r.date)})</span> <span class="bg-gray-100 px-1 rounded text-[10px]">${r.mode}</span></span>
                     <span class="font-bold">₹${r.amount} <button onclick="deleteReceipt(${i})" class="ml-2 text-red-500 no-print">×</button></span>
                 </div>
             `).join('');
 
-            calculateTotals();
+            window.calculateTotals();
         };
 
-        // 5. BILLING ACTIONS
-        window.addItem = () => {
-            const cat = document.getElementById('ui_cat').value;
-            const desc = document.getElementById('ui_desc').value;
-            const rate = document.getElementById('ui_rate').value;
-            const qty = document.getElementById('ui_qty').value;
-            // CHANGED: Default to Discharge Date (ui_dod) instead of Admission Date
-            const date = document.getElementById('ui_dod').value; 
-
-            if(!rate || !qty) return;
-
-            window.billItems.push({ category: cat, desc: desc, rate: rate, qty: qty, date: date, discount: 0 });
-            renderUI();
-        };
-
+        // UI Helpers
         window.updateItemDisc = (idx, val) => { window.billItems[idx].discount = val; renderUI(); };
         window.updateItemDesc = (idx, val) => { window.billItems[idx].desc = val; };
         window.deleteItem = (idx) => { window.billItems.splice(idx, 1); renderUI(); };
@@ -728,23 +684,19 @@
             renderUI();
         };
         window.deleteReceipt = (idx) => { window.receipts.splice(idx, 1); renderUI(); };
-
+        
         window.addRoomDays = () => {
             const roomType = document.getElementById('ui_roomCat').value;
             const start = new Date(document.getElementById('ui_doa').value);
             const end = new Date(document.getElementById('ui_dod').value);
             if(isNaN(start) || isNaN(end)) return alert("Set Dates first");
-            // Assuming hardcoded room logic for auto-calc or can be fetched from tariff if structured
-            // Using basic values for demo as dynamic tariff structure is flat
             let tariff = 2000, nursing = 500, doc = 500;
             if(roomType.includes("PVT")) { tariff=4000; nursing=1000; doc=1000; }
             if(roomType.includes("ICU")) { tariff=6000; nursing=2000; doc=2000; }
             if(roomType.includes("AC")) { tariff=3500; nursing=750; doc=800; }
-
             const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
             for(let i=0; i < days; i++) {
-                let d = new Date(start);
-                d.setDate(d.getDate() + i);
+                let d = new Date(start); d.setDate(d.getDate() + i);
                 const dateStr = d.toISOString().split('T')[0];
                 window.billItems.push(
                     { category: "ROOM RENT", desc: `Room: ${roomType}`, rate: tariff, qty: 1, date: dateStr, discount: 0 },
@@ -755,34 +707,86 @@
             renderUI();
         };
 
-        window.generateNewIDs = () => {
-            window.currentBillId = null; // Reset current editing ID
-            document.getElementById('ui_uhid').value = "KCC" + Math.floor(Math.random() * 10000);
-            document.getElementById('ui_ip').value = "IP" + Math.floor(Math.random() * 10000);
-            document.getElementById('b_invoice_no').innerText = generateUniqueBillNo();
-            renderUI();
+        window.newBill = () => {
+            if(confirm("Reset form?")) {
+                window.billItems = []; window.receipts = []; window.currentBillId = null;
+                document.querySelectorAll('input').forEach(i => i.value = '');
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('ui_doa').value = today;
+                document.getElementById('ui_dod').value = today;
+                document.getElementById('ui_rdate').value = today;
+                renderUI();
+                generateNewIDs();
+            }
         };
-
+        
         window.preparePrint = () => {
             const name = document.getElementById('ui_name').value || "Patient";
             const billNo = document.getElementById('b_invoice_no').innerText || "Bill";
             document.title = `${name}_${billNo}`;
             setTimeout(() => window.print(), 100);
         };
+        
+        window.clearBillingItems = () => { window.billItems = []; renderUI(); };
 
-        window.newBill = () => {
-            if(confirm("Reset form? Unsaved changes will be lost.")) {
-                window.billItems = [];
-                window.receipts = [];
-                window.currentBillId = null;
-                document.querySelectorAll('input').forEach(i => i.value = '');
-                renderUI();
+        // --- 5. TARIFF LOGIC ---
+        window.openAddTariffModal = () => {
+            document.getElementById('tariffAddModal').classList.remove('hidden');
+            document.getElementById('tm_title').innerText = "Add Tariff Item";
+            document.getElementById('tm_category').value = "";
+            document.getElementById('tm_description').value = "";
+            document.getElementById('tm_rate').value = "";
+            document.getElementById('tm_edit_index').value = "-1";
+        }
+        
+        window.openEditTariffModal = (cat, idx) => {
+            document.getElementById('tariffAddModal').classList.remove('hidden');
+            const item = localTariff[cat][idx];
+            document.getElementById('tm_title').innerText = "Edit Item";
+            document.getElementById('tm_category').value = cat;
+            document.getElementById('tm_description').value = item.name;
+            document.getElementById('tm_rate').value = item.rate;
+            document.getElementById('tm_edit_index').value = idx;
+            document.getElementById('tm_edit_cat').value = cat;
+        }
+
+        window.saveTariffItem = async () => {
+            const cat = document.getElementById('tm_category').value.toUpperCase();
+            const desc = document.getElementById('tm_description').value;
+            const rate = parseFloat(document.getElementById('tm_rate').value);
+            const idx = parseInt(document.getElementById('tm_edit_index').value);
+            const oldCat = document.getElementById('tm_edit_cat').value;
+
+            if(!cat || !desc) return;
+            if(!localTariff[cat]) localTariff[cat] = [];
+
+            if(idx > -1 && oldCat === cat) {
+                localTariff[cat][idx] = { name: desc, rate: rate };
+            } else {
+                if(idx > -1 && oldCat !== cat) localTariff[oldCat].splice(idx, 1);
+                localTariff[cat].push({ name: desc, rate: rate });
+            }
+
+            if(isOnline) {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tariff', 'master'), localTariff);
+            } else {
+                saveLocalData();
+                updateDropdowns();
+                renderTariffMasterUI();
+            }
+            document.getElementById('tariffAddModal').classList.add('hidden');
+        };
+
+        window.deleteTariffItem = async (cat, idx) => {
+            if(confirm("Delete item?")) {
+                localTariff[cat].splice(idx, 1);
+                if(isOnline) await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tariff', 'master'), localTariff);
+                else { saveLocalData(); renderTariffMasterUI(); updateDropdowns(); }
             }
         };
 
-        // 6. CLOUD SAVING & HISTORY
-        window.saveBillToCloud = async () => {
-            if (!currentUser) return alert("Offline. Cannot save.");
+        // --- 6. SAVING LOGIC ---
+        window.saveBill = async () => {
             const billData = {
                 uhid: document.getElementById('ui_uhid').value,
                 ip: document.getElementById('ui_ip').value,
@@ -803,127 +807,104 @@
             statusEl.innerText = "Saving...";
             statusEl.classList.remove('hidden');
 
-            try {
-                if (window.currentBillId) {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bills', window.currentBillId), billData);
+            if(isOnline) {
+                try {
+                    if (window.currentBillId) {
+                        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bills', window.currentBillId), billData);
+                    } else {
+                        const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'bills'), billData);
+                        window.currentBillId = docRef.id;
+                    }
+                    statusEl.innerText = "Saved to Cloud";
+                } catch(e) { console.error(e); alert("Cloud Save Error"); }
+            } else {
+                // Local Storage Saving
+                let bills = JSON.parse(localStorage.getItem('kcc_bills') || '[]');
+                if(window.currentBillId) {
+                    const idx = bills.findIndex(b => b.id === window.currentBillId);
+                    if(idx > -1) bills[idx] = { ...billData, id: window.currentBillId };
                 } else {
-                    const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'bills'), billData);
-                    window.currentBillId = docRef.id;
+                    const newId = 'local_' + Date.now();
+                    window.currentBillId = newId;
+                    bills.push({ ...billData, id: newId });
                 }
-                statusEl.innerText = "Saved to Cloud";
-                setTimeout(() => statusEl.classList.add('hidden'), 2000);
-            } catch (e) {
-                console.error(e);
-                alert("Error saving bill");
+                localStorage.setItem('kcc_bills', JSON.stringify(bills));
+                statusEl.innerText = "Saved Locally";
+                loadLocalData(); // Refresh history
             }
+            setTimeout(() => statusEl.classList.add('hidden'), 2000);
         };
 
-        const loadHistoryFromCloud = () => {
-            if (!currentUser) return;
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'bills'), (snapshot) => {
-                const tbody = document.getElementById('historyTableBody');
-                tbody.innerHTML = '';
-                snapshot.forEach(docSnap => {
-                    const d = docSnap.data();
-                    const total = d.items.reduce((acc, item) => acc + (item.rate * item.qty - (item.discount||0)), 0);
-                    const tr = document.createElement('tr');
-                    tr.className = "bg-white border-b hover:bg-gray-50 cursor-pointer";
-                    tr.innerHTML = `
-                        <td class="px-6 py-4">${formatDate(d.updatedAt.split('T')[0])}</td>
-                        <td class="px-6 py-4 font-mono font-bold">${d.billNo}</td>
-                        <td class="px-6 py-4 font-bold text-gray-900">${d.name}</td>
-                        <td class="px-6 py-4 text-right">₹${total.toFixed(2)}</td>
-                        <td class="px-6 py-4 text-center">
-                            <button class="text-blue-600 hover:underline">Edit</button>
-                        </td>
-                    `;
-                    tr.onclick = () => loadBillIntoEditor(docSnap.id, d);
-                    tbody.appendChild(tr);
-                });
+        // --- 7. LOADERS & RENDERERS ---
+        const loadTariffFromCloud = () => {
+            const tariffRef = doc(db, 'artifacts', appId, 'public', 'data', 'tariff', 'master');
+            onSnapshot(tariffRef, (docSnap) => {
+                if (docSnap.exists()) localTariff = docSnap.data();
+                else setDoc(tariffRef, localTariff);
+                updateDropdowns();
+                renderTariffMasterUI();
             });
         };
 
-        const loadBillIntoEditor = (id, data) => {
-            window.currentBillId = id;
-            window.billItems = data.items || [];
-            window.receipts = data.receipts || [];
-            
-            document.getElementById('ui_uhid').value = data.uhid;
-            document.getElementById('ui_ip').value = data.ip;
-            document.getElementById('ui_name').value = data.name;
-            document.getElementById('ui_doa').value = data.doa;
-            document.getElementById('ui_dod').value = data.dod;
-            document.getElementById('ui_roomCat').value = data.roomCat;
-            document.getElementById('ui_doc').value = data.doc;
-            document.getElementById('ui_insurance').value = data.insurance;
-            document.getElementById('b_invoice_no').innerText = data.billNo;
-            document.getElementById('ui_billDiscount').value = data.billDiscount || 0;
-
-            switchView('billing');
-            renderUI();
+        const loadHistoryFromCloud = () => {
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'bills'), (snapshot) => {
+                const bills = [];
+                snapshot.forEach(doc => bills.push({ ...doc.data(), id: doc.id }));
+                renderHistoryTable(bills);
+            });
         };
 
-        // 7. TARIFF MASTER LOGIC
-        const loadTariffFromCloud = () => {
-            if (!currentUser) return;
-            const tariffRef = doc(db, 'artifacts', appId, 'public', 'data', 'tariff', 'master');
-            
-            onSnapshot(tariffRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    localTariff = docSnap.data();
-                } else {
-                    // Initialize if empty
-                    setDoc(tariffRef, localTariff);
-                }
-                updateDropdowns();
-                renderTariffMasterUI();
+        const renderHistoryTable = (bills) => {
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+            bills.forEach(d => {
+                const total = d.items ? d.items.reduce((acc, item) => acc + (item.rate * item.qty - (item.discount||0)), 0) : 0;
+                const tr = document.createElement('tr');
+                tr.className = "bg-white border-b hover:bg-gray-50 cursor-pointer";
+                tr.innerHTML = `
+                    <td class="px-6 py-4">${window.formatDate(d.updatedAt.split('T')[0])}</td>
+                    <td class="px-6 py-4 font-mono font-bold">${d.billNo}</td>
+                    <td class="px-6 py-4 font-bold text-gray-900">${d.name}</td>
+                    <td class="px-6 py-4 text-right">₹${total.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-center"><button class="text-blue-600 hover:underline">Edit</button></td>
+                `;
+                tr.onclick = () => {
+                    window.currentBillId = d.id;
+                    window.billItems = d.items || [];
+                    window.receipts = d.receipts || [];
+                    document.getElementById('ui_uhid').value = d.uhid;
+                    document.getElementById('ui_ip').value = d.ip;
+                    document.getElementById('ui_name').value = d.name;
+                    document.getElementById('ui_doa').value = d.doa;
+                    document.getElementById('ui_dod').value = d.dod;
+                    document.getElementById('ui_roomCat').value = d.roomCat;
+                    document.getElementById('ui_doc').value = d.doc;
+                    document.getElementById('ui_insurance').value = d.insurance;
+                    document.getElementById('b_invoice_no').innerText = d.billNo;
+                    document.getElementById('ui_billDiscount').value = d.billDiscount || 0;
+                    switchView('billing');
+                    renderUI();
+                };
+                tbody.appendChild(tr);
             });
         };
 
         const updateDropdowns = () => {
             const catSel = document.getElementById('ui_cat');
             const roomSel = document.getElementById('ui_roomCat');
-            const currentVal = catSel.value; // preserve selection
+            const currentVal = catSel.value;
             catSel.innerHTML = '';
-            
             Object.keys(localTariff).forEach(k => {
                 const opt = document.createElement('option');
-                opt.value = k;
-                opt.text = k;
-                catSel.add(opt);
+                opt.value = k; opt.text = k; catSel.add(opt);
             });
             if(currentVal) catSel.value = currentVal;
 
-            // Simple room population based on hardcoded types for now, 
-            // but ideally this also comes from tariff if we structured it that way.
             roomSel.innerHTML = '';
             ["GENERAL WARD", "SINGLE AC", "GW", "PVT", "ICU"].forEach(r => {
                 const opt = document.createElement('option');
                 opt.value = r; opt.text = r; roomSel.add(opt);
             });
-        };
-
-        window.openAddTariffModal = () => document.getElementById('tariffAddModal').classList.remove('hidden');
-        
-        window.saveTariffItem = async () => {
-            const cat = document.getElementById('tm_category').value.toUpperCase();
-            const desc = document.getElementById('tm_description').value;
-            const rate = parseFloat(document.getElementById('tm_rate').value);
-
-            if(!cat || !desc) return;
-
-            if(!localTariff[cat]) localTariff[cat] = [];
-            localTariff[cat].push({ name: desc, rate: rate });
-
-            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tariff', 'master'), localTariff);
-            document.getElementById('tariffAddModal').classList.add('hidden');
-        };
-
-        window.deleteTariffItem = async (cat, idx) => {
-            if(confirm("Delete this tariff item?")) {
-                localTariff[cat].splice(idx, 1);
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tariff', 'master'), localTariff);
-            }
         };
 
         const renderTariffMasterUI = () => {
@@ -932,7 +913,6 @@
             Object.keys(localTariff).forEach(cat => {
                 const card = document.createElement('div');
                 card.className = "border rounded p-4 shadow-sm bg-gray-50";
-                
                 let listHtml = '';
                 localTariff[cat].forEach((item, idx) => {
                     listHtml += `
@@ -940,21 +920,18 @@
                             <span>${item.name}</span>
                             <div class="flex items-center gap-2">
                                 <span class="font-bold">₹${item.rate}</span>
+                                <button onclick="openEditTariffModal('${cat}', ${idx})" class="text-blue-500 hover:text-blue-700">✎</button>
                                 <button onclick="deleteTariffItem('${cat}', ${idx})" class="text-red-500 hover:text-red-700">×</button>
                             </div>
                         </div>
                     `;
                 });
-
-                card.innerHTML = `
-                    <h4 class="font-bold text-[#1e3a8a] mb-2 border-b pb-1">${cat}</h4>
-                    <div class="max-h-40 overflow-y-auto">${listHtml}</div>
-                `;
+                card.innerHTML = `<h4 class="font-bold text-[#1e3a8a] mb-2 border-b pb-1">${cat}</h4><div class="max-h-40 overflow-y-auto">${listHtml}</div>`;
                 grid.appendChild(card);
             });
         };
 
-        // 8. NAVIGATION
+        // --- 8. UI HELPERS ---
         window.switchView = (view) => {
             ['billing', 'history', 'tariff'].forEach(v => {
                 document.getElementById('view-' + v).classList.add('hidden');
@@ -964,33 +941,40 @@
             document.getElementById('tab-' + view).classList.add('active');
         };
 
-        // 9. INIT LISTENERS
         document.getElementById('ui_cat').addEventListener('change', (e) => {
-            // Auto-fill Description if items exist in tariff
             const cat = e.target.value;
-            
-            // FIXED: Uncommented this line so description auto-fills again
-            document.getElementById('ui_desc').value = cat; 
-            
-            // Optional: If you want to grab a default rate from your localTariff items
-            // const items = localTariff[cat];
-            // if(items && items.length > 0) document.getElementById('ui_rate').value = items[0].rate;
+            document.getElementById('ui_desc').value = cat;
+            const items = localTariff[cat] || [];
+            const list = document.getElementById('desc_list');
+            list.innerHTML = '';
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.name;
+                list.appendChild(opt);
+            });
         });
 
-        // Initialize Dates
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('ui_doa').value = today;
-        document.getElementById('ui_dod').value = today;
-        document.getElementById('ui_rdate').value = today;
-        generateNewIDs();
-        renderUI();
+        document.getElementById('ui_desc').addEventListener('input', (e) => {
+            const val = e.target.value;
+            const cat = document.getElementById('ui_cat').value;
+            const items = localTariff[cat] || [];
+            const match = items.find(i => i.name === val);
+            if(match) document.getElementById('ui_rate').value = match.rate;
+        });
 
-        // Populate doctors (hardcoded for now as not in dynamic tariff yet)
         const docSel = document.getElementById('ui_doc');
         ["Dr. B.K. Srinivasan", "Dr. Rajesh", "Dr. Anjali"].forEach(d => {
             const opt = document.createElement('option');
             opt.value = d; opt.text = d; docSel.add(opt);
         });
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('ui_doa').value = today;
+        document.getElementById('ui_dod').value = today;
+        document.getElementById('ui_rdate').value = today;
+
+        // START APP
+        initApp();
 
     </script>
 </body>
