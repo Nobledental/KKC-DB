@@ -6,6 +6,8 @@
     <title>KCC Advanced Professional Billing System</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Local Decimal.js for precise calculations -->
+    <script src="./js/decimal.min.js"></script>
     <style>
         /* Custom Styles for Print and Aesthetics */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
@@ -14,66 +16,62 @@
         .print-area { max-width: 100%; }
         .hidden-admin { display: none; } /* Used for the modal */
         
-        /* Grid definitions for Bill Items (8 Columns) */
-        /* S.No(40), Date(80), Description(3fr), Rate(1fr), Qty(40), Gross(1fr), Discount(1fr), Total(1.2fr), Action(40) */
+        /* Grid definitions for Bill Items (8 Columns) - MADE MORE COMPACT */
+        /* S.No(30), Date(65), Description(4fr), Rate(1fr), Qty(40), Gross(1fr), Discount(1fr), Total(1.2fr), Action(30) */
         .bill-grid-header { 
             display: grid; 
-            grid-template-columns: 40px 80px 3fr 1fr 40px 1fr 1fr 40px; 
+            grid-template-columns: 30px 65px 4fr 1fr 40px 1fr 1fr 30px; 
         }
         .bill-grid-row { 
             display: grid; 
-            grid-template-columns: 40px 80px 3fr 1fr 40px 1fr 1fr 40px; 
+            grid-template-columns: 30px 65px 4fr 1fr 40px 1fr 1fr 30px; 
         }
         
-        /* Alignment fixes */
-        .bill-grid-header > div:nth-child(3), .bill-grid-row > div:nth-child(3) { text-align: left !important; padding-left: 0.5rem; }
-        .bill-grid-row > div:nth-child(1), .bill-grid-row > div:nth-child(2), .bill-grid-row > div:nth-child(3) { justify-content: flex-start; }
+        /* Alignment fixes: Columns 1, 2, 3 (S.No, Date, Description) are LEFT aligned */
+        .bill-grid-header > div:nth-child(1), .bill-grid-header > div:nth-child(2), .bill-grid-header > div:nth-child(3) { text-align: left !important; padding-left: 0.25rem; }
+        .bill-grid-row > div:nth-child(1), .bill-grid-row > div:nth-child(2), .bill-grid-row > div:nth-child(3) { justify-content: flex-start; text-align: left !important; }
+        .bill-grid-row > div:nth-child(1) { padding-left: 0.25rem; } /* S.No padding */
+
+        /* Reduced row padding for compactness */
         .bill-grid-row > div { 
-            text-align: right; padding: 0.5rem 0.25rem; border-bottom: 1px dashed #eee; display: flex; align-items: center; 
+            text-align: right; padding: 0.3rem 0.2rem; border-bottom: 1px dashed #eee; display: flex; align-items: center; 
         }
-        .input-financial { max-width: 90%; text-align: right; padding: 0.15rem; border: 1px dashed #ccc; border-radius: 4px; }
+        .input-financial { max-width: 90%; text-align: right; padding: 0.1rem; border: 1px dashed #ccc; border-radius: 3px; font-size: 10px; }
         .static-value { display: none; }
 
         /* Print Specific Controls */
         @media print {
-            /* 1. Remove all non-bill elements */
             .no-print { display: none !important; }
             .print-area { margin: 0; padding: 0; box-shadow: none; border-radius: 0; }
             
             /* 2. Bill Grid Fix (Remove Action Column) */
             .bill-grid-header { 
-                grid-template-columns: 40px 80px 3fr 1fr 40px 1fr 1fr !important;
+                grid-template-columns: 30px 65px 4fr 1fr 40px 1fr 1fr !important;
                 background-color: #e5e7eb !important; /* Force print header color */
             }
             .bill-grid-row { 
-                grid-template-columns: 40px 80px 3fr 1fr 40px 1fr 1fr !important;
+                grid-template-columns: 30px 65px 4fr 1fr 40px 1fr 1fr !important;
             }
             .bill-grid-row > div:last-child { display: none !important; }
             
             /* 3. Force Colors & Backgrounds */
             .print-area, .print-area * { color: black !important; background-color: white !important; }
             .bg-blue-900 { background-color: #1e3a8a !important; color: white !important; }
-            .bg-blue-100 { background-color: #dbeafe !important; }
-            .text-blue-800 { color: #1e40af !important; }
-            .bg-gray-200 { background-color: #e5e7eb !important; }
-            .bg-gray-100 { background-color: #f3f4f6 !important; }
-            .text-green-700 { color: #047857 !important; }
-            .text-red-700 { color: #b91c1c !important; }
+            .bg-blue-100-h { background-color: #3b82f6 !important; color: white !important; } /* Highlighting BG color */
+            .text-blue-800-h { color: white !important; } /* Highlighting text color */
             
-            /* 4. Show Static Values and Hide Inputs */
+            .bg-gray-200 { background-color: #e5e7eb !important; }
+            
             .input-financial { display: none !important; }
             .static-value { display: block !important; }
             
-            /* 5. Header/Footer Repetition (Requires repeating content inside the print container) */
             @page {
                 size: A4;
                 margin: 0.5in 0.5in;
                 @top-center { content: element(header); }
                 @bottom-center { content: element(footer); }
             }
-            .header-print-section { 
-                position: running(header); 
-            }
+            .header-print-section { position: running(header); }
             #printFooter { 
                 position: running(footer); 
                 display: block !important;
@@ -82,16 +80,11 @@
             .page-counter {
                 content: "Page " counter(page) " of " counter(pages);
             }
-            
-            /* Remove margins from running elements in the main flow */
             .header-print-section, #printFooter {
-                margin: 0 !important;
-                padding: 0 !important;
-                border: none !important;
+                margin: 0 !important; padding: 0 !important; border: none !important;
             }
         }
     </style>
-    <!-- Removed Firebase Import -->
     <script type="module">
         
         // --- Decimal.js Library (Crucial for Financial Accuracy) ---
@@ -732,19 +725,65 @@
             }
         }
 
+        // --- Data Population Function ---
+        function populatePraveenKumarBill() {
+            // 1. Clear everything
+            window.billItems = [];
+            window.receipts = [];
+            clearPatientInputs();
 
+            // 2. Set Patient Details (from PDF)
+            document.getElementById('ui_name').value = 'MR. PRAVEEN KUMAR';
+            document.getElementById('ui_age').value = '60'; 
+            document.getElementById('ui_gender').value = 'Male';
+            document.getElementById('ui_doa').value = '2025-09-27';
+            document.getElementById('ui_dod').value = '2025-09-28';
+            document.getElementById('ui_roomCat').value = 'GENERAL WARD';
+            document.getElementById('ui_doc').value = 'Dr. B.K. Srinivasan';
+
+            // 3. Auto-Charge (Room, Nursing, Doctor Visits) for 1 day
+            addRoomDays(); 
+
+            // 4. Manually Add Specific Charges (from PDF breakup)
+            // Note: addRoomDays() already added 2 days Bed/Nursing/Doctor visits. We assume the PDF's Bed/Nursing/Doctor totals (3000, 900, 3600) COVER the duration, so we use the individual package and consolidated items.
+
+            function addManualItem(cat, desc, rate, qty, sortOrder) {
+                const date = document.getElementById("ui_doa").value;
+                window.billItems.push(createBillItem(cat, date, desc, rate, qty, sortOrder));
+            }
+            
+            // These items were NOT autogenerated but are listed separately in the PDF
+            addManualItem("Surgical", "SURGEON FEES", 50000, 1);
+            addManualItem("Surgical", "ASSISTANT SURGEON FEES", 16000, 1);
+            addManualItem("Surgical", "DJ STENDING", 12000, 1);
+            addManualItem("Surgical", "ANAESTHESIA FEEES", 16000, 1);
+            addManualItem("Miscellaneous", "ICU CHARGE", 5000, 1);
+            addManualItem("Miscellaneous", "OT CHARGE", 27000, 1);
+            addManualItem("Investigation", "PREANESTHETIC CHECKUP", 1200, 1);
+            
+            // Consolidated Items
+            addManualItem("Pharmacy", "--- Consolidated Pharmacy Bill ---", 19243, 1); 
+            addManualItem("Investigation", "--- Consolidated Lab Amount ---", 4750, 1); 
+
+            // 5. Add Receipts
+            window.receipts.push({ no: 'R-297', date: '2025-09-27', amt: '100000.00', mode: 'Cash' });
+            window.receipts.push({ no: 'R-296', date: '2025-09-28', amt: '60293.00', mode: 'Cash' });
+
+            sortBillItems();
+            renderUI();
+            // Final check on totals (160293 expected)
+            console.log("Bill Populated for MR. PRAVEEN KUMAR. Total calculated: " + calculateTotals().finalBillAmount.toFixed(2));
+        }
+        
         // =========================================================================
         // 5. INIT BLOCK (Must be last to ensure all functions are defined)
         // =========================================================================
         
         function initLocal() {
-            // 1. Load data from local storage
             loadTariffFromLocal();
-            loadCurrentBillFromLocal();
-
-            // 2. Initialize UI components (dropdowns, IDs)
-            loadDropdowns();
-            generateNewIDs(); // Ensure new IDs if none were loaded
+            
+            // Load the hardcoded bill data instead of local storage for quick testing
+            populatePraveenKumarBill();
             
             // 3. Render final state
             renderUI();
@@ -785,6 +824,7 @@
         <div class="bg-white rounded-lg shadow-2xl p-6 w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
                 <h2 class="text-xl font-bold text-gray-800">Tariff Master Configuration</h2>
+                <!-- FIX: Ensure onclick calls the toggle function to close the modal -->
                 <button onclick="toggleTariffAdmin()" class="text-gray-500 hover:text-gray-800 text-2xl font-light">&times;</button>
             </div>
             <div id="tariffBody" class="grid grid-cols-2 gap-4">
@@ -807,7 +847,7 @@
                 </div>
             </div>
             <div class="text-right">
-                <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">DISCHARGE FINAL BILL</span>
+                <span class="bg-blue-600 text-white text-md font-semibold px-4 py-2 rounded-lg uppercase tracking-wider">DISCHARGE FINAL BILL</span>
                 <p class="text-xs mt-2">Bill No: <strong id="b_invoice_no" class="text-red-600">PROVISIONAL</strong></p>
                 <p class="text-xs">Run Date: <strong id="b_run_date">-</strong></p>
                 <p class="text-xs mt-1 page-counter"></p>
@@ -815,7 +855,7 @@
         </header>
 
         <!-- Control Line (No-Print) -->
-        <div class="no-print flex justify-between items-center bg-gray-100 p-3 rounded-lg mb-6 shadow-inner">
+        <div class="no-print flex justify-between items-center bg-gray-100 p-3 rounded-lg mb-4 shadow-inner">
             <div class="space-x-2">
                 <button onclick="generateNewIDs()" class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">Generate New IDs</button>
                 <button onclick="newBill()" class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">Clear Bill</button>
@@ -824,31 +864,34 @@
         </div>
         
         <!-- Patient Details -->
-        <div class="mb-6">
-            <div class="bg-blue-100 text-blue-800 font-semibold p-3 rounded-t-lg">Patient & General Details</div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-200 rounded-b-lg">
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">UHID</label><input type="text" id="ui_uhid" oninput="updatePatientDetails()" class="border p-2 rounded"></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">IP No</label><input type="text" id="ui_ip" oninput="updatePatientDetails()" class="border p-2 rounded"></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Patient Name</label><input type="text" id="ui_name" oninput="updatePatientDetails()" class="border p-2 rounded"></div>
+        <div class="mb-4">
+            <!-- UPDATED HEADER STYLE -->
+            <div class="bg-blue-600 bg-blue-100-h text-white text-blue-800-h font-extrabold p-3 rounded-t-lg shadow-sm text-lg">PATIENT & GENERAL DETAILS</div>
+            <!-- REDUCED GAPS AND PADDING -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 border border-gray-200 rounded-b-lg shadow-md">
+                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">UHID</label><input type="text" id="ui_uhid" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
+                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">IP No</label><input type="text" id="ui_ip" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
+                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Patient Name</label><input type="text" id="ui_name" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
                 
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Admission Date</label><input type="date" id="ui_doa" oninput="updatePatientDetails()" class="border p-2 rounded"></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Discharge Date</label><input type="date" id="ui_dod" oninput="updatePatientDetails()" class="border p-2 rounded"></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Room Category</label><select id="ui_roomCat" onchange="updatePatientDetails()" class="border p-2 rounded"></select></div>
+                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Admission Date</label><input type="date" id="ui_doa" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
+                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Discharge Date</label><input type="date" id="ui_dod" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
+                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Room Category</label><select id="ui_roomCat" onchange="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></select></div>
 
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Consultant</label><select id="ui_doc" onchange="updatePatientDetails()" class="border p-2 rounded"></select></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Insurance</label><input type="text" id="ui_insurance" oninput="updatePatientDetails()" class="border p-2 rounded"></div>
-                <div class="flex flex-col justify-end">
+                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Consultant</label><select id="ui_doc" onchange="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></select></div>
+                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Insurance</label><input type="text" id="ui_insurance" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
+                <div class="flex flex-col justify-end no-print">
+                    <!-- The button is kept for functionality, but hidden via no-print as requested -->
                     <button onclick="addRoomDays()" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition">Auto-Charge Room/Nursing</button>
                 </div>
             </div>
         </div>
 
         <!-- Billing Items -->
-        <div class="mb-6">
+        <div class="mb-4">
             <div class="bg-gray-200 text-gray-800 font-semibold p-3 rounded-t-lg">Billing Items</div>
             
             <!-- Header Grid -->
-            <div class="bill-grid-header text-xs font-bold text-gray-600 uppercase bg-gray-100 p-2 border-b border-gray-300">
+            <div class="bill-grid-header text-xs font-bold text-gray-600 uppercase bg-gray-100 p-1 border-b border-gray-300">
                 <div class="text-left">S.No</div>
                 <div class="text-left">Date</div>
                 <div class="text-left">Description</div>
@@ -870,15 +913,15 @@
         </div>
 
         <!-- Add Item Manually -->
-        <div class="mb-6 border border-dashed border-blue-400 p-4 rounded-lg bg-blue-50 no-print">
-            <h3 class="text-base font-semibold text-blue-800 mb-3">Add Item Manually</h3>
+        <div class="mb-4 border border-dashed border-blue-400 p-3 rounded-lg bg-blue-50 no-print">
+            <h3 class="text-base font-semibold text-blue-800 mb-2">Add Item Manually</h3>
             <div class="grid grid-cols-5 gap-3">
-                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Category</label><select id="ui_cat" class="border p-2 rounded"></select></div>
-                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Description</label><select id="ui_desc" class="border p-2 rounded"></select></div>
-                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Rate</label><input type="number" id="ui_rate" class="border p-2 rounded"></div>
-                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Qty</label><input type="number" id="ui_qty" value="1" class="border p-2 rounded"></div>
+                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Category</label><select id="ui_cat" class="border p-1 rounded"></select></div>
+                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Description</label><select id="ui_desc" class="border p-1 rounded"></select></div>
+                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Rate</label><input type="number" id="ui_rate" class="border p-1 rounded"></div>
+                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Qty</label><input type="number" id="ui_qty" value="1" class="border p-1 rounded"></div>
                 <div class="col-span-1 flex flex-col justify-end">
-                    <button onclick="addItem()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition">Add Item</button>
+                    <button onclick="addItem()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1.5 rounded-lg transition">Add Item</button>
                 </div>
             </div>
         </div>
@@ -889,7 +932,7 @@
             <!-- Receipts -->
             <div class="mb-6">
                 <div class="bg-gray-200 text-gray-800 font-semibold p-3 rounded-t-lg">Receipts and Payments</div>
-                <div class="p-4 border border-gray-200 rounded-b-lg">
+                <div class="p-3 border border-gray-200 rounded-b-lg">
                     <div id="receiptLines" class="mb-4">
                         <!-- Receipts rendered here -->
                     </div>
