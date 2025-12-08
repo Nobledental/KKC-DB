@@ -219,11 +219,9 @@
         <header class="p-8 pb-2">
             <div class="flex justify-between items-start">
                 <div class="flex items-center gap-4">
-                    <!-- HOSPITAL LOGO (SVG) -->
-                    <div class="w-16 h-16 text-[#1e3a8a] flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-14 h-14">
-                            <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M18 11H14V15H10V11H6V9H10V5H14V9H18V11Z" />
-                        </svg>
+                    <!-- HOSPITAL LOGO (Updated to IMG tag) -->
+                    <div class="w-16 h-16 flex items-center justify-center">
+                        <img src="logo.png" alt="Logo" class="max-w-full max-h-full object-contain" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-xs font-bold text-gray-400\'>LOGO</span>'">
                     </div>
                     <div>
                         <h1 class="text-2xl font-black text-gray-900 tracking-tight leading-none">KRISHNA KIDNEY CENTRE</h1>
@@ -761,7 +759,10 @@
         };
 
         window.preparePrint = function() {
-            document.title = "Bill_" + document.getElementById('ui_name').value;
+            // NEW: Updated File Name Saving
+            const name = document.getElementById('ui_name').value || "Patient";
+            const billNo = document.getElementById('b_invoice_no').innerText || "Bill";
+            document.title = `${name}_${billNo}`;
             setTimeout(() => window.print(), 100);
         };
 
