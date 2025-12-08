@@ -1,137 +1,560 @@
-*{box-sizing:border-box}
-body{
-  font-family:Manrope,Helvetica,sans-serif;
-  margin:0;
-  background:#f5f5f5;
+/* ============================================================
+    BASE STYLES & RESETS
+============================================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Manrope', Helvetica, sans-serif;
+    margin: 0;
+    background: #f5f5f5;
+    color: #333;
+    min-height: 100vh;
 }
 
-/* Sidebar */
-.sidebar{
-  width:240px;
-  background:#0B63C5;
-  color:white;
-  height:100vh;
-  padding:20px;
-  position:fixed;
-  left:0;top:0;
+/* ============================================================
+    SIDEBAR & NAVIGATION
+============================================================ */
+.sidebar {
+    width: 240px;
+    background: #0B63C5;
+    color: white;
+    height: 100vh;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
-.sidebar-header{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:20px}
-.sidebar-logo{
-  width:70px;height:70px;border-radius:50%;
-  background:white;color:#0B63C5;font-weight:800;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;margin-bottom:10px;
+.sidebar-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.sidebar-nav button{
-  width:100%;padding:12px;border:none;border-radius:6px;
-  background:rgba(255,255,255,.2);color:white;
-  margin-bottom:10px;cursor:pointer;font-size:15px;
+.sidebar-logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: white;
+    color: #0B63C5;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 10px;
 }
-.sidebar-nav button.active{background:white;color:#0B63C5;font-weight:700}
+.sidebar-nav button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, .1);
+    color: white;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    text-align: left;
+    transition: background 0.2s;
+}
+.sidebar-nav button:hover:not(.active) {
+    background: rgba(255, 255, 255, .25);
+}
+.sidebar-nav button.active {
+    background: white;
+    color: #0B63C5;
+    font-weight: 700;
+}
 
-/* Main Panel */
-#mainPanel{
-  margin-left:260px;
-  padding:20px;
+/* ============================================================
+    MAIN PANEL & UI ELEMENTS
+============================================================ */
+#main {
+    margin-left: 260px;
+    padding: 20px;
 }
 
-/* Cards */
-.ui-card{
-  background:white;padding:20px;border-radius:8px;margin-bottom:20px;
-  box-shadow:0 0 10px rgba(0,0,0,0.06);
+/* Screen Switching */
+.screen {
+    display: none;
 }
-.ui-title{font-size:22px;font-weight:800;margin-bottom:15px}
-
-.ui-row-2,.ui-row-3,.ui-row-4{display:grid;gap:14px}
-.ui-row-2{grid-template-columns:1fr 1fr}
-.ui-row-3{grid-template-columns:1fr 1fr 1fr}
-.ui-row-4{grid-template-columns:1fr 1fr 1fr 1fr}
-
-label{font-size:11px;text-transform:uppercase;opacity:.7}
-input,select{
-  width:100%;padding:7px;border:1px solid #ddd;border-radius:5px;margin-top:3px;
+.screen.active {
+    display: block;
 }
 
-.btn{
-  padding:10px 14px;border:none;border-radius:6px;cursor:pointer;
+/* Cards & Layouts */
+.ui-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-.btn.primary{background:#0B63C5;color:white;font-weight:700}
-.full{width:100%}
+.ui-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #0B63C5;
+}
+.ui-card h2 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.ui-row-2, .ui-row-3, .ui-row-4 {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 15px;
+}
+.ui-row-2 { grid-template-columns: 1fr 1fr; }
+.ui-row-3 { grid-template-columns: repeat(3, 1fr); }
+.ui-row-4 { grid-template-columns: repeat(4, 1fr); }
+
+label {
+    font-size: 10px;
+    text-transform: uppercase;
+    opacity: .7;
+    display: block;
+    margin-bottom: 2px;
+}
+input, select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-top: 0;
+    font-size: 14px;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+    font-weight: 600;
+    font-size: 14px;
+}
+.btn.primary {
+    background: #0B63C5;
+    color: white;
+}
+.btn.primary:hover {
+    background: #084992;
+}
+.btn.success {
+    background: #28a745; 
+    color: white;
+}
+.btn.success:hover {
+    background: #1e7e34;
+}
+.btn.secondary {
+    background: #6c757d;
+    color: white;
+}
+.btn.secondary:hover {
+    background: #5a6268;
+}
+.btn.info {
+    background: #17a2b8; 
+    color: white;
+    margin-top: 10px;
+}
+.btn.info:hover {
+    background: #138496;
+}
+.full { width: 100%; }
+.summary-actions button {
+    margin-right: 10px;
+    margin-top: 15px;
+}
 
 /* Billing UI Table */
-.bill-ui-table{
-  width:100%;border-collapse:collapse;font-size:13px;
+.bill-ui-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    table-layout: fixed;
 }
-.bill-ui-table th,.bill-ui-table td{
-  border:1px solid #eee;padding:8px;text-align:left;
+.bill-ui-table th, .bill-ui-table td {
+    border: 1px solid #eee;
+    padding: 10px 8px;
+    text-align: left;
+    vertical-align: top;
 }
+.bill-ui-table th:nth-child(3) { width: 25%; } /* Description */
+.bill-ui-table th:nth-child(4), .bill-ui-table td:nth-child(4) { width: 10%; text-align: right; } /* Rate */
+.bill-ui-table th:nth-child(5), .bill-ui-table td:nth-child(5) { width: 5%; text-align: center; } /* Qty */
+.bill-ui-table th:nth-child(6), .bill-ui-table td:nth-child(6) { width: 10%; text-align: right; } /* Gross */
+.bill-ui-table th:nth-child(7), .bill-ui-table td:nth-child(7) { width: 12%; } /* Discount (Input) */
+.bill-ui-table th:nth-child(8), .bill-ui-table td:nth-child(8) { width: 10%; text-align: right; font-weight: 700; } /* Net */
+.bill-ui-table th:nth-child(9), .bill-ui-table td:nth-child(9) { width: 8%; text-align: center; } /* Action */
 
-.sum-ui-row{display:flex;justify-content:space-between;padding:6px 0}
-.sum-ui-row.total{font-weight:700;border-top:1px solid #eee;margin-top:8px;padding-top:8px}
 
-/* PRINT BILL DESIGN (Your original HTML/CSS) */
-.container{
-  max-width:680px;background:white;padding:25px;margin:0 auto;
-  border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.08);
+/* Totals & Summary */
+.sum-ui-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 15px;
 }
-
-.header-flex{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding-bottom:12px}
-
-.logo-area{display:flex;gap:12px;align-items:center}
-.logotype{
-  background:#008D41;color:#fff;width:75px;height:75px;
-  line-height:75px;text-align:center;font-size:22px;border-radius:50%;font-weight:700;
+.sum-ui-row strong {
+    font-weight: 700;
 }
-
-.h-title{font-size:18px;font-weight:800;margin:0}
-.h-sub{margin:3px 0 0;opacity:.7;font-size:12px}
-.tamil{font-size:11px;color:#555}
-
-.invoice-label{
-  background:#0B63C5;color:white;padding:6px 10px;font-size:11px;border-radius:4px;
-  display:inline-block;
+.sum-ui-row.total {
+    font-weight: 700;
+    border-top: 2px solid #ddd;
+    margin-top: 10px;
+    padding-top: 10px;
+    font-size: 17px;
+    color: #0B63C5;
 }
-
-.compact-line{
-  margin-top:12px;font-size:12px;padding:10px;background:#f4f6f8;border-radius:6px;
-}
-
-.details-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:14px;padding:15px 0;
-}
-.details-grid label{font-size:10px;text-transform:uppercase;opacity:.7}
-.details-grid p{margin-top:2px;font-size:13px;font-weight:700}
-
-.column-header-row{
-  display:grid;
-  grid-template-columns:1fr 80px 60px 80px;
-}
-.column-header{
-  background:#eee;text-transform:uppercase;padding:12px;font-size:11px;
-  font-weight:700;border-right:1px solid #eee;
+.sum-value {
+    font-weight: 700;
+    margin-top: 10px;
 }
 
-.row{
-  display:grid;
-  grid-template-columns:1fr 80px 60px 80px;
-  padding:7px 12px;border-bottom:1px solid #eee;
+
+/* TARIFF EDITOR STYLES */
+.tariff-grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
 }
-.summary-box{padding:15px;border:1px solid #eee;border-radius:6px}
-.sum-line{display:flex;justify-content:space-between;padding:6px 0}
-.sum-line.total{font-weight:700;border-top:1px solid #eee;margin-top:8px;padding-top:8px}
-.sum-final{margin-top:12px;padding-top:10px;border-top:2px solid #ddd;font-size:15px;font-weight:800}
+.tariff-block {
+    border: 1px solid #eee;
+    padding: 15px;
+    border-radius: 6px;
+    width: 200px;
+    background: #fcfcfc;
+    flex-grow: 1;
+    min-width: 200px;
+    max-width: 300px;
+}
+.tariff-block input.t-name {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 8px;
+    border: 1px dashed #ccc;
+}
+.tariff-block .t-row label {
+    font-size: 9px;
+    opacity: 0.6;
+}
+.tariff-block .t-row input {
+    padding: 5px;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+.doc-check {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+.save-tariff-container {
+    text-align: center;
+    margin: 20px 0;
+}
 
-.receipt-container{margin-top:20px}
 
-/* PRINT MODE — ONLY BILL + RECEIPTS */
-@media print{
-  body *{visibility:hidden !important}
-  #billContainerFinal, #billContainerFinal *{visibility:visible !important}
-  #receiptContainer, #receiptContainer *{visibility:visible !important}
+/* DISCOUNT INPUT FIX */
+.discount-input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: right;
+    font-size: 13px;
+}
 
-  #billContainerFinal{position:absolute;top:0;left:0;width:100%}
-  #receiptContainer{page-break-before:always;position:absolute;top:100%;left:0;width:100%}
+/* ============================================================
+    PRINT BILL DESIGN
+============================================================ */
+.container {
+    max-width: 750px;
+    background: white;
+    padding: 30px;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+}
+.print-page {
+    display: none; 
+} 
 
-  .sidebar, #mainPanel{display:none !important}
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 12px;
+}
+.logo-area {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+.logo-img {
+    width: 75px; 
+    height: 75px; 
+    object-fit: cover;
+    border-radius: 50%;
+}
+.logotype { 
+    display: none; 
+}
+.h-title { 
+    font-size: 20px; 
+    font-weight: 800;
+    margin: 0;
+}
+.h-sub { 
+    margin: 3px 0 0;
+    opacity: .7;
+    font-size: 11px;
+}
+.tamil {
+    font-size: 11px;
+    color: #555;
+    opacity: 1;
+}
+
+.invoice-block {
+    text-align: right;
+}
+.invoice-label {
+    background: #0B63C5;
+    color: white;
+    padding: 6px 10px;
+    font-size: 11px;
+    border-radius: 4px;
+    display: inline-block;
+}
+.small-meta {
+    margin: 5px 0 0;
+    font-size: 12px;
+}
+
+.doctor-line {
+    margin-top: 12px;
+    font-size: 12px;
+    padding: 10px;
+    background: #f4f6f8;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.section {
+    margin-top: 20px;
+}
+.column-title {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px 20px;
+    padding: 15px 0;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 15px;
+}
+.details-grid label {
+    font-size: 10px;
+    text-transform: uppercase;
+    opacity: .7;
+}
+.details-grid p {
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* Updated grid for PRINT ITEMS (6 columns) */
+.column-header-row, .row {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr 0.6fr 1fr 1fr 1fr; 
+}
+.column-header, .column-header-small {
+    background: #eee;
+    text-transform: uppercase;
+    padding: 10px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border-right: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+.column-header:last-child, .column-header-small:last-child {
+    border-right: none;
+}
+.column-header-small {
+    text-align: center;
+}
+.column-header {
+    text-align: left;
+}
+.row {
+    padding: 6px 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+}
+.row > div:nth-child(2), .row > div:nth-child(4), .row > div:nth-child(5), .row > div:nth-child(6) {
+    text-align: right;
+}
+.row > div:nth-child(3) {
+    text-align: center;
+}
+
+.summary-box {
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+}
+.sum-final {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 2px solid #ddd;
+    font-size: 15px;
+    font-weight: 800;
+    text-align: right;
+}
+.sum-final span {
+    float: left;
+    font-weight: normal;
+}
+
+.receipt-container {
+    margin-top: 20px;
+}
+
+
+/* ============================================================
+    RESPONSIVENESS 
+============================================================ */
+@media (max-width: 900px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        padding: 15px;
+    }
+    .sidebar-header {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    .sidebar-logo {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+        margin-right: 10px;
+    }
+    .sidebar-header h2 {
+        font-size: 18px;
+        margin: 0;
+    }
+    .sidebar-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .sidebar-nav button {
+        width: auto;
+        flex-grow: 1;
+        margin-bottom: 0;
+    }
+    #main {
+        margin-left: 0;
+        padding: 15px;
+    }
+    .ui-row-2, .ui-row-3, .ui-row-4 {
+        grid-template-columns: 1fr;
+    }
+    .details-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .tariff-block {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    .header-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .invoice-block {
+        margin-top: 10px;
+    }
+}
+
+/* ============================================================
+    PRINT MODE
+============================================================ */
+@media print {
+    body * {
+        visibility: hidden !important;
+        overflow: hidden !important;
+    }
+    .print-page, .print-page * {
+        visibility: visible !important;
+        overflow: visible !important;
+    }
+    .print-page {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        box-shadow: none !important;
+        margin: 0;
+        padding: 0;
+        font-size: 11px;
+        color: #000;
+    }
+    
+    #billContainerFinal { 
+        position: relative;
+    }
+    #receiptContainer {
+        page-break-before: always;
+        position: relative;
+        margin-top: 20px;
+    }
+    
+    .sidebar, #main {
+        display: none !important;
+    }
+
+    .column-header-row, .row {
+        grid-template-columns: 1.8fr 1fr 0.6fr 1fr 1fr 1fr; 
+    }
+    .column-header, .column-header-small {
+        padding: 6px;
+        background: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+    }
+    .row {
+        padding: 4px 6px;
+    }
 }
