@@ -1,71 +1,82 @@
-// This file replaces seed-tariff.json and must be placed in the data/ directory.
-// It is loaded via <script src="data/tariffs.js"></script> in index.html.
+/* ============================================================================
+    KCC BILLING OS — TARIFF MASTER (GLOBAL VARIABLE VERSION)
+    Loads instantly offline. Access using:  window.TARIFF
+============================================================================ */
 
-const TARIFF_DATA = {
-  "currency_unit": "INR",
-  "billing_cycle": "24_HOURS_FROM_ADMISSION",
-  "billing_rules": {
-    "emergency_surcharge": 0.50,
-    "multiple_surgery_rule": {
-      "higher_charged": 1.00,
-      "second_same_area": 0.50,
-      "second_different_area": 1.00
+window.TARIFF = {
+
+  currency_unit: "INR",
+  billing_cycle: "24_HOURS_FROM_ADMISSION",
+
+  billing_rules: {
+    emergency_surcharge: 0.50,
+
+    multiple_surgery_rule: {
+      higher_charged: 1.00,
+      second_same_area: 0.50,
+      second_different_area: 1.00
     },
-    "assistant_surgeon_fee": 0.25,
-    "emergency_procedure_addon": 0.25,
-    "room_rent_rule": {
-      "full_day_hours": 6,
-      "half_day_multiplier": 0.5,
-      "highest_tariff_applicable": true
+
+    assistant_surgeon_fee: 0.25,
+    emergency_procedure_addon: 0.25,
+
+    room_rent_rule: {
+      full_day_hours: 6,
+      half_day_multiplier: 0.5,
+      highest_tariff_applicable: true
     }
   },
 
-  "opd_charges": {
-    "CONSULTATION": 500,
-    "SUPER_SPECIALIST": 1000,
-    "FOLLOW_UP_DAYS_WAIVED": 7,
-    "FOLLOW_UP_DAYS_CHARGED": 15
+  opd_charges: {
+    CONSULTATION: 500,
+    SUPER_SPECIALIST: 1000,
+    FOLLOW_UP_DAYS_WAIVED: 7,
+    FOLLOW_UP_DAYS_CHARGED: 15
   },
 
-  "rooms": {
+  rooms: {
     "SINGLE ROOM A/C": {
-      "id": "SINGLE_AC",
-      "tariff_per_day": 3500,
-      "nursing_per_day": 750,
-      "consultant_per_visit": 800,
-      "super_specialist_per_visit": 1200
+      id: "SINGLE_AC",
+      tariff_per_day: 3500,
+      nursing_per_day: 750,
+      consultant_per_visit: 800,
+      super_specialist_per_visit: 1200
     },
+
     "GENERAL WARD": {
-      "id": "GENERAL_WARD",
-      "tariff_per_day": 2500,
-      "nursing_per_day": 750,
-      "consultant_per_visit": 800,
-      "super_specialist_per_visit": 1200
+      id: "GENERAL_WARD",
+      tariff_per_day: 2500,
+      nursing_per_day: 750,
+      consultant_per_visit: 800,
+      super_specialist_per_visit: 1200
     },
+
     "ICU": {
-      "id": "ICU",
-      "tariff_per_day": 7000,
-      "nursing_per_day": 850,
-      "consultant_per_visit": 1100,
-      "super_specialist_per_visit": 1500
+      id: "ICU",
+      tariff_per_day: 7000,
+      nursing_per_day: 850,
+      consultant_per_visit: 1100,
+      super_specialist_per_visit: 1500
     },
+
     "ICU-observation day care": {
-      "id": "ICU_DAYCARE",
-      "tariff_per_day": 5000,
-      "nursing_per_day": 850,
-      "consultant_per_visit": 1100,
-      "super_specialist_per_visit": 1500
+      id: "ICU_DAYCARE",
+      tariff_per_day: 5000,
+      nursing_per_day: 850,
+      consultant_per_visit: 1100,
+      super_specialist_per_visit: 1500
     },
+
     "ICU-Observation less than 8 Hours": {
-      "id": "ICU_SHORT_OBS",
-      "tariff_per_day": 6000,
-      "nursing_per_day": 850,
-      "consultant_per_visit": 1100,
-      "super_specialist_per_visit": 1500
+      id: "ICU_SHORT_OBS",
+      tariff_per_day: 6000,
+      nursing_per_day: 850,
+      consultant_per_visit: 1100,
+      super_specialist_per_visit: 1500
     }
   },
 
-  "doctors": [
+  doctors: [
     "Dr. B.K. Srinivasan",
     "Dr. Rajesh",
     "Dr. Kumar",
@@ -73,45 +84,64 @@ const TARIFF_DATA = {
     "Dr. Priya Menon (Internal Med)"
   ],
 
-  "surgical_packages": {
-    "notes": "Rates include Surgeon, OT, and Anaesthetist fees. All other charges (Room, Nursing, Pharmacy, etc.) are actuals.",
-    
-    "URO": {
-      "TURP": {
-        "GENERAL_WARD": 54000, 
-        "SINGLE_AC": 67500, 
-        "breakup_template": { "Surgeon Fees": 0.6, "OT Charge": 0.25, "Anaesthetist Fees": 0.15 } 
+  surgical_packages: {
+
+    notes: "Rates include Surgeon, OT, and Anaesthetist fees. All other charges (Room, Nursing, Pharmacy, etc.) are actuals.",
+
+    URO: {
+      TURP: {
+        GENERAL_WARD: 54000,
+        SINGLE_AC: 67500,
+        breakup_template: {
+          "Surgeon Fees": 0.6,
+          "OT Charge": 0.25,
+          "Anaesthetist Fees": 0.15
+        }
       },
-      "PCNL_STENT_UNI": {
-        "GENERAL_WARD": 75000, 
-        "SINGLE_AC": 93750,
-        "breakup_template": { "Surgeon Fees": 0.6, "OT Charge": 0.25, "Anaesthetist Fees": 0.15 } 
+
+      PCNL_STENT_UNI: {
+        GENERAL_WARD: 75000,
+        SINGLE_AC: 93750,
+        breakup_template: {
+          "Surgeon Fees": 0.6,
+          "OT Charge": 0.25,
+          "Anaesthetist Fees": 0.15
+        }
       }
     },
-    
-    "GEN_SURGERY": {
-      "APPENDICECTOMY_OPEN": {
-        "GENERAL_WARD": 36000, 
-        "SINGLE_AC": 45000,
-        "breakup_template": { "Surgeon Fees": 0.55, "OT Charge": 0.3, "Anaesthetist Fees": 0.15 } 
+
+    GEN_SURGERY: {
+      APPENDICECTOMY_OPEN: {
+        GENERAL_WARD: 36000,
+        SINGLE_AC: 45000,
+        breakup_template: {
+          "Surgeon Fees": 0.55,
+          "OT Charge": 0.3,
+          "Anaesthetist Fees": 0.15
+        }
       }
     }
   },
 
-  "investigations": {
-    "CBC": { "name": "Complete Blood Count (CBC)", "rate": 450, "category": "Lab" },
-    "RFT": { "name": "Renal Function Test (RFT)", "rate": 750, "category": "Lab" },
-    "USG_ABDOMEN": { "name": "Ultrasound Abdomen & Pelvis", "rate": 1800, "category": "Imaging" }
+  investigations: {
+    CBC: { name: "Complete Blood Count (CBC)", rate: 450, category: "Lab" },
+    RFT: { name: "Renal Function Test (RFT)", rate: 750, category: "Lab" },
+    USG_ABDOMEN: {
+      name: "Ultrasound Abdomen & Pelvis",
+      rate: 1800,
+      category: "Imaging"
+    }
   },
 
-  "pharmacy": {
-    "PARACETAMOL_500": { "name": "Paracetamol 500mg (Tablet)", "rate": 2, "unit": "Tablet" },
-    "AMOXICILLIN_IV": { "name": "Amoxicillin 500mg (IV)", "rate": 150, "unit": "Vial" }
+  pharmacy: {
+    PARACETAMOL_500: { name: "Paracetamol 500mg (Tablet)", rate: 2, unit: "Tablet" },
+    AMOXICILLIN_IV: { name: "Amoxicillin 500mg (IV)", rate: 150, unit: "Vial" }
   },
 
-  "miscellaneous": {
-    "MRD_CHARGE": { "name": "Medical Record Department (MRD) Charge", "rate": 500 },
-    "MLC_DOC_CHARGE": { "name": "MLC Documentation Charge", "rate": 1000 },
-    "REG_FEE": { "name": "Registration Fee (OPD)", "rate": 0 }
+  miscellaneous: {
+    MRD_CHARGE: { name: "Medical Record Department (MRD) Charge", rate: 500 },
+    MLC_DOC_CHARGE: { name: "MLC Documentation Charge", rate: 1000 },
+    REG_FEE: { name: "Registration Fee (OPD)", rate: 0 }
   }
+
 };
