@@ -4,223 +4,233 @@
 <meta charset="UTF-8">
 <title>KCC Billing OS — Krishna Kidney Centre</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <link rel="stylesheet" href="style.css">
+<script src="vendor/decimal.min.js"></script> 
 <script defer src="app.js"></script>
 </head>
 
 <body>
 
-<!-- ============================================================
-     SIDEBAR
-============================================================ -->
 <aside class="sidebar">
-  <div class="sidebar-header">
-    <div class="sidebar-logo">KKC</div>
-    <h2>Krishna Kidney Centre</h2>
-  </div>
+    <div class="sidebar-header">
+        <div class="sidebar-logo">KKC</div>
+        <h2>Krishna Kidney Centre</h2>
+    </div>
 
-  <nav class="sidebar-nav">
-    <button data-screen="billingScreen" class="active">Billing</button>
-    <button data-screen="tariffScreen">Tariff</button>
-    <button data-screen="historyScreen">Bill History</button>
-  </nav>
+    <nav class="sidebar-nav">
+        <button data-screen="billingScreen" class="active">🧾 Billing</button>
+        <button data-screen="tariffScreen">⚙️ Tariff Master</button>
+        <button data-screen="historyScreen">📜 Bill History</button>
+    </nav>
 </aside>
 
+<main id="main">
 
+    <section id="billingScreen" class="screen active">
 
-<!-- ============================================================
-     MAIN CONTENT
-============================================================ -->
-<main id="mainPanel">
+        <h1 class="ui-title">KCC Billing System</h1>
 
-  <!-- ============================================================
-       BILLING SCREEN
-  ============================================================ -->
-  <section id="billingScreen" class="screen active">
+        <div class="ui-card">
+            <h2>Patient Details</h2>
 
-    <h1 class="ui-title">KCC Billing System</h1>
+            <div class="ui-row-3">
+                <div><label>Name</label><input id="ui_name" type="text" placeholder="Patient Name"></div>
+                <div><label>Age</label><input id="ui_age" type="number" placeholder="Age"></div>
+                <div><label>Gender</label>
+                    <select id="ui_gender">
+                        <option>Male</option><option>Female</option><option>Other</option>
+                    </select>
+                </div>
+            </div>
 
-    <!-- Patient Details -->
-    <div class="ui-card">
-      <h2>Patient Details</h2>
+            <div class="ui-row-3">
+                <div><label>UHID</label><input id="ui_uhid" type="text" placeholder="Unique Health ID"></div>
+                <div><label>IP Number</label><input id="ui_ip" type="text" placeholder="Inpatient/Case No."></div>
+                <div><label>Room Category</label><select id="ui_roomCat"></select></div>
+            </div>
 
-      <div class="ui-row-3">
-        <div><label>Name</label><input id="ui_name" type="text"></div>
-        <div><label>Age</label><input id="ui_age" type="number"></div>
-        <div><label>Gender</label>
-          <select id="ui_gender"><option>Male</option><option>Female</option><option>Other</option></select>
-        </div>
-      </div>
+            <div class="ui-row-2">
+                <div><label>Admission Date</label><input id="ui_doa" type="date"></div> 
+                <div><label>Discharge Date</label><input id="ui_dod" type="date"></div>
+            </div>
 
-      <div class="ui-row-3">
-        <div><label>UHID</label><input id="ui_uhid" type="text"></div>
-        <div><label>IP Number</label><input id="ui_ip" type="text"></div>
-        <div><label>Room</label><select id="ui_roomCat"></select></div>
-      </div>
+            <div class="ui-row-2">
+                <div><label>Consultant</label><select id="ui_doc"></select></div>
+                <div><label>Speciality</label><input id="ui_spec" value="Urology" type="text"></div>
+            </div>
 
-      <div class="ui-row-2">
-        <div><label>Admission Date</label><input id="ui_doa" type="datetime-local"></div>
-        <div><label>Discharge Date</label><input id="ui_dod" type="datetime-local"></div>
-      </div>
-
-      <div class="ui-row-2">
-        <div><label>Consultant</label><select id="ui_doc"></select></div>
-        <div><label>Speciality</label><input id="ui_spec" value="Urology" type="text"></div>
-      </div>
-
-      <div class="ui-row-2">
-        <div><label>Insurance?</label>
-          <select id="ui_ins"><option>No</option><option>Yes</option></select>
-        </div>
-        <div><label>Insurance Name</label><input id="ui_insName" type="text"></div>
-      </div>
-
-    </div>
-
-
-    <!-- Billing Items -->
-    <div class="ui-card">
-      <h2>Add Billing Item</h2>
-
-      <div class="ui-row-4">
-        <div><label>Category</label>
-          <select id="ui_cat">
-            <option>Consultation</option>
-            <option>Room Rent</option>
-            <option>Nursing</option>
-            <option>Doctor Visit</option>
-            <option>Pharmacy</option>
-            <option>Investigation</option>
-            <option>OT</option>
-            <option>Surgical</option>
-            <option>Package</option>
-            <option>Returns</option>
-          </select>
+            <div class="ui-row-2">
+                <div><label>Insurance?</label>
+                    <select id="ui_ins"><option value="No">No</option><option value="Yes">Yes</option></select>
+                </div>
+                <div><label>Insurance Name/TPA</label><input id="ui_insName" type="text" placeholder="Enter Insurance/TPA Name"></div>
+            </div>
+            
+             <button class="btn info" onclick="addRoomDays()">Calculate & Add Room Days</button>
         </div>
 
-        <div><label>Date</label><input id="ui_date" type="date"></div>
-        <div><label>Description</label><input id="ui_desc" type="text"></div>
-        <div><label>Rate</label><input id="ui_rate" type="number"></div>
-      </div>
 
-      <div class="ui-row-3">
-        <div><label>Qty</label><input id="ui_qty" type="number"></div>
-        <div><label>Copay %</label><input id="ui_copay" type="number" value="0"></div>
-        <div><button class="btn primary full" onclick="addItem()">Add Item</button></div>
-      </div>
-    </div>
+        <div class="ui-card">
+            <h2>Add Billing Item</h2>
 
+            <div class="ui-row-4">
+                <div><label>Category</label>
+                    <select id="ui_cat">
+                        <option value="Consultation">Consultation</option>
+                        <option value="Pharmacy">Pharmacy</option>
+                        <option value="Investigation">Investigation</option>
+                        <option value="Package">Package</option>
+                        <option value="Miscellaneous">Miscellaneous</option>
+                        <option value="Returns">Returns</option>
+                    </select>
+                </div>
 
-    <!-- Receipts -->
-    <div class="ui-card">
-      <h2>Add Receipt</h2>
+                <div><label>Date</label><input id="ui_date" type="date"></div>
+                <div><label>Description/Item</label>
+                    <select id="ui_desc">
+                        <option value="">-- Select Category First --</option> 
+                    </select>
+                </div>
+                <div><label>Rate (Manual/Tariff)</label><input id="ui_rate" type="number" placeholder="0.00"></div>
+            </div>
 
-      <div class="ui-row-3">
-        <div><label>Date</label><input id="ui_rdate" type="date"></div>
-        <div><label>Amount</label><input id="ui_ramt" type="number"></div>
-        <div><label>Mode</label>
-          <select id="ui_rmode"><option>Cash</option><option>UPI</option><option>Card</option></select>
+            <div class="ui-row-3">
+                <div><label>Qty</label><input id="ui_qty" type="number" value="1" placeholder="1"></div>
+                <div><label>Copay % (Not Implemented)</label><input id="ui_copay" type="number" value="0" disabled></div>
+                <div><button class="btn primary full" onclick="addItem()">Add Item</button></div>
+            </div>
         </div>
-      </div>
-
-      <button class="btn primary" onclick="addReceipt()">Add Receipt</button>
-    </div>
 
 
-    <!-- Table -->
-    <div class="ui-card">
-      <h2>Billing Items</h2>
-      <table class="bill-ui-table">
-        <thead>
-          <tr>
-            <th>Category</th><th>Date</th><th>Description</th>
-            <th>Rate</th><th>Qty</th><th>Gross</th><th>Net</th>
-          </tr>
-        </thead>
-        <tbody id="ui_billBody"></tbody>
-      </table>
-    </div>
+        <div class="ui-card">
+            <h2>Payment Receipts</h2>
+
+            <div class="ui-row-3">
+                <div><label>Date</label><input id="ui_rdate" type="date"></div>
+                <div><label>Amount (₹)</label><input id="ui_ramt" type="number" placeholder="0.00"></div>
+                <div><label>Mode</label>
+                    <select id="ui_rmode"><option>Cash</option><option>UPI</option><option>Card</option></select>
+                </div>
+            </div>
+
+            <button class="btn primary" onclick="addReceipt()">Add Receipt</button>
+        </div>
+        
+        <div class="ui-card">
+            <h2>Bill Discount</h2>
+
+            <div class="ui-row-3">
+                <div>
+                    <label>Overall Discount (₹)</label>
+                    <input id="ui_billDiscount" type="number" value="0" placeholder="0.00">
+                </div>
+
+                <div>
+                    <label>Apply Discount</label>
+                    <button class="btn primary full" onclick="applyBillDiscount()">Apply Proportional</button>
+                </div>
+
+                <div>
+                    <label>Total Discount Applied</label>
+                    <p id="ui_totalDiscount" class="sum-value">₹0.00</p>
+                </div>
+            </div>
+        </div>
 
 
-    <!-- Summary -->
-    <div class="ui-card">
-      <h2>Summary</h2>
+        <div class="ui-card">
+            <h2>Billing Items</h2>
 
-      <div class="sum-ui-row"><span>Gross</span><strong id="ui_s_gross">₹0</strong></div>
-      <div class="sum-ui-row"><span>Returns</span><strong id="ui_s_ret">₹0</strong></div>
-      <div class="sum-ui-row"><span>Receipts</span><strong id="ui_s_rec">₹0</strong></div>
-
-      <div class="sum-ui-row total"><span>Final Payable</span><strong id="ui_s_final">₹0</strong></div>
-
-      <button class="btn primary" onclick="saveBill()">Save Bill</button>
-      <button class="btn print-btn" onclick="preparePrint()">Print Bill</button>
-    </div>
-
-  </section>
-
-
-
-  <!-- ============================================================
-       TARIFF SCREEN
-  ============================================================ -->
-  <section id="tariffScreen" class="screen">
-
-    <h1 class="ui-title">Tariff Master</h1>
-
-    <div class="ui-card">
-      <h2>Rooms</h2>
-      <div id="tariff_rooms"></div>
-      <button class="btn primary" onclick="addRoom()">Add Room</button>
-    </div>
-
-    <div class="ui-card">
-      <h2>Doctors</h2>
-      <div id="tariff_doctors"></div>
-      <button class="btn primary" onclick="addDoctor()">Add Doctor</button>
-    </div>
-
-    <div class="ui-card">
-      <h2>Surgical Packages</h2>
-      <div id="tariff_packages"></div>
-      <button class="btn primary" onclick="addPackage()">Add Package</button>
-    </div>
-
-    <button class="btn primary" onclick="saveTariff()">Save Tariff</button>
-  </section>
+            <table class="bill-ui-table">
+                <thead>
+                    <tr>
+                        <th>Cat</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Rate</th>
+                        <th>Qty</th>
+                        <th>Gross</th>
+                        <th>Discount</th>
+                        <th>Net</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="ui_billBody"></tbody>
+            </table>
+        </div>
 
 
+        <div class="ui-card summary-card">
+            <h2>Summary</h2>
+            <div class="sum-ui-row"><span>Total Gross</span><strong id="ui_s_gross">₹0.00</strong></div>
+            <div class="sum-ui-row"><span>Total Discount</span><strong id="ui_totalDiscount_summary">₹0.00</strong></div>
+            <div class="sum-ui-row"><span>Net Bill Amount</span><strong id="ui_s_net_bill">₹0.00</strong></div>
+            <div class="sum-ui-row"><span>Receipts Paid</span><strong id="ui_s_rec">₹0.00</strong></div>
+            <div class="sum-ui-row total"><span>Balance Payable</span><strong id="ui_s_final">₹0.00</strong></div>
 
-  <!-- ============================================================
-       HISTORY SCREEN
-  ============================================================ -->
-  <section id="historyScreen" class="screen">
-    <h1 class="ui-title">Bill History</h1>
+            <div class="summary-actions">
+                <button class="btn success" onclick="saveBill()">💾 Save Bill</button>
+                <button class="btn secondary" onclick="preparePrint()">🖨️ Print Bill</button>
+            </div>
+        </div>
 
-    <div class="ui-card">
-      <table class="bill-ui-table">
-        <thead>
-          <tr>
-            <th>Bill No</th><th>Patient</th><th>UHID</th><th>Date</th><th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="historyTable"></tbody>
-      </table>
-    </div>
-  </section>
+    </section>
+
+
+    <section id="tariffScreen" class="screen">
+        <h1 class="ui-title">Tariff Master</h1>
+
+        <div class="ui-card">
+            <h2>Rooms (IPD Charges)</h2>
+            <div id="tariff_rooms" class="tariff-grid-container"></div>
+            <button class="btn primary" onclick="addRoom()">+ Add Room</button>
+        </div>
+
+        <div class="ui-card">
+            <h2>Doctors / Consultants</h2>
+            <div id="tariff_doctors" class="tariff-grid-container"></div>
+            <button class="btn primary" onclick="addDoctor()">+ Add Doctor</button>
+        </div>
+
+        <div class="ui-card">
+            <h2>Surgical Packages</h2>
+            <p class="note-text">
+                Edit existing packages below. Package breakups are defined by percentage templates.
+            </p>
+            <div id="tariff_packages" class="tariff-grid-container" style="flex-direction: column;"></div>
+            <button class="btn primary" onclick="alert('Please add packages directly in the JSON file for this version.')">+ Add Package (JSON)</button>
+        </div>
+        
+        <div class="save-tariff-container">
+             <button class="btn success huge" onclick="saveTariff()">✅ Save All Tariff Changes</button>
+        </div>
+    </section>
+
+
+    <section id="historyScreen" class="screen">
+        <h1 class="ui-title">Bill History</h1>
+
+        <div class="ui-card">
+            <table class="bill-ui-table">
+                <thead>
+                    <tr>
+                        <th>Bill No</th><th>Patient</th><th>UHID</th><th>Date</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTable"></tbody>
+            </table>
+        </div>
+    </section>
 
 </main>
 
 
 
-<!-- ============================================================
-     PRINT BILL — A4 LAYOUT
-============================================================ -->
-<div class="container" id="billContainerFinal">
+<div class="container print-page" id="billContainerFinal">
 
     <div class="header-flex">
         <div class="logo-area">
-            <div class="logotype">KKC</div>
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////Li4uKk9QrwAAAAJ0Uk5T/wDltzBKAAAAKklEQVR42u3MgQAAAAQEof7/qwcKQAAAAAAAAAAAAAAAAAAAAAAAAd4AGLpAAaVz+mEAAAAASUVORK5CYII=" alt="Hospital Logo" class="logo-img"> 
             <div class="h-info">
                 <h1 class="h-title">KRISHNA KIDNEY CENTRE</h1>
                 <p class="h-sub">No.1/375-7, Rayakottai Main Road, Near Flyover, Krishnagiri - 635001</p>
@@ -232,6 +242,7 @@
         <div class="invoice-block">
             <span class="invoice-label">HOSPITAL BREAK-UP BILL</span>
             <p class="small-meta">Bill No: <strong id="b_invoice">-</strong></p>
+            <p class="small-meta">Date: <strong id="b_date_issued">-</strong></p>
         </div>
     </div>
 
@@ -239,14 +250,14 @@
         Dr. B.K. SRINIVASAN, M.S, M.Ch. (Urology) — UROLOGIST & ANDROLOGIST — Regd No: 73759
     </div>
 
-    <div class="compact-line" id="b_compactLine"></div>
-
     <div class="section">
         <div class="column-title">Patient & Billing Details</div>
 
         <div class="details-grid">
             <div><label>Name</label><p id="b_name"></p></div>
+            <div><label>UHID / IP No</label><p id="b_uhid_ip"></p></div>
             <div><label>Age / Gender</label><p id="b_age_gender"></p></div>
+            <div><label>Room Category</label><p id="b_room"></p></div>
             <div><label>D.O.A</label><p id="b_doa"></p></div>
             <div><label>D.O.D</label><p id="b_dod"></p></div>
             <div><label>Consultant</label><p id="b_doc"></p></div>
@@ -260,44 +271,57 @@
 
         <div class="column-header-row">
             <div class="column-header">Description</div>
-            <div class="column-header">Charges/U</div>
-            <div class="column-header">Units</div>
-            <div class="column-header">Total</div>
+            <div class="column-header-small">Rate</div>
+            <div class="column-header-small">Qty</div>
+            <div class="column-header-small">Gross (₹)</div>
+            <div class="column-header-small">Disc (₹)</div>
+            <div class="column-header-small">Net (₹)</div>
         </div>
 
         <div class="column-detail" id="b_items"></div>
     </div>
 
     <div class="section">
-        <div class="column-title">Summary</div>
+        <div class="column-title">Final Summary</div>
 
         <div class="summary-box">
-            <div class="sum-line"><span>Total Gross</span><strong id="s_gross">₹0</strong></div>
-            <div class="sum-line total"><span>Final Amount</span><strong id="s_final">₹0</strong></div>
+            <div class="sum-line"><span>Total Gross Charges</span><strong id="s_gross">₹0.00</strong></div>
+            <div class="sum-line"><span>Total Discount/Adjustment</span><strong id="s_discount">₹0.00</strong></div>
+            <div class="sum-line total"><span>NET Payable Amount</span><strong id="s_final">₹0.00</strong></div>
         </div>
     </div>
 </div>
 
 
-<!-- RECEIPT PAGE -->
-<div class="container receipt-container" id="receiptContainer">
+<div class="container receipt-container print-page" id="receiptContainer">
+    <div class="header-flex">
+        <div class="logo-area">
+             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////Li4uKk9QrwAAAAJ0Uk5T/wDltzBKAAAAKklEQVR42u3MgQAAAAQEof7/qwcKQAAAAAAAAAAAAAAAAAAAAAAAAd4AGLpAAaVz+mEAAAAASUVORK5CYII=" alt="Hospital Logo" class="logo-img">
+             <div class="h-info"><h1 class="h-title">KRISHNA KIDNEY CENTRE</h1></div>
+        </div>
+        <div class="invoice-block"><span class="invoice-label">PAYMENT BREAKDOWN</span></div>
+    </div>
+    
     <div class="section">
-        <div class="column-title">Payment Receipts</div>
+        <div class="column-title">Receipts and Balance</div>
 
         <div class="summary-box">
             <div id="receiptLines"></div>
 
             <div class="sum-line total">
-                <span>Total Receipts</span><strong id="rc_total">₹0</strong>
+                <span>Total Receipts</span><strong id="rc_total">₹0.00</strong>
             </div>
 
             <div class="sum-final">
-                <span>Balance Payable</span><strong id="rc_balance">₹0</strong>
+                <span>Balance Payable / Refundable</span><strong id="rc_balance">₹0.00</strong>
+            </div>
+            
+            <div class="sum-final footer-text">
+                <p>Signature (Billing Executive)</p>
             </div>
         </div>
     </div>
 </div>
-
 
 </body>
 </html>
