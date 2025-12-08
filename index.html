@@ -3,93 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KCC Advanced Professional Billing System</title>
-    <!-- Tailwind CSS CDN -->
+    <title>KCC Professional Billing System</title>
+    
+    <!-- Tailwind CSS (Utility classes) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Local Decimal.js for precise calculations -->
-    <script src="./js/decimal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
+    
+    <!-- Fonts: Inter for clean, modern legibility -->
     <style>
-        /* Custom Styles for Print and Aesthetics */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8f8fa; }
-        .container-main { max-width: 900px; }
-        .print-area { max-width: 100%; }
-        .hidden-admin { display: none; } /* Used for the modal */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
-        /* Grid definitions for Bill Items (8 Columns) - MADE MORE COMPACT */
-        /* S.No(30), Date(65), Description(4fr), Rate(1fr), Qty(40), Gross(1fr), Discount(1fr), Total(1.2fr), Action(30) */
-        .bill-grid-header { 
-            display: grid; 
-            grid-template-columns: 30px 65px 4fr 1fr 40px 1fr 1fr 30px; 
+        :root {
+            --primary-blue: #1e3a8a; /* Deep Blue */
+            --header-bg: #f3f4f6;    /* Light Gray for Section Headers */
+            --border-color: #e5e7eb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
         }
-        .bill-grid-row { 
-            display: grid; 
-            grid-template-columns: 30px 65px 4fr 1fr 40px 1fr 1fr 30px; 
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #eef2f6; 
+            color: var(--text-main);
+            font-size: 13px; /* Slightly smaller base font for compactness */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- CSS: LAYOUT & COMPONENTS --- */
+        .container-main { 
+            max-width: 210mm; /* A4 Width */
+            margin: 20px auto;
+            background: white;
+            min-height: 297mm; /* A4 Height */
+        }
+
+        .section-header {
+            background-color: var(--header-bg);
+            border-bottom: 1px solid #d1d5db;
+            color: #111827;
+            font-weight: 700;
+            padding: 4px 12px; /* Reduced padding */
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        /* Grid for Bill Rows: Adjusted to remove Gross Column */
+        /* SNo(30) Date(70) Desc(Auto) Rate(70) Qty(30) Disc(60) Total(80) Action(30) */
+        .bill-grid-header, .bill-grid-row {
+            display: grid;
+            grid-template-columns: 30px 70px 1fr 70px 30px 60px 80px 30px; 
+            gap: 4px; /* Reduced gap */
+            align-items: center;
+        }
+
+        .bill-grid-header {
+            border-bottom: 2px solid #000;
+            padding: 6px 12px;
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #374151;
+        }
+
+        .bill-grid-row {
+            padding: 4px 12px; /* Reduced padding for compact rows */
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 12px;
         }
         
-        /* Alignment fixes: Columns 1, 2, 3 (S.No, Date, Description) are LEFT aligned */
-        .bill-grid-header > div:nth-child(1), .bill-grid-header > div:nth-child(2), .bill-grid-header > div:nth-child(3) { text-align: left !important; padding-left: 0.25rem; }
-        .bill-grid-row > div:nth-child(1), .bill-grid-row > div:nth-child(2), .bill-grid-row > div:nth-child(3) { justify-content: flex-start; text-align: left !important; }
-        .bill-grid-row > div:nth-child(1) { padding-left: 0.25rem; } /* S.No padding */
+        /* Alignments */
+        .text-right-col { text-align: right; justify-content: flex-end; display: flex; }
+        .text-left-col { text-align: left; justify-content: flex-start; display: flex; }
+        
+        .bill-grid-row .text-right-col { font-variant-numeric: tabular-nums; }
 
-        /* Reduced row padding for compactness */
-        .bill-grid-row > div { 
-            text-align: right; padding: 0.3rem 0.2rem; border-bottom: 1px dashed #eee; display: flex; align-items: center; 
+        /* Input Styling */
+        input, select { 
+            border: 1px solid #d1d5db; 
+            border-radius: 4px; 
+            padding: 2px 6px; 
+            font-size: 12px; 
+            width: 100%;
+            transition: border-color 0.15s;
         }
-        .input-financial { max-width: 90%; text-align: right; padding: 0.1rem; border: 1px dashed #ccc; border-radius: 3px; font-size: 10px; }
-        .static-value { display: none; }
+        input:focus, select:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.1); }
+        .input-financial { text-align: right; font-family: 'Courier New', monospace; font-weight: 600; }
+        
+        /* Editable Description Input Style */
+        .input-desc-edit {
+            border: 1px solid transparent;
+            padding: 1px 4px;
+            background: transparent;
+            width: 100%;
+            font-weight: 500;
+            color: #1f2937;
+        }
+        .input-desc-edit:hover { border: 1px solid #e5e7eb; background: #fff; }
+        .input-desc-edit:focus { border: 1px solid var(--primary-blue); background: #fff; }
 
-        /* Print Specific Controls */
+        /* Category Group Header in Table */
+        .category-row {
+            grid-column: 1 / -1;
+            background-color: #f9fafb;
+            font-weight: 700;
+            font-size: 10px;
+            padding: 2px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* --- CSS: PRINT MEDIA QUERY --- */
         @media print {
+            @page { size: A4; margin: 10mm; }
+            
+            body { 
+                background: white; 
+                font-size: 10pt; 
+                color: black !important; /* Force Black Text */
+            }
+            
+            /* Force all text to black including headers and totals */
+            .text-red-600, .text-blue-600, .text-gray-500, .text-gray-900 {
+                color: black !important;
+            }
+
+            .container-main {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+                min-height: auto;
+            }
+
             .no-print { display: none !important; }
-            .print-area { margin: 0; padding: 0; box-shadow: none; border-radius: 0; }
-            
-            /* 2. Bill Grid Fix (Remove Action Column) */
-            .bill-grid-header { 
-                grid-template-columns: 30px 65px 4fr 1fr 40px 1fr 1fr !important;
-                background-color: #e5e7eb !important; /* Force print header color */
+
+            /* Print Aesthetics */
+            .section-header { 
+                background-color: #f3f4f6 !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+                border-top: 1px solid #000;
+                border-bottom: 1px solid #000;
             }
-            .bill-grid-row { 
-                grid-template-columns: 30px 65px 4fr 1fr 40px 1fr 1fr !important;
+
+            /* Grid Adjustments for Print (Hide Action Column) */
+            .bill-grid-header, .bill-grid-row {
+                grid-template-columns: 30px 70px 1fr 70px 30px 60px 80px 0px;
             }
-            .bill-grid-row > div:last-child { display: none !important; }
+            .bill-grid-row > div:last-child { display: none; } /* Hide 'X' button container */
+
+            /* Hide Inputs, Show Values */
+            input, select { display: none !important; }
+            .print-value-display { display: inline-block !important; }
             
-            /* 3. Force Colors & Backgrounds */
-            .print-area, .print-area * { color: black !important; background-color: white !important; }
-            .bg-blue-900 { background-color: #1e3a8a !important; color: white !important; }
-            .bg-blue-100-h { background-color: #3b82f6 !important; color: white !important; } /* Highlighting BG color */
-            .text-blue-800-h { color: white !important; } /* Highlighting text color */
+            /* Ensure editable description prints correctly */
+            .input-desc-edit { display: none !important; }
+            .print-desc-display { display: inline-block !important; width: 100%; }
             
-            .bg-gray-200 { background-color: #e5e7eb !important; }
-            
-            .input-financial { display: none !important; }
-            .static-value { display: block !important; }
-            
-            @page {
-                size: A4;
-                margin: 0.5in 0.5in;
-                @top-center { content: element(header); }
-                @bottom-center { content: element(footer); }
+            /* Clean Table Lines */
+            .bill-grid-header { border-bottom: 2px solid #000 !important; }
+            .bill-grid-row { border-bottom: 1px solid #eee !important; }
+
+            /* Footer Positioning */
+            footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 8pt;
+                color: black !important;
+                border-top: 1px solid #000;
+                padding-top: 8px;
             }
-            .header-print-section { position: running(header); }
-            #printFooter { 
-                position: running(footer); 
-                display: block !important;
-                padding-top: 10px;
-            }
-            .page-counter {
-                content: "Page " counter(page) " of " counter(pages);
-            }
-            .header-print-section, #printFooter {
-                margin: 0 !important; padding: 0 !important; border: none !important;
+            
+            /* Compact Spacing for Print */
+            .p-8 { padding: 1.5rem !important; }
+            .mb-6 { margin-bottom: 1rem !important; }
+            .gap-8 { gap: 1rem !important; }
+            
+            /* Standardize Font Sizes in Summary */
+            #financialSummarySection .text-lg, 
+            #financialSummarySection .text-2xl,
+            #financialSummarySection .text-base {
+                font-size: 10pt !important; /* Force same font size */
             }
         }
     </style>
-    <script type="module">
+</head>
+<body>
+
+    <!-- SETTINGS MODAL (Admin) -->
+    <div id="tariffModal" class="no-print hidden-admin fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-2xl w-[600px] max-h-[80vh] flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-lg">
+                <h2 class="font-bold text-gray-800">Tariff Master Configuration</h2>
+                <button onclick="toggleTariffAdmin()" class="text-gray-400 hover:text-red-500 text-2xl">&times;</button>
+            </div>
+            <div id="tariffBody" class="p-6 overflow-y-auto grid grid-cols-2 gap-4"></div>
+            <div class="p-4 border-t bg-gray-50 text-right rounded-b-lg">
+                <button onclick="toggleTariffAdmin()" class="px-4 py-2 bg-gray-800 text-white rounded text-xs font-bold">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN A4 PAGE -->
+    <div class="container-main shadow-lg rounded-sm flex flex-col relative">
         
-        // --- Decimal.js Library (Crucial for Financial Accuracy) ---
+        <!-- HEADER -->
+        <header class="p-8 pb-2">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-4">
+                    <!-- HOSPITAL LOGO (SVG) -->
+                    <div class="w-16 h-16 text-[#1e3a8a] flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-14 h-14">
+                            <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M18 11H14V15H10V11H6V9H10V5H14V9H18V11Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-black text-gray-900 tracking-tight leading-none">KRISHNA KIDNEY CENTRE</h1>
+                        <p class="text-sm text-gray-500 mt-1 font-medium">Krishnagiri, Tamil Nadu • India</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="inline-block bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-2 print:bg-white print:text-black print:border print:border-black">
+                        Discharge Final Bill
+                    </span>
+                    <div class="text-sm">Bill No: <span id="b_invoice_no" class="font-bold text-red-600">PROVISIONAL</span></div>
+                    <div class="text-sm text-gray-500">Run Date: <span id="b_run_date" class="font-medium text-gray-900"></span></div>
+                </div>
+            </div>
+            <hr class="mt-4 border-gray-200">
+        </header>
+
+        <!-- CONTROLS (Screen Only) -->
+        <div class="px-8 mb-2 no-print flex gap-2">
+            <button onclick="generateNewIDs()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded">GENERATE IDS</button>
+            <button onclick="newBill()" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded">CLEAR FORM</button>
+            <button onclick="toggleTariffAdmin()" class="bg-gray-700 hover:bg-gray-800 text-white text-xs font-bold px-3 py-2 rounded ml-auto">SETTINGS</button>
+        </div>
+
+        <!-- PATIENT DETAILS SECTION -->
+        <div class="px-8 mb-4">
+            <div class="section-header rounded-t-sm">Patient & General Details</div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2 p-3 border border-t-0 border-gray-200 text-xs">
+                <!-- Row 1 -->
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">UHID</label>
+                    <input type="text" id="ui_uhid" class="no-print-border" oninput="renderUI()">
+                    <span class="print-value-display hidden font-bold text-gray-800" id="print_uhid"></span>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">IP Number</label>
+                    <input type="text" id="ui_ip" class="no-print-border" oninput="renderUI()">
+                    <span class="print-value-display hidden font-bold text-gray-800" id="print_ip"></span>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Patient Name</label>
+                    <input type="text" id="ui_name" class="font-bold" oninput="renderUI()">
+                    <span class="print-value-display hidden font-bold text-gray-800 text-sm" id="print_name"></span>
+                </div>
+
+                <!-- Row 2 -->
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Admission Date</label>
+                    <input type="date" id="ui_doa" oninput="renderUI()">
+                    <span class="print-value-display hidden font-medium text-gray-800" id="print_doa"></span>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Discharge Date</label>
+                    <input type="date" id="ui_dod" oninput="renderUI()">
+                    <span class="print-value-display hidden font-medium text-gray-800" id="print_dod"></span>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Room Category</label>
+                    <select id="ui_roomCat" onchange="renderUI()"></select>
+                    <span class="print-value-display hidden font-medium text-gray-800" id="print_roomCat"></span>
+                    <button onclick="addRoomDays()" class="no-print mt-1 text-[9px] text-blue-600 underline hover:text-blue-800">Auto-Calc</button>
+                </div>
+
+                <!-- Row 3 -->
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Consultant</label>
+                    <select id="ui_doc" onchange="renderUI()"></select>
+                    <span class="print-value-display hidden font-medium text-gray-800" id="print_doc"></span>
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1">Insurance / Payer</label>
+                    <input type="text" id="ui_insurance" oninput="renderUI()">
+                    <span class="print-value-display hidden font-medium text-gray-800" id="print_insurance"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BILLING ITEMS TABLE -->
+        <div class="px-8 flex-grow">
+            <div class="section-header rounded-t-sm">Billing Items</div>
+            
+            <div class="bill-grid-header bg-gray-50">
+                <div class="text-left-col">S.No</div>
+                <div class="text-left-col">Date</div>
+                <div class="text-left-col">Description</div>
+                <div class="text-right-col">Rate</div>
+                <div class="text-right-col">Qty</div>
+                <div class="text-right-col">Disc.</div>
+                <div class="text-right-col">Total</div>
+                <div class="text-center no-print">Act</div>
+            </div>
+
+            <div id="ui_billBody" class="border-l border-r border-b border-gray-200 min-h-[150px] pb-4">
+                <!-- JS will inject rows here -->
+            </div>
+
+            <!-- MANUAL ADD (No Print) -->
+            <div class="no-print mt-2 p-2 bg-blue-50 border border-blue-100 rounded text-xs">
+                <div class="flex gap-2 items-end">
+                    <div class="flex-1">
+                        <label class="text-[9px] text-gray-500 font-bold uppercase">Category</label>
+                        <select id="ui_cat" class="bg-white"></select>
+                    </div>
+                    <div class="flex-[2]">
+                        <label class="text-[9px] text-gray-500 font-bold uppercase">Description</label>
+                        <input type="text" id="ui_desc" class="bg-white" placeholder="Type description...">
+                    </div>
+                    <div class="w-16">
+                        <label class="text-[9px] text-gray-500 font-bold uppercase">Rate</label>
+                        <input type="number" id="ui_rate" class="bg-white">
+                    </div>
+                    <div class="w-12">
+                        <label class="text-[9px] text-gray-500 font-bold uppercase">Qty</label>
+                        <input type="number" id="ui_qty" value="1" class="bg-white">
+                    </div>
+                    <button onclick="addItem()" class="bg-blue-600 text-white font-bold text-xs px-3 py-1.5 rounded">ADD</button>
+                    <button onclick="clearBillingItems()" class="bg-white border border-red-200 text-red-600 font-bold text-xs px-2 py-1.5 rounded">CLR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUMMARY SECTION -->
+        <div class="px-8 mt-2 mb-20" id="financialSummarySection">
+            <div class="grid grid-cols-2 gap-8">
+                
+                <!-- LEFT: Receipts (Hidden in print if needed, but keeping logic) -->
+                <div>
+                    <div class="section-header rounded-t-sm">Receipts & Payments</div>
+                    <div class="border border-t-0 border-gray-200 p-3 min-h-[100px] flex flex-col justify-between">
+                        <div id="receiptLines" class="space-y-1 text-xs"></div>
+                        
+                        <div class="no-print mt-2 pt-2 border-t border-dashed border-gray-200">
+                            <div class="flex gap-2 mb-2">
+                                <input type="text" id="ui_rno" placeholder="R.No" class="w-20">
+                                <input type="number" id="ui_ramt" placeholder="Amount" class="w-24 font-bold text-blue-800">
+                                <input type="date" id="ui_rdate" class="w-24">
+                            </div>
+                            <div class="flex gap-2">
+                                <select id="ui_rmode" class="w-20"><option>Cash</option><option>Card</option><option>UPI</option></select>
+                                <button onclick="addReceipt()" class="bg-green-600 text-white text-xs font-bold px-3 py-1 rounded flex-grow">ADD PAYMENT</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Financial Summary -->
+                <div>
+                    <div class="section-header rounded-t-sm">Financial Summary</div>
+                    <div class="border border-t-0 border-gray-200 p-3">
+                        <div class="flex justify-between items-center mb-1 no-print">
+                            <span class="text-xs text-gray-500">Global Discount (%)</span>
+                            <input type="number" id="ui_billDiscount" value="0" class="w-16 text-right font-bold text-red-600" oninput="renderUI()">
+                        </div>
+
+                        <div class="space-y-2 text-sm">
+                            <!-- ONLY SHOW Total Gross, Final Bill, Balance Due -->
+                            
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 font-bold">Total Gross Amount</span>
+                                <span class="font-bold font-mono" id="ui_s_gross">0.00</span>
+                            </div>
+                            
+                            <!-- Hidden rows (still in DOM for logic but hidden visually) -->
+                            <div class="flex justify-between text-red-600 text-xs hidden">
+                                <span>Item Discounts</span>
+                                <span class="font-mono" id="ui_itemDiscount">- 0.00</span>
+                            </div>
+                            <div class="flex justify-between text-red-600 text-xs border-b border-gray-100 pb-2 hidden">
+                                <span>Global Discount Applied</span>
+                                <span class="font-mono" id="ui_globalDiscount">- 0.00</span>
+                            </div>
+
+                            <!-- Final Bill Amount -->
+                            <div class="flex justify-between items-center pt-1 border-t border-gray-100">
+                                <span class="font-bold text-gray-800">Final Bill Amount</span>
+                                <span class="font-bold font-mono text-base" id="ui_s_net_bill">0.00</span>
+                            </div>
+
+                            <div class="hidden flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-200 mt-2">
+                                <span class="font-black text-gray-900 uppercase">**Grand Total**</span>
+                                <span class="font-black font-mono text-lg text-gray-900" id="ui_s_grand_total">0.00</span>
+                            </div>
+
+                            <div class="hidden flex justify-between text-gray-600 pt-2">
+                                <span>Less: Receipts Paid</span>
+                                <span class="font-mono" id="ui_s_rec">0.00</span>
+                            </div>
+
+                            <!-- Balance Due -->
+                            <div class="flex justify-between items-center pt-2 border-t-2 border-gray-300 mt-2">
+                                <span class="font-black text-red-600 text-lg uppercase">Balance Due</span>
+                                <span class="font-black font-mono text-2xl text-red-600" id="ui_s_final">0.00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-right no-print">
+                            <button onclick="preparePrint()" class="bg-[#1e3a8a] text-white font-bold px-4 py-2 rounded shadow hover:bg-blue-900 transition flex items-center gap-2 justify-center w-full text-xs">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                PRINT FINAL INVOICE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIGNATURE SECTION (Added as requested) -->
+        <div class="px-8 mt-auto mb-4">
+            <div class="flex justify-between items-end pt-8 pb-4">
+                <div class="text-center">
+                    <div class="w-40 border-t border-black mb-1"></div>
+                    <div class="font-bold text-xs uppercase">Prepared By</div>
+                </div>
+                <div class="text-center">
+                    <div class="w-40 border-t border-black mb-1"></div>
+                    <div class="font-bold text-xs uppercase">Staff Signature</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="py-4 border-t border-gray-200 text-center text-gray-500 text-[9px]">
+            <div class="font-bold text-gray-700 uppercase mb-1">Krishna Kidney Centre</div>
+            <div>123 Main Street, Near Bus Stand, Krishnagiri - 635001, Tamil Nadu, India</div>
+            <div>Phone: +91 4343-22XXXX | Email: info@krishnakidneycentre.com</div>
+            <div class="mt-1 text-gray-400 italic">This is a computer generated invoice. Signature is not required.</div>
+        </footer>
+
+    </div>
+
+    <!-- --- JAVASCRIPT LOGIC --- -->
+    <script type="module">
+        // 1. DECIMAL CONFIG
         if (typeof Decimal === 'undefined') {
-            console.warn("⚠️ Decimal.js not loaded. Using dummy implementation. Financial calculations may be inaccurate.");
             window.Decimal = class {
                 constructor(value) { this.v = Number(value || 0); }
                 toNumber() { return this.v; }
@@ -100,889 +468,372 @@
                 lte(other) { return this.v <= new Decimal(other).toNumber(); }
                 gt(other) { return this.v > new Decimal(other).toNumber(); }
                 toFixed(d) { return this.v.toFixed(d); }
-                toString() { return String(this.v); }
-                toDecimalPlaces(d, roundingMode) { return new Decimal(this.v.toFixed(d)); }
-                static ROUND_HALF_UP = 2;
             };
+        } else {
+            window.Decimal = Decimal;
         }
-        window.Decimal = window.Decimal || Decimal;
 
-        // --- TARIFF DATA (Replicated from tariffs.js) ---
+        // 2. DATA CONSTANTS
         window.TARIFF = {
-            currency_unit: "INR",
-            billing_cycle: "24_HOURS_FROM_ADMISSION",
-            billing_rules: { tax_rate_percent: 0.0, room_rent_rule: { full_day_hours: 6, half_day_multiplier: 0.5 } },
-            opd_charges: { CONSULTATION: { name: "General Consultation", rate: 500, category: "Doctor Visit" }, SUPER_SPECIALIST: { name: "Super Specialist Visit", rate: 1000, category: "Doctor Visit" } },
+            currency: "INR",
+            opd_charges: { CONSULTATION: { name: "General Consultation", rate: 500 }, SPECIALIST: { name: "Super Specialist Visit", rate: 1000 } },
             rooms: {
-                "SINGLE ROOM A/C": { id: "SINGLE_AC", tariff_per_day: 3500, nursing_per_day: 750, consultant_per_visit: 800, super_specialist_per_visit: 1200 },
-                "GENERAL WARD": { id: "GENERAL_WARD", tariff_per_day: 2500, nursing_per_day: 750, consultant_per_visit: 800, super_specialist_per_visit: 1200 },
+                "SINGLE AC": { tariff: 3500, nursing: 750, consultant: 800 },
+                "GENERAL WARD": { tariff: 2500, nursing: 750, consultant: 800 },
+                "GW": { tariff: 2000, nursing: 500, consultant: 500 },
+                "PVT": { tariff: 4000, nursing: 1000, consultant: 1000 },
+                "ICU": { tariff: 6000, nursing: 2000, consultant: 2000 }
             },
-            doctors: ["Dr. B.K. Srinivasan", "Dr. Rajesh"],
+            // Flat list of categories added to TARIFF keys to appear in dropdown
+            "SURGEON FEES": { default: { rate: 0 } },
+            "ASSISTANT SURGEON FEES": { default: { rate: 0 } },
+            "DJ STENTING": { default: { rate: 0 } },
+            "ANAESTHESIA FEES": { default: { rate: 0 } },
+            "ICU CHARGE": { default: { rate: 0 } },
+            "DOCTOR CHARGE": { default: { rate: 0 } },
+            "SPECIALTY DOCTOR ICU VISIT CHARGE": { default: { rate: 0 } },
+            "BED CHARGE": { default: { rate: 0 } },
+            "NURSING CHARGES": { default: { rate: 0 } },
+            "OT CHARGE": { default: { rate: 0 } },
+            "PREANESTHETIC CHECKUP": { default: { rate: 0 } },
+            "MEDICINE CHARGE": { default: { rate: 0 } },
+
+            doctors: ["Dr. B.K. Srinivasan", "Dr. Rajesh", "Dr. Anjali"],
             surgical_packages: {
-                URO: {
-                    TURP: { 
-                        GENERAL_WARD: 54000, SINGLE_AC: 67500, 
-                        breakup_template: { "Surgeon Fees": 0.6, "OT Charge": 0.25, "Anaesthetist Fees": 0.15 } 
-                    }
+                URO: { 
+                    TURP: { "GENERAL WARD": 54000, "SINGLE AC": 67500, breakup: { "Surgeon": 0.6, "OT": 0.25, "Anesthesia": 0.15 } }
                 }
             },
-            investigations: { CBC: { name: "Complete Blood Count (CBC)", rate: 450 } },
-            pharmacy: { PARACETAMOL_500: { name: "Paracetamol 500mg (Tablet)", rate: 2 } },
-            miscellaneous: { MRD_CHARGE: { name: "Medical Record Department (MRD) Charge", rate: 500 } }
+            investigations: { CBC: { name: "Complete Blood Count", rate: 450 }, CREATININE: { name: "Serum Creatinine", rate: 250 } },
+            pharmacy: { PARA500: { name: "Paracetamol 500mg", rate: 2 }, ANTIBIOTIC: { name: "Antibiotic Inj", rate: 450 } },
+            miscellaneous: { MRD: { name: "MRD Charges", rate: 500 }, ADMISSION: { name: "Admission Fee", rate: 250 } }
         };
-
-        window.tariff = window.TARIFF; 
-
-        // --- GLOBAL STATE ACCESSORS & CONSTANTS ---
+        
         window.billItems = [];
         window.receipts = [];
-        window.CATEGORY_MAP = {
-            "Consultation": "opd_charges", "Pharmacy": "pharmacy", "Investigation": "investigations",
-            "Package": "surgical_packages", "Miscellaneous": "miscellaneous", "Surgical": "surgical",
-            "Room Rent": "rooms", "Nursing": "rooms", "Doctor Visit": "opd_charges"
-        };
-        const CATEGORY_ORDER = { "Room Rent": 10, "Nursing": 20, "Doctor Visit": 30, "Surgical": 40, "Package": 45, "Investigation": 50, "Pharmacy": 60, "Miscellaneous": 90, "Consultation": 30 };
-        const ALL_PATIENT_INPUTS = ['ui_uhid', 'ui_ip', 'ui_name', 'ui_age', 'ui_gender', 'ui_roomCat', 'ui_doa', 'ui_dod', 'ui_doc', 'ui_spec', 'ui_insurance', 'ui_billDiscount'];
-        
-        // --- LOCAL STORAGE KEYS ---
-        const TARIFF_KEY = 'kcc_tariff_master';
-        const BILL_KEY = 'kcc_current_bill';
-        const SEQUENCE_KEY_PREFIX = 'kcc_seq_';
+        const STORAGE_KEY = 'kcc_bill_data';
 
-
-        // =========================================================================
-        // 1. CORE UTILITY FUNCTIONS
-        // =========================================================================
-
-        function getNextSequence(key, length) {
-            let sequence = Number(localStorage.getItem(SEQUENCE_KEY_PREFIX + key) || 1);
-            let nextId = String(sequence).padStart(length, '0');
-            localStorage.setItem(SEQUENCE_KEY_PREFIX + key, sequence + 1);
-            return nextId;
-        }
-        
-        function generateRandomId(prefix, digits, letters) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            const nums = '0123456789';
-            let id = prefix ? `${prefix}-` : '';
-            for (let i = 0; i < digits; i++) id += nums.charAt(Math.floor(Math.random() * nums.length));
-            for (let i = 0; i < letters; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
-            return id;
+        // 3. CORE FUNCTIONS
+        function formatMoney(amount) {
+            // CHANGED: Removed Commas, simple fixed decimal
+            return new Decimal(amount).toFixed(2);
         }
 
-        function formatDisplayDate(dateString) {
-            if (!dateString) return '-';
-            const date = new Date(dateString + 'T00:00:00'); 
-            const options = { day: '2-digit', month: 'short', year: 'numeric' };
-            return date.toLocaleDateString('en-GB', options).toUpperCase().replace(/ /g, ' ').replace(',', '');
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
         }
 
-        function createBillItem(cat, date, desc, rate, qty, sortOrder = CATEGORY_ORDER[cat] || 99) {
-            const r = new Decimal(rate || 0);
-            const q = new Decimal(qty || 1);
-            const gross = r.mul(q);
-
-            return {
-                cat, date: date || "", desc, 
-                rate: r.toFixed(2), qty: q.toNumber(), gross: gross.toFixed(2),
-                discount: "0.00", net: gross.toFixed(2), tax: "0.00", total: gross.toFixed(2),
-                sortOrder: sortOrder
-            };
-        }
-        
-        function sortBillItems() {
-            window.billItems.sort((a, b) => {
-                if (a.sortOrder !== b.sortOrder) {
-                    return a.sortOrder - b.sortOrder;
-                }
-                if (a.date < b.date) return -1;
-                if (a.date > b.date) return 1;
-                return a.desc.localeCompare(b.desc);
-            });
-        }
-        
-        // =========================================================================
-        // 2. LOCAL PERSISTENCE FUNCTIONS
-        // =========================================================================
-
-        function saveTariffToLocal() {
-            // Saves window.tariff to local storage
-            localStorage.setItem(TARIFF_KEY, JSON.stringify(window.tariff));
-            loadDropdowns();
-            renderUI();
-        }
-        
-        function loadTariffFromLocal() {
-            const storedTariff = localStorage.getItem(TARIFF_KEY);
-            if (storedTariff) {
-                window.tariff = JSON.parse(storedTariff);
-            } else {
-                // If not found, save the default structure
-                saveTariffToLocal(); 
+        function generateUniqueBillNo() {
+            // CHANGED: 12-digit alphanumeric unique sequence
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 12; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-        }
-        
-        function saveCurrentBillToLocal(bill) {
-            // Saves the entire current bill object
-            localStorage.setItem(BILL_KEY, JSON.stringify(bill));
+            return result;
         }
 
-        function loadCurrentBillFromLocal() {
-            const storedBill = localStorage.getItem(BILL_KEY);
-            if (storedBill) {
-                const latestBill = JSON.parse(storedBill);
-                window.billItems = latestBill.items;
-                window.receipts = latestBill.receipts;
-                
-                // Restore UI inputs from billData
-                ALL_PATIENT_INPUTS.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el && latestBill.billData[id]) el.value = latestBill.billData[id];
-                });
-            }
-        }
-
-
-        // =========================================================================
-        // 3. UI & CALCULATION FUNCTIONS (Depend on #1, calls #2)
-        // =========================================================================
-        
         function calculateTotals() {
             let gross = new Decimal(0);
-            let itemDisc = new Decimal(0);
-            let preDiscNet = new Decimal(0);
+            let totalItemDisc = new Decimal(0);
+            let netAfterItemDisc = new Decimal(0);
 
-            window.billItems.forEach(it => {
-                const g = new Decimal(it.gross);
-                const d = new Decimal(it.discount || 0);
+            // Item Level Calcs
+            window.billItems.forEach(item => {
+                const g = new Decimal(item.rate).mul(item.qty);
+                const d = new Decimal(item.discount || 0);
+                
+                item.gross = g.toFixed(2);
+                item.total = g.minus(d).toFixed(2);
+                
                 gross = gross.plus(g);
-                itemDisc = itemDisc.plus(d);
-                preDiscNet = preDiscNet.plus(g.minus(d));
+                totalItemDisc = totalItemDisc.plus(d);
+                netAfterItemDisc = netAfterItemDisc.plus(g.minus(d));
             });
 
-            const globalDiscPercent = new Decimal(document.getElementById("ui_billDiscount").value || 0);
-            let globalDiscAmount = new Decimal(0);
-            
-            if (globalDiscPercent.gt(0)) {
-                const discountFactor = globalDiscPercent.div(100);
-                globalDiscAmount = preDiscNet.mul(discountFactor).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
+            // Global Discount
+            const globalDiscPercent = new Decimal(document.getElementById('ui_billDiscount').value || 0);
+            let globalDiscVal = new Decimal(0);
+            if(globalDiscPercent.gt(0)) {
+                globalDiscVal = netAfterItemDisc.mul(globalDiscPercent.div(100));
             }
 
-            const finalBillAmount = preDiscNet.minus(globalDiscAmount); 
-
-            let paid = new Decimal(0);
-            window.receipts.forEach(r => { paid = paid.plus(new Decimal(r.amt)); });
+            const finalBill = netAfterItemDisc.minus(globalDiscVal);
             
-            const balanceDue = finalBillAmount.minus(paid);
+            // Receipts
+            let totalPaid = new Decimal(0);
+            window.receipts.forEach(r => totalPaid = totalPaid.plus(r.amount));
+            
+            const balance = finalBill.minus(totalPaid);
 
-            // Redistribute global discount to line items for display
-            window.billItems.forEach(it => {
-                const itemGrossLessItemDisc = new Decimal(it.gross).minus(new Decimal(it.discount));
-                const itemProportion = preDiscNet.gt(0) ? itemGrossLessItemDisc.div(preDiscNet) : new Decimal(0);
-
-                const itemGlobalDiscAllocated = itemProportion.mul(globalDiscAmount);
-                const itemTotal = itemGrossLessItemDisc.minus(itemGlobalDiscAllocated).toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
-                
-                it.net = itemTotal.toFixed(2); 
-                it.total = itemTotal.toFixed(2); 
-            });
-
-
-            // Update UI
-            document.getElementById("b_run_date").innerText = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase().replace(/ /g, ' ').replace(',', '');
-            document.getElementById("ui_s_gross").innerText = "₹" + gross.toFixed(2);
-            document.getElementById("ui_itemDiscount").innerText = "- ₹" + itemDisc.toFixed(2);
-            document.getElementById("ui_globalDiscount").innerText = "- ₹" + globalDiscAmount.toFixed(2);
-            document.getElementById("ui_s_net_bill").innerText = "₹" + finalBillAmount.toFixed(2);
-            document.getElementById("ui_s_tax_rate").innerText = "₹0.00"; 
-            document.getElementById("ui_s_grand_total").innerText = "₹" + finalBillAmount.toFixed(2);
-            document.getElementById("ui_s_rec").innerText = "₹" + paid.toFixed(2);
-            document.getElementById("ui_s_final").innerText = "₹" + balanceDue.toFixed(2);
-
-            return { gross, itemDisc, globalDiscAmount, finalBillAmount, paid, balanceDue };
+            // Update DOM Summary
+            document.getElementById('ui_s_gross').innerText = formatMoney(gross.toNumber());
+            document.getElementById('ui_itemDiscount').innerText = "- " + formatMoney(totalItemDisc.toNumber());
+            document.getElementById('ui_globalDiscount').innerText = "- " + formatMoney(globalDiscVal.toNumber());
+            document.getElementById('ui_s_net_bill').innerText = formatMoney(finalBill.toNumber());
+            document.getElementById('ui_s_grand_total').innerText = formatMoney(finalBill.toNumber());
+            document.getElementById('ui_s_rec').innerText = formatMoney(totalPaid.toNumber());
+            document.getElementById('ui_s_final').innerText = formatMoney(balance.toNumber());
         }
 
         function renderUI() {
-            const body = document.getElementById("ui_billBody");
-            body.innerHTML = "";
-            let currentCat = '';
+            // 1. Update Patient Display (For Print)
+            const fields = ['uhid', 'ip', 'name', 'doa', 'dod', 'roomCat', 'doc', 'insurance'];
+            fields.forEach(f => {
+                const val = document.getElementById('ui_' + f).value;
+                const display = document.getElementById('print_' + f);
+                if (display) {
+                    display.innerText = (f === 'doa' || f === 'dod') ? formatDate(val) : val;
+                }
+            });
             
-            calculateTotals(); 
+            // NEW: Update Run Date to match Discharge Date
+            const dodVal = document.getElementById('ui_dod').value;
+            document.getElementById('b_run_date').innerText = formatDate(dodVal);
 
-            window.billItems.forEach((x, i) => {
-                if (x.cat !== currentCat) {
-                    body.innerHTML += `<div class="col-span-8 p-2 font-bold bg-indigo-50 text-indigo-800">${x.cat}</div>`;
-                    currentCat = x.cat;
+            // 2. Render Bill Items
+            const tbody = document.getElementById('ui_billBody');
+            tbody.innerHTML = '';
+            
+            // Sort items by Category then Date
+            const sortedItems = [...window.billItems].sort((a, b) => a.category.localeCompare(b.category) || a.date.localeCompare(b.date));
+            
+            let currentCat = null;
+            let sno = 1;
+
+            sortedItems.forEach((item, idx) => {
+                // Group Header
+                if (item.category !== currentCat) {
+                    currentCat = item.category;
+                    tbody.innerHTML += `<div class="category-row">${currentCat}</div>`;
                 }
 
-                body.innerHTML += `
-                <div class="bill-grid-row text-xs font-mono">
-                    <div class="justify-start">${i + 1}</div>
-                    <div class="justify-start">${formatDisplayDate(x.date)}</div>
-                    <div class="font-semibold text-gray-700">${x.desc}</div>
-                    <div>${x.rate}</div>
-                    <div>${x.qty}</div>
-                    <div>${x.gross}</div>
-                    <div>
-                        <input type="number" class="input-financial" value="${x.discount}"
-                            oninput="updateItemDiscount(${i},this.value)">
-                        <strong class="static-value">${x.discount}</strong>
+                const originalIdx = window.billItems.indexOf(item); // To delete/edit correctly
+                
+                const row = document.createElement('div');
+                row.className = 'bill-grid-row group hover:bg-blue-50';
+                row.innerHTML = `
+                    <div class="text-left-col text-gray-500">${sno++}</div>
+                    <div class="text-left-col">${formatDate(item.date)}</div>
+                    
+                    <div class="text-left-col">
+                        <!-- Editable Description Input -->
+                        <input type="text" class="input-desc-edit" value="${item.desc}" onchange="updateItemDesc(${originalIdx}, this.value)">
+                        <span class="print-desc-display hidden">${item.desc}</span>
                     </div>
-                    <div><strong class="font-bold text-gray-900">${x.total}</strong></div>
-                    <div class="text-center">
-                        <button onclick="deleteItem(${i})" class="bg-red-500 hover:bg-red-600 text-white p-1 rounded-md text-xs no-print">X</button>
+
+                    <div class="text-right-col">${parseFloat(item.rate).toFixed(2)}</div>
+                    <div class="text-right-col">${item.qty}</div>
+                    
+                    <div class="text-right-col">
+                        <input type="number" class="input-financial w-full h-6 text-xs no-print" 
+                            value="${item.discount}" onchange="updateItemDisc(${originalIdx}, this.value)">
+                        <span class="print-value-display hidden">${item.discount > 0 ? item.discount : '-'}</span>
                     </div>
-                </div>`;
+                    
+                    <div class="text-right-col font-bold text-gray-900">${item.total}</div>
+                    
+                    <div class="text-center no-print">
+                        <button onclick="deleteItem(${originalIdx})" class="text-red-400 hover:text-red-600 font-bold">×</button>
+                    </div>
+                `;
+                tbody.appendChild(row);
             });
-            
-            const rOut = document.getElementById("receiptLines");
-            rOut.innerHTML = window.receipts.map(r => `
-                <div class="flex justify-between text-sm py-1 border-b border-dashed border-gray-200">
-                    <span>Receipt No: ${r.no} (${formatDisplayDate(r.date)}) - ${r.mode}</span>
-                    <span class="font-bold text-gray-700">₹${r.amt}</span>
-                    <button onclick="deleteReceipt('${r.no}')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-0.5 rounded-md text-xs no-print">X</button>
-                </div>`).join('');
 
-            // Save state
-            const billData = {};
-            ALL_PATIENT_INPUTS.forEach(id => {
-                 billData[id] = document.getElementById(id)?.value || '';
-            });
-            billData.lastUpdated = new Date().toISOString();
+            // 3. Render Receipts
+            const rContainer = document.getElementById('receiptLines');
+            rContainer.innerHTML = window.receipts.map((r, i) => `
+                <div class="flex justify-between border-b border-dashed border-gray-200 py-1">
+                    <span>${r.no} <span class="text-gray-400 text-[10px]">(${formatDate(r.date)})</span> <span class="bg-gray-100 px-1 rounded text-[10px]">${r.mode}</span></span>
+                    <span class="font-bold">₹${r.amount} <button onclick="deleteReceipt(${i})" class="ml-2 text-red-500 no-print">×</button></span>
+                </div>
+            `).join('');
 
-            const currentBill = { billData: billData, items: window.billItems, receipts: window.receipts };
-            saveCurrentBillToLocal(currentBill);
+            calculateTotals();
+            saveData();
         }
+
+        // 4. ACTION FUNCTIONS
+        window.addItem = function() {
+            const cat = document.getElementById('ui_cat').value;
+            // CHANGED: Get value from input instead of select
+            const desc = document.getElementById('ui_desc').value;
+            const rate = document.getElementById('ui_rate').value;
+            const qty = document.getElementById('ui_qty').value;
+            const date = document.getElementById('ui_doa').value; // Default to admission date
+
+            if(!rate || !qty) return;
+
+            window.billItems.push({
+                category: cat,
+                desc: desc,
+                rate: rate,
+                qty: qty,
+                date: date,
+                discount: 0
+            });
+            renderUI();
+        };
+
+        window.updateItemDisc = function(idx, val) {
+            window.billItems[idx].discount = val;
+            renderUI();
+        };
         
-        function updateReceiptNumber() {
-            const nextRNo = getNextSequence('receipt_sequence', 12);
-            document.getElementById('ui_rno').value = 'R' + nextRNo;
-        }
+        // New Function to handle description edits
+        window.updateItemDesc = function(idx, val) {
+            window.billItems[idx].desc = val;
+            // No need to re-render UI completely for text change to avoid focus loss, 
+            // but we call saveData.
+            saveData();
+        };
 
-        function updateItemDiscount(i, val) {
-            const d = new Decimal(val || 0);
-            const g = new Decimal(window.billItems[i].gross);
+        window.deleteItem = function(idx) {
+            window.billItems.splice(idx, 1);
+            renderUI();
+        };
 
-            if (d.gt(g)) {
-                window.billItems[i].discount = g.toFixed(2);
-            } else {
-                window.billItems[i].discount = d.toFixed(2);
+        window.addReceipt = function() {
+            const rno = document.getElementById('ui_rno').value;
+            const amt = document.getElementById('ui_ramt').value;
+            const date = document.getElementById('ui_rdate').value;
+            const mode = document.getElementById('ui_rmode').value;
+
+            if(!amt || !rno) return;
+
+            window.receipts.push({ no: rno, amount: parseFloat(amt), date: date, mode: mode });
+            document.getElementById('ui_ramt').value = '';
+            renderUI();
+        };
+
+        window.deleteReceipt = function(idx) {
+            window.receipts.splice(idx, 1);
+            renderUI();
+        };
+
+        window.addRoomDays = function() {
+            const roomType = document.getElementById('ui_roomCat').value;
+            const start = new Date(document.getElementById('ui_doa').value);
+            const end = new Date(document.getElementById('ui_dod').value);
+            
+            if(isNaN(start) || isNaN(end)) return alert("Set Dates first");
+
+            const roomData = window.TARIFF.rooms[roomType];
+            if(!roomData) return;
+
+            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            
+            for(let i=0; i < days; i++) {
+                let d = new Date(start);
+                d.setDate(d.getDate() + i);
+                const dateStr = d.toISOString().split('T')[0];
+
+                window.billItems.push(
+                    { category: "Room Rent", desc: `Room Charge: ${roomType}`, rate: roomData.tariff, qty: 1, date: dateStr, discount: 0 },
+                    { category: "Nursing", desc: "Nursing Charges", rate: roomData.nursing, qty: 1, date: dateStr, discount: 0 },
+                    { category: "Doctor Visit", desc: "Consultant Visits", rate: roomData.consultant * 2, qty: 1, date: dateStr, discount: 0 }
+                );
             }
             renderUI();
+        };
+
+        // 5. SETUP & HELPERS
+        function saveData() {
+            const data = {
+                items: window.billItems,
+                receipts: window.receipts,
+                patient: {
+                    uhid: document.getElementById('ui_uhid').value,
+                    name: document.getElementById('ui_name').value,
+                }
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
 
-        function deleteItem(i) { window.billItems.splice(i,1); renderUI(); }
-        function deleteReceipt(rNo) { window.receipts = window.receipts.filter(r => r.no !== rNo); renderUI(); }
-        
-        function updatePatientDetails() { return renderUI(); }
-        
-        function clearPatientInputs() {
-            ALL_PATIENT_INPUTS.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = '';
+        window.generateNewIDs = function() {
+            document.getElementById('ui_uhid').value = "KCC" + Math.floor(Math.random() * 10000);
+            document.getElementById('ui_ip').value = "IP" + Math.floor(Math.random() * 10000);
+            // CHANGED: Use new generator function
+            document.getElementById('b_invoice_no').innerText = generateUniqueBillNo();
+            renderUI();
+        };
+
+        window.preparePrint = function() {
+            document.title = "Bill_" + document.getElementById('ui_name').value;
+            setTimeout(() => window.print(), 100);
+        };
+
+        window.newBill = function() {
+            if(confirm("Clear current bill?")) {
+                window.billItems = [];
+                window.receipts = [];
+                document.querySelectorAll('input').forEach(i => i.value = '');
+                renderUI();
+            }
+        };
+
+        // 6. INITIALIZATION
+        (function init() {
+            // Populate Dropdowns
+            const catSel = document.getElementById('ui_cat');
+            Object.keys(window.TARIFF).forEach(k => {
+                 // Expanded list to include new keys
+                 if(['opd_charges', 'rooms', 'investigations', 'pharmacy', 'miscellaneous',
+                    'SURGEON FEES', 'ASSISTANT SURGEON FEES', 'DJ STENTING', 'ANAESTHESIA FEES',
+                    'ICU CHARGE', 'DOCTOR CHARGE', 'SPECIALTY DOCTOR ICU VISIT CHARGE', 'BED CHARGE',
+                    'NURSING CHARGES', 'OT CHARGE', 'PREANESTHETIC CHECKUP', 'MEDICINE CHARGE'
+                    ].includes(k)) {
+                     const opt = document.createElement('option');
+                     opt.value = k;
+                     opt.text = k.toUpperCase().replace('_', ' ');
+                     catSel.add(opt);
+                 }
             });
+            
+            // Populate Rooms
+            const roomSel = document.getElementById('ui_roomCat');
+            Object.keys(window.TARIFF.rooms).forEach(k => {
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.text = k;
+                roomSel.add(opt);
+            });
+
+            // Populate Doctors
+            const docSel = document.getElementById('ui_doc');
+            window.TARIFF.doctors.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.text = d;
+                docSel.add(opt);
+            });
+
+            // Dynamic Description Loader - MODIFIED
+            catSel.addEventListener('change', (e) => {
+                // Auto-fill Description text input with the Category Name
+                // This is helpful since the user has to manual edit descriptions now
+                const descInput = document.getElementById('ui_desc');
+                descInput.value = e.target.value; 
+            });
+            
+            // Trigger first load
+            // catSel.dispatchEvent(new Event('change')); 
+
+            // Set Dates
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('ui_doa').value = today;
             document.getElementById('ui_dod').value = today;
-        }
-        
-        function generateNewIDs() {
-            document.getElementById('ui_uhid').value = generateRandomId('KKC', 2, 4);
-            document.getElementById('ui_ip').value = generateRandomId('IP', 3, 3);
-            updateReceiptNumber();
-            updatePatientDetails();
-        }
-        
-        // =========================================================================
-        // 4. BUSINESS LOGIC (Depends on #3)
-        // =========================================================================
-        
-        function newBill() { 
-            if (confirm("Start a new bill? All current data will be cleared.")) { 
-                window.billItems = []; 
-                window.receipts = []; 
-                clearPatientInputs();
-                generateNewIDs(); 
-                renderUI(); 
-            } 
-        }
-
-        function clearBillingItems() { if (confirm("Clear all items?")) { window.billItems = []; renderUI(); } }
-
-        function loadDropdowns() {
-            if (!window.tariff || !window.tariff.rooms || !window.tariff.doctors) return;
+            document.getElementById('ui_rdate').value = today;
             
-            const roomSel = document.getElementById("ui_roomCat");
-            roomSel.innerHTML = Object.keys(window.tariff.rooms).map(key => `<option value="${key}">${key}</option>`).join('');
-
-            const docSel = document.getElementById("ui_doc");
-            docSel.innerHTML = window.tariff.doctors.map(d => `<option value="${d}">${d}</option>`).join('');
-
-            const catSel = document.getElementById("ui_cat");
-            catSel.innerHTML = Object.keys(window.CATEGORY_MAP).map(c => `<option value="${c}">${c}</option>`).join('');
-            
-            catSel.onchange = updateDescriptionDropdown;
-            updateDescriptionDropdown();
-            renderTariffAdmin();
-        }
-
-        function updateDescriptionDropdown() {
-            const cat = document.getElementById("ui_cat").value;
-            const descSel = document.getElementById("ui_desc");
-            const rateBox = document.getElementById("ui_rate");
-            descSel.innerHTML = "";
-            let items = [];
-
-            if (cat === "Pharmacy" || cat === "Investigation") {
-                items.push({ key: "CONSOLIDATED", name: `--- Consolidated ${cat} Bill ---`, rate: 0 });
-            }
-
-            if (cat === "Package") {
-                Object.keys(window.tariff.surgical_packages).forEach(speciality => {
-                    Object.keys(window.tariff.surgical_packages[speciality]).forEach(pkg => {
-                        if (pkg !== 'notes') items.push({ key: pkg, name: `${pkg} (${speciality})` });
-                    });
-                });
-            } else if (window.CATEGORY_MAP[cat] && window.tariff[window.CATEGORY_MAP[cat]]) {
-                let src = window.tariff[window.CATEGORY_MAP[cat]];
-                Object.keys(src).forEach(k => {
-                    if (k !== "note" && k !== "notes") {
-                        const itemData = src[k];
-                        const rate = typeof itemData === 'object' ? itemData.rate : itemData;
-                        const name = typeof itemData === 'object' ? itemData.name : k;
-                        items.push({ key: k, name: name, rate: rate });
-                    }
-                });
-            }
-
-            items.forEach(it => {
-                let o = document.createElement("option");
-                o.value = it.key;
-                o.text = it.name;
-                if (it.rate) o.setAttribute("data-rate", it.rate);
-                descSel.add(o);
-            });
-
-            descSel.disabled = (items.length === 0);
-            
-            descSel.onchange = () => {
-                const opt = descSel.options[descSel.selectedIndex];
-                if (opt.value === "CONSOLIDATED") {
-                    rateBox.value = "";
-                    rateBox.disabled = false;
-                    document.getElementById("ui_qty").value = 1;
-                    document.getElementById("ui_qty").disabled = true;
-                }
-                else if (opt.hasAttribute("data-rate")) {
-                    rateBox.value = opt.getAttribute("data-rate");
-                    rateBox.disabled = true;
-                    document.getElementById("ui_qty").disabled = false;
-                } else {
-                    rateBox.value = "";
-                    rateBox.disabled = false;
-                    document.getElementById("ui_qty").disabled = false;
-                }
-            };
-            if (items.length > 0) descSel.onchange();
-        }
-
-        function addItem() {
-            const cat = document.getElementById("ui_cat").value;
-            const descSel = document.getElementById("ui_desc");
-            const descText = descSel.options[descSel.selectedIndex].text;
-            const date = document.getElementById("ui_doa").value;
-            let qty = Number(document.getElementById("ui_qty").value || 1);
-            let rate = Number(document.getElementById("ui_rate").value || 0);
-
-            if (descSel.value === "CONSOLIDATED") {
-                qty = 1;
-                window.billItems.push(createBillItem(cat, date, descText, rate, qty));
-            } else if (cat === "Package") {
-                const roomKey = document.getElementById("ui_roomCat").value;
-                const pkgKey = descSel.value;
-                let pkgFound = null;
-                let breakupTemplate = null;
-
-                Object.keys(window.tariff.surgical_packages).forEach(speciality => {
-                    if (window.tariff.surgical_packages[speciality][pkgKey]) {
-                        pkgFound = window.tariff.surgical_packages[speciality][pkgKey][roomKey];
-                        breakupTemplate = window.tariff.surgical_packages[speciality][pkgKey].breakup_template;
-                    }
-                });
-
-                if (pkgFound && breakupTemplate) {
-                    const pkgRate = new Decimal(pkgFound);
-                    Object.keys(breakupTemplate).forEach(itemDesc => {
-                        const percentage = new Decimal(breakupTemplate[itemDesc]);
-                        const itemRate = pkgRate.mul(percentage).toNumber();
-                        
-                        window.billItems.push(createBillItem("Surgical", date, `${pkgKey}: ${itemDesc} (${(percentage.mul(100)).toFixed(0)}%)`, itemRate, qty));
-                    });
-                } else { alert("Package rate not found."); return; }
-            } else {
-                window.billItems.push(createBillItem(cat, date, descText, rate, qty));
-            }
-
+            generateNewIDs();
             renderUI();
-        }
+        })();
 
-        function addRoomDays() {
-            const doa = document.getElementById("ui_doa").value;
-            const dod = document.getElementById("ui_dod").value;
-            const roomKey = document.getElementById("ui_roomCat").value;
-
-            if (!doa || !dod || !roomKey) return alert("Select Admission/Discharge Dates and Room Category.");
-
-            window.billItems = window.billItems.filter(x => !["Room Rent", "Nursing", "Doctor Visit", "Miscellaneous"].includes(x.cat));
-
-            const r = window.tariff.rooms[roomKey];
-            const start = new Date(doa);
-            const end = new Date(dod);
-            const hrs = (end - start) / 3600000;
-            const full = Math.floor(hrs / 24);
-            const rem = hrs % 24;
-            const rules = window.tariff.billing_rules.room_rent_rule;
-
-            for (let i = 0; i < full; i++) {
-                const d = new Date(start.getTime() + i*86400000).toISOString().split("T")[0];
-                window.billItems.push(createBillItem("Room Rent", d, `Room: ${roomKey}`, r.tariff_per_day, 1));
-                window.billItems.push(createBillItem("Nursing", d, "Nursing Charge per day", r.nursing_per_day, 1));
-                const docFee = new Decimal(r.consultant_per_visit).plus(new Decimal(r.super_specialist_per_visit)).toNumber();
-                window.billItems.push(createBillItem("Doctor Visit", d, "Consultant Visit (x2)", docFee * 2, 1));
-            }
-
-            if (rem > 0) {
-                let roomRate = new Decimal(r.tariff_per_day);
-                let nurRate = new Decimal(r.nursing_per_day);
-
-                if (rem <= rules.full_day_hours) {
-                    roomRate = roomRate.mul(rules.half_day_multiplier);
-                    nurRate = nurRate.mul(rules.half_day_multiplier);
-                }
-
-                const finalDate = end.toISOString().split("T")[0];
-                window.billItems.push(createBillItem("Room Rent", finalDate, `Room: ${roomKey} (Final Day)`, roomRate.toNumber(), 1));
-                window.billItems.push(createBillItem("Nursing", finalDate, "Nursing Charge (Final Day)", nurRate.toNumber(), 1));
-                const docFee = new Decimal(r.consultant_per_visit).plus(new Decimal(r.super_specialist_per_visit)).toNumber();
-                window.billItems.push(createBillItem("Doctor Visit", finalDate, "Consultant Visit (x1)", docFee, 1));
-            }
-
-            if (window.tariff.miscellaneous.MRD_CHARGE) {
-                window.billItems.push(createBillItem("Miscellaneous", doa, window.tariff.miscellaneous.MRD_CHARGE.name, window.tariff.miscellaneous.MRD_CHARGE.rate, 1));
-            }
-
-            sortBillItems();
-            renderUI();
-        }
-
-        function addReceipt() {
-            const amt = new Decimal(document.getElementById("ui_ramt").value || 0);
-            const rNo = document.getElementById("ui_rno").value;
-
-            if (amt.lte(0) || rNo.length < 5) return alert("Enter valid Amount and Receipt Number.");
-
-            const { finalBillAmount } = calculateTotals();
-            const paid = window.receipts.reduce((a,b) => a.plus(new Decimal(b.amt)), new Decimal(0));
-
-            if (paid.plus(amt).gt(finalBillAmount.plus(new Decimal(0.01)))) {
-                alert("Receipt exceeds Grand Total.");
-                return;
-            }
-
-            window.receipts.push({
-                no: rNo,
-                date: document.getElementById("ui_rdate").value || new Date().toISOString().split("T")[0],
-                amt: amt.toFixed(2),
-                mode: document.getElementById("ui_rmode").value
-            });
-
-            document.getElementById("ui_ramt").value = '';
-            updateReceiptNumber();
-            renderUI();
-        }
-
-        function preparePrint() {
-            document.getElementById("b_invoice_no").innerText = generateRandomId('BILL', 6, 2);
-            window.print();
-        }
-
-        function toggleTariffAdmin() {
-            const modal = document.getElementById('tariffModal');
-            modal.classList.toggle('hidden-admin');
-        }
-
-        function renderTariffAdmin() {
-            const container = document.getElementById('tariffBody');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            const renderTariffInput = (section, key, field, label, value) => {
-                return `
-                    <div class="flex justify-between items-center p-2 border-b border-gray-100 bg-white">
-                        <span class="font-medium text-sm">${label}</span>
-                        <input type="number" value="${value}" oninput="updateTariffValue('${section}', '${key}', '${field}', this.value)" 
-                            class="border p-1 w-24 text-right text-xs">
-                    </div>`;
-            };
-
-            // 1. Rooms
-            container.innerHTML += `<div class="col-span-2 p-2 bg-gray-100 font-bold mt-4">1. Room Tariffs</div>`;
-            Object.keys(window.tariff.rooms).forEach(key => {
-                const room = window.tariff.rooms[key];
-                container.innerHTML += `<div class="col-span-2 font-semibold mt-2">${key}</div>`;
-                container.innerHTML += renderTariffInput('rooms', key, 'tariff_per_day', 'Tariff/Day', room.tariff_per_day);
-                container.innerHTML += renderTariffInput('rooms', key, 'nursing_per_day', 'Nursing/Day', room.nursing_per_day);
-            });
-            
-            // 2. Doctors
-            container.innerHTML += `<div class="col-span-2 p-2 bg-gray-100 font-bold mt-4">2. Doctors/Consultants List</div>`;
-            window.tariff.doctors.forEach((doc, i) => {
-                 container.innerHTML += `
-                    <div class="flex justify-between items-center p-2 border-b border-gray-100 bg-white">
-                        <input type="text" value="${doc}" oninput="updateDoctorName(${i}, this.value)" class="border p-1 w-48 text-sm">
-                        <button onclick="deleteDoctor(${i})" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Delete</button>
-                    </div>`;
-            });
-            container.innerHTML += `<div class="col-span-2 p-3"><input type="text" id="newDoctorName" placeholder="New Doctor Name" class="border p-1 w-48 text-sm">
-                                    <button onclick="addDoctor()" class="bg-green-500 text-white px-2 py-1 rounded ml-2 text-sm">Add Doctor</button></div>`;
-            
-            // 3. Surgical Packages & Breakups
-            container.innerHTML += `<div class="col-span-2 p-2 bg-gray-100 font-bold mt-4">3. Surgical Packages & Breakups</div>`;
-            Object.keys(window.tariff.surgical_packages).forEach(speciality => {
-                if(speciality === 'notes') return;
-                Object.keys(window.tariff.surgical_packages[speciality]).forEach(pkgKey => {
-                    const pkg = window.tariff.surgical_packages[speciality][pkgKey];
-                    container.innerHTML += `<div class="col-span-2 font-semibold mt-2 text-sm text-blue-700">${pkgKey} (${speciality})</div>`;
-                    
-                    // Rates by Room Type
-                    Object.keys(pkg).filter(k => k !== 'breakup_template').forEach(roomType => {
-                         container.innerHTML += `
-                            <div class="flex justify-between items-center p-2 border-b border-gray-100 bg-gray-50 text-xs">
-                                <span>Rate for ${roomType}</span>
-                                <input type="number" value="${pkg[roomType]}" oninput="updatePackageRate('${speciality}', '${pkgKey}', '${roomType}', this.value)" 
-                                    class="border p-1 w-24 text-right">
-                            </div>`;
-                    });
-
-                    // Breakup Template
-                    container.innerHTML += `<div class="col-span-2 text-xs font-medium mt-1">Breakdown %:</div>`;
-                    Object.keys(pkg.breakup_template).forEach(breakupItem => {
-                        container.innerHTML += `
-                            <div class="flex justify-between items-center p-2 border-b border-gray-100 bg-gray-50 text-xs">
-                                <span>${breakupItem}</span>
-                                <input type="number" value="${(pkg.breakup_template[breakupItem] * 100)}" oninput="updatePackageBreakup('${speciality}', '${pkgKey}', '${breakupItem}', this.value)" 
-                                    class="border p-1 w-16 text-right">%
-                            </div>`;
-                    });
-                });
-            });
-
-            // 4. Investigations 
-            container.innerHTML += `<div class="col-span-2 p-2 bg-gray-100 font-bold mt-4">4. Investigation Rates (Lab/Radiology)</div>`;
-            Object.keys(window.tariff.investigations).forEach(key => {
-                const item = window.tariff.investigations[key];
-                 container.innerHTML += renderTariffInput('investigations', key, 'rate', `${item.name} (${key})`, item.rate);
-            });
-            // 5. Pharmacy 
-            container.innerHTML += `<div class="col-span-2 p-2 bg-gray-100 font-bold mt-4">5. Pharmacy Items</div>`;
-            Object.keys(window.tariff.pharmacy).forEach(key => {
-                const item = window.tariff.pharmacy[key];
-                 container.innerHTML += renderTariffInput('pharmacy', key, 'rate', `${item.name} (${key})`, item.rate);
-            });
-        }
-
-        function updateTariffValue(section, key, field, value) {
-            if (window.tariff[section] && window.tariff[section][key]) {
-                window.tariff[section][key][field] = Number(value);
-                saveTariffToLocal();
-            }
-        }
-        function updatePackageRate(speciality, pkgKey, roomType, value) {
-            window.tariff.surgical_packages[speciality][pkgKey][roomType] = Number(value);
-            saveTariffToLocal();
-        }
-        function updatePackageBreakup(speciality, pkgKey, breakupItem, value) {
-            window.tariff.surgical_packages[speciality][pkgKey].breakup_template[breakupItem] = Number(value) / 100;
-            saveTariffToLocal();
-        }
-        function updateDoctorName(index, name) {
-            window.tariff.doctors[index] = name;
-            saveTariffToLocal();
-        }
-        function deleteDoctor(index) {
-             if (confirm("Delete this doctor?")) {
-                window.tariff.doctors.splice(index, 1);
-                saveTariffToLocal();
-            }
-        }
-        function addDoctor() {
-            const name = document.getElementById('newDoctorName').value.trim();
-            if (name) {
-                if (!window.tariff.doctors) window.tariff.doctors = [];
-                window.tariff.doctors.push(name);
-                document.getElementById('newDoctorName').value = '';
-                saveTariffToLocal();
-            }
-        }
-
-        // --- Data Population Function ---
-        function populatePraveenKumarBill() {
-            // 1. Clear everything
-            window.billItems = [];
-            window.receipts = [];
-            clearPatientInputs();
-
-            // 2. Set Patient Details (from PDF)
-            document.getElementById('ui_name').value = 'MR. PRAVEEN KUMAR';
-            document.getElementById('ui_age').value = '60'; 
-            document.getElementById('ui_gender').value = 'Male';
-            document.getElementById('ui_doa').value = '2025-09-27';
-            document.getElementById('ui_dod').value = '2025-09-28';
-            document.getElementById('ui_roomCat').value = 'GENERAL WARD';
-            document.getElementById('ui_doc').value = 'Dr. B.K. Srinivasan';
-
-            // 3. Auto-Charge (Room, Nursing, Doctor Visits) for 1 day
-            addRoomDays(); 
-
-            // 4. Manually Add Specific Charges (from PDF breakup)
-            // Note: addRoomDays() already added 2 days Bed/Nursing/Doctor visits. We assume the PDF's Bed/Nursing/Doctor totals (3000, 900, 3600) COVER the duration, so we use the individual package and consolidated items.
-
-            function addManualItem(cat, desc, rate, qty, sortOrder) {
-                const date = document.getElementById("ui_doa").value;
-                window.billItems.push(createBillItem(cat, date, desc, rate, qty, sortOrder));
-            }
-            
-            // These items were NOT autogenerated but are listed separately in the PDF
-            addManualItem("Surgical", "SURGEON FEES", 50000, 1);
-            addManualItem("Surgical", "ASSISTANT SURGEON FEES", 16000, 1);
-            addManualItem("Surgical", "DJ STENDING", 12000, 1);
-            addManualItem("Surgical", "ANAESTHESIA FEEES", 16000, 1);
-            addManualItem("Miscellaneous", "ICU CHARGE", 5000, 1);
-            addManualItem("Miscellaneous", "OT CHARGE", 27000, 1);
-            addManualItem("Investigation", "PREANESTHETIC CHECKUP", 1200, 1);
-            
-            // Consolidated Items
-            addManualItem("Pharmacy", "--- Consolidated Pharmacy Bill ---", 19243, 1); 
-            addManualItem("Investigation", "--- Consolidated Lab Amount ---", 4750, 1); 
-
-            // 5. Add Receipts
-            window.receipts.push({ no: 'R-297', date: '2025-09-27', amt: '100000.00', mode: 'Cash' });
-            window.receipts.push({ no: 'R-296', date: '2025-09-28', amt: '60293.00', mode: 'Cash' });
-
-            sortBillItems();
-            renderUI();
-            // Final check on totals (160293 expected)
-            console.log("Bill Populated for MR. PRAVEEN KUMAR. Total calculated: " + calculateTotals().finalBillAmount.toFixed(2));
-        }
-        
-        // =========================================================================
-        // 5. INIT BLOCK (Must be last to ensure all functions are defined)
-        // =========================================================================
-        
-        function initLocal() {
-            loadTariffFromLocal();
-            
-            // Load the hardcoded bill data instead of local storage for quick testing
-            populatePraveenKumarBill();
-            
-            // 3. Render final state
-            renderUI();
-        }
-        
-        window.onload = () => {
-            initLocal(); 
-            document.getElementById("ui_rdate").value = new Date().toISOString().split('T')[0];
-        };
-        
-        // Expose functions globally for HTML event handlers
-        window.generateNewIDs = generateNewIDs;
-        window.newBill = newBill;
-        window.updatePatientDetails = updatePatientDetails;
-        window.addRoomDays = addRoomDays;
-        window.clearBillingItems = clearBillingItems;
-        window.addItem = addItem;
-        window.addReceipt = addReceipt;
-        window.updateItemDiscount = updateItemDiscount;
-        window.deleteItem = deleteItem;
-        window.deleteReceipt = deleteReceipt;
-        window.preparePrint = preparePrint;
-        window.updateDescriptionDropdown = updateDescriptionDropdown;
-        window.toggleTariffAdmin = toggleTariffAdmin;
-        window.updateTariffValue = updateTariffValue;
-        window.updatePackageRate = updatePackageRate;
-        window.updatePackageBreakup = updatePackageBreakup;
-        window.updateDoctorName = updateDoctorName;
-        window.deleteDoctor = deleteDoctor;
-        window.addDoctor = addDoctor;
-
+        // Admin Toggles
+        window.toggleTariffAdmin = () => document.getElementById('tariffModal').classList.toggle('hidden');
+        window.clearBillingItems = () => { window.billItems = []; renderUI(); };
     </script>
-</head>
-<body class="p-4 md:p-8">
-    
-    <!-- TARIFF MANAGEMENT MODAL (Pop-up) -->
-    <div id="tariffModal" class="no-print hidden-admin fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-2xl p-6 w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h2 class="text-xl font-bold text-gray-800">Tariff Master Configuration</h2>
-                <!-- FIX: Ensure onclick calls the toggle function to close the modal -->
-                <button onclick="toggleTariffAdmin()" class="text-gray-500 hover:text-gray-800 text-2xl font-light">&times;</button>
-            </div>
-            <div id="tariffBody" class="grid grid-cols-2 gap-4">
-                <!-- Tariff details rendered here -->
-            </div>
-            <p class="mt-4 text-xs text-gray-500">Changes are saved automatically to Local Storage. Close to apply changes.</p>
-        </div>
-    </div>
-    
-    <!-- MAIN BILLING INTERFACE -->
-    <div class="container-main mx-auto print-area bg-white shadow-xl rounded-lg p-6 md:p-10 transition-all">
-        
-        <!-- Header (Print Section for repetition) -->
-        <header class="header-print-section flex justify-between items-start border-b-2 border-gray-300 pb-4 mb-6">
-            <div class="flex items-center space-x-4">
-                <div class="w-16 h-16 bg-blue-900 text-white flex items-center justify-center text-xl font-extrabold rounded-md">KCC</div>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">KRISHNA KIDNEY CENTRE</h1>
-                    <p class="text-sm text-gray-500">Krishnagiri, Tamil Nadu • India</p> 
-                </div>
-            </div>
-            <div class="text-right">
-                <span class="bg-blue-600 text-white text-md font-semibold px-4 py-2 rounded-lg uppercase tracking-wider">DISCHARGE FINAL BILL</span>
-                <p class="text-xs mt-2">Bill No: <strong id="b_invoice_no" class="text-red-600">PROVISIONAL</strong></p>
-                <p class="text-xs">Run Date: <strong id="b_run_date">-</strong></p>
-                <p class="text-xs mt-1 page-counter"></p>
-            </div>
-        </header>
-
-        <!-- Control Line (No-Print) -->
-        <div class="no-print flex justify-between items-center bg-gray-100 p-3 rounded-lg mb-4 shadow-inner">
-            <div class="space-x-2">
-                <button onclick="generateNewIDs()" class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">Generate New IDs</button>
-                <button onclick="newBill()" class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">Clear Bill</button>
-            </div>
-            <button onclick="toggleTariffAdmin()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">Manage Tariffs</button>
-        </div>
-        
-        <!-- Patient Details -->
-        <div class="mb-4">
-            <!-- UPDATED HEADER STYLE -->
-            <div class="bg-blue-600 bg-blue-100-h text-white text-blue-800-h font-extrabold p-3 rounded-t-lg shadow-sm text-lg">PATIENT & GENERAL DETAILS</div>
-            <!-- REDUCED GAPS AND PADDING -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 border border-gray-200 rounded-b-lg shadow-md">
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">UHID</label><input type="text" id="ui_uhid" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">IP No</label><input type="text" id="ui_ip" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Patient Name</label><input type="text" id="ui_name" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
-                
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Admission Date</label><input type="date" id="ui_doa" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Discharge Date</label><input type="date" id="ui_dod" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Room Category</label><select id="ui_roomCat" onchange="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></select></div>
-
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Consultant</label><select id="ui_doc" onchange="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></select></div>
-                <div class="flex flex-col"><label class="text-xs font-medium text-gray-500">Insurance</label><input type="text" id="ui_insurance" oninput="updatePatientDetails()" class="border p-1 rounded focus:ring-blue-400 focus:border-blue-400"></div>
-                <div class="flex flex-col justify-end no-print">
-                    <!-- The button is kept for functionality, but hidden via no-print as requested -->
-                    <button onclick="addRoomDays()" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition">Auto-Charge Room/Nursing</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Billing Items -->
-        <div class="mb-4">
-            <div class="bg-gray-200 text-gray-800 font-semibold p-3 rounded-t-lg">Billing Items</div>
-            
-            <!-- Header Grid -->
-            <div class="bill-grid-header text-xs font-bold text-gray-600 uppercase bg-gray-100 p-1 border-b border-gray-300">
-                <div class="text-left">S.No</div>
-                <div class="text-left">Date</div>
-                <div class="text-left">Description</div>
-                <div>Rate</div>
-                <div>Qty</div>
-                <div>Gross</div>
-                <div class="no-print">Discount</div>
-                <div>Total</div>
-                <div class="no-print">Action</div>
-            </div>
-            
-            <!-- Item Rows -->
-            <div id="ui_billBody" class="border-x border-gray-200">
-                <!-- Rows injected here -->
-            </div>
-            <div class="text-right p-2 border border-t-0 border-gray-200 rounded-b-lg no-print">
-                 <button onclick="clearBillingItems()" class="bg-red-400 hover:bg-red-500 text-white text-sm px-3 py-1 rounded transition">Clear All Items</button>
-            </div>
-        </div>
-
-        <!-- Add Item Manually -->
-        <div class="mb-4 border border-dashed border-blue-400 p-3 rounded-lg bg-blue-50 no-print">
-            <h3 class="text-base font-semibold text-blue-800 mb-2">Add Item Manually</h3>
-            <div class="grid grid-cols-5 gap-3">
-                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Category</label><select id="ui_cat" class="border p-1 rounded"></select></div>
-                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Description</label><select id="ui_desc" class="border p-1 rounded"></select></div>
-                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Rate</label><input type="number" id="ui_rate" class="border p-1 rounded"></div>
-                <div class="col-span-1 flex flex-col"><label class="text-xs font-medium text-gray-500">Qty</label><input type="number" id="ui_qty" value="1" class="border p-1 rounded"></div>
-                <div class="col-span-1 flex flex-col justify-end">
-                    <button onclick="addItem()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1.5 rounded-lg transition">Add Item</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Summary and Receipts -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <!-- Receipts -->
-            <div class="mb-6">
-                <div class="bg-gray-200 text-gray-800 font-semibold p-3 rounded-t-lg">Receipts and Payments</div>
-                <div class="p-3 border border-gray-200 rounded-b-lg">
-                    <div id="receiptLines" class="mb-4">
-                        <!-- Receipts rendered here -->
-                    </div>
-                    
-                    <div class="border-t pt-3 no-print">
-                        <h4 class="text-sm font-semibold mb-2">Add Payment</h4>
-                        <input type="text" id="ui_rno" placeholder="Receipt No" class="border p-1 w-24">
-                        <input type="number" id="ui_ramt" placeholder="Amount" class="border p-1 w-24">
-                        <input type="date" id="ui_rdate" class="border p-1 w-28">
-                        <select id="ui_rmode" class="border p-1 w-20"><option>Cash</option><option>UPI</option></select>
-                        <button onclick="addReceipt()" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded transition">Add</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Summary -->
-            <div>
-                <div class="bg-gray-200 text-gray-800 font-semibold p-3 rounded-t-lg">Summary</div>
-                <div class="p-4 border border-gray-200 rounded-b-lg">
-                    <div class="flex justify-between items-center pb-2 border-b border-gray-100 no-print">
-                        <span class="text-sm font-medium">Global Bill Discount (%)</span> 
-                        <input type="number" id="ui_billDiscount" value="0" min="0" max="100" oninput="updatePatientDetails()" class="input-financial w-16">
-                    </div>
-
-                    <div class="flex justify-between py-1"><span>Total Gross</span> <strong id="ui_s_gross">₹0.00</strong></div>
-                    <div class="flex justify-between py-1 text-red-500"><span>Total Item Discount</span> <strong id="ui_itemDiscount">- ₹0.00</strong></div>
-                    <div class="flex justify-between py-1 text-red-500"><span>Global Discount Applied</span> <strong id="ui_globalDiscount">- ₹0.00</strong></div>
-                    
-                    <div class="flex justify-between py-2 border-t font-semibold mt-2"><span>Final Bill Amount</span> <strong id="ui_s_net_bill">₹0.00</strong></div>
-                    <div class="flex justify-between py-1 text-green-700"><span>GST/VAT (<span id="ui_tax_rate_display">0</span>%)</span> <strong id="ui_s_tax_rate">₹0.00</strong></div>
-                    
-                    <div class="flex justify-between py-2 border-t-2 border-gray-700 font-bold text-lg"><span>**GRAND TOTAL**</span> <strong id="ui_s_grand_total">₹0.00</strong></div>
-                    
-                    <div class="flex justify-between py-2 border-t font-medium mt-2"><span>Receipts Paid</span> <strong id="ui_s_rec">₹0.00</strong></div>
-                    
-                    <div class="flex justify-between py-2 border-t-2 border-red-700 font-extrabold text-xl text-red-700 mt-2"><span>BALANCE DUE</span> <strong id="ui_s_final">₹0.00</strong></div>
-                    
-                    <div class="text-right mt-4 no-print">
-                        <button onclick="preparePrint()" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2 rounded-lg transition">Export Final PDF</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Hospital Address Footer (Print Only) -->
-        <footer id="printFooter" class="mt-8 pt-4 border-t border-gray-300 hidden text-center text-gray-600 text-xs">
-            <p>KRISHNA KIDNEY CENTRE, 123 Main Street, Near Bus Stand, Krishnagiri - 635001, Tamil Nadu, India</p>
-            <p>Phone: +91 4343-22XXXX | Email: info@krishnakidneycentre.com</p>
-            <p class="mt-2 text-gray-400">This is a computer generated invoice. Signature is not required.</p>
-        </footer>
-    </div>
 </body>
 </html>
