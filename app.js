@@ -1,210 +1,371 @@
-/* ============================================================================
-   AUTO GENERATORS
-============================================================================ */
-function genUHID() {
-    const now = new Date();
-    const y = String(now.getFullYear()).slice(-2);
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const r = String(Math.floor(Math.random() * 900000) + 100000);
-    return `KCC-${y}${m}-${r}`;
+/* ============================================================
+   SIMPLE STORAGE (localStorage)
+============================================================ */
+function load(key){
+  return JSON.parse(localStorage.getItem(key) || "null");
+}
+function save(key,val){
+  localStorage.setItem(key,JSON.stringify(val));
 }
 
-function genIP() {
-    const now = new Date();
-    const y = String(now.getFullYear()).slice(-2);
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const r = String(Math.floor(Math.random() * 900000) + 100000);
-    return `IP-${y}${m}-${r}`;
-}
+/* ============================================================
+   GLOBAL STATE
+============================================================ */
+let billItems=[];
+let receipts=[];
+let tariff=null;
+let history = load("history") || [];
 
-function genInvoice() {
-    return String(Math.floor(100000000000 + Math.random() * 900000000000));
-}
+/* ============================================================
+   AUTO INIT TARIFF DATA
+============================================================ */
+function initTariff(){
+  if(load("tariff")){ tariff = load("tariff"); return; }
 
-/* ============================================================================
-   TABS
-============================================================================ */
-document.querySelectorAll(".tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-        document.querySelector(".tab.active").classList.remove("active");
-        tab.classList.add("active");
-
-        document.querySelector(".tab-section.active").classList.remove("active");
-        document.getElementById(tab.dataset.tab).classList.add("active");
-    });
-});
-
-/* ============================================================================
-   PATIENT GENERATOR
-============================================================================ */
-document.getElementById("genPatient").onclick = () => {
-    document.getElementById("uhid").value = genUHID();
-    document.getElementById("ipNo").value = genIP();
-};
-
-/* ============================================================================
-   BILL ROW CREATOR
-============================================================================ */
-const billRows = document.getElementById("billRows");
-
-function addRow(date, desc, rate, qty) {
-    const row = document.createElement("div");
-    row.className = "billrow";
-
-    row.innerHTML = `
-        <input value="${date}" type="date" class="date">
-        <input value="${desc}">
-        <input type="number" class="rate" value="${rate}">
-        <input type="number" class="qty" value="${qty}">
-        <div class="gross">0.00</div>
-        <div class="gst">0.00</div>
-        <div class="net">0.00</div>
-        <button class="del">×</button>
-    `;
-
-    row.querySelector(".del").onclick = () => {
-        row.remove();
-        calcTotals();
-    };
-
-    billRows.appendChild(row);
-    calcTotals();
-}
-
-/* ============================================================================
-   DAILY BILLING GENERATOR
-============================================================================ */
-document.getElementById("genDaily").onclick = () => {
-
-    const adm = document.getElementById("admDate").value;
-    const run = document.getElementById("runDate").value;
-
-    if (!adm || !run) return alert("Please set admission & run date");
-
-    let dt = new Date(adm);
-    const end = new Date(run);
-
-    billRows.innerHTML = "";
-
-    while (dt <= end) {
-        const d = dt.toISOString().split("T")[0];
-        addRow(d, "Room Rent", document.getElementById("t_room").value, 1);
-        addRow(d, "Nursing", document.getElementById("t_nursing").value, 1);
-        addRow(d, "RMO/DMO Duty", document.getElementById("t_rmo").value, 1);
-        addRow(d, "Consultation Visit", document.getElementById("t_consult").value, 1);
-        addRow(d, "Consultation Visit", document.getElementById("t_consult").value, 1);
-
-        dt.setDate(dt.getDate() + 1);
+  tariff = {
+    rooms:{
+      "General Ward":{room:1200,nursing:400,doctor:600},
+      "Semi Private":{room:2000,nursing:600,doctor:800},
+      "Private":{room:3500,nursing:800,doctor:1200},
+      "Deluxe":{room:5000,nursing:1200,doctor:1500}
+    },
+    doctors:["Dr. B.K. Srinivasan","Dr. Rajesh","Dr. Kumar"],
+    packages:{
+      "URS Procedure":{
+        package:50000,
+        breakup:[
+          {d:"Surgeon Fees",r:50000,q:1},
+          {d:"Assistant Surgeon Fees",r:16000,q:1},
+          {d:"DJ Stenting",r:12000,q:1},
+          {d:"Anaesthesia Fees",r:10000,q:1},
+          {d:"OT Charge",r:12000,q:1}
+        ]
+      }
     }
-};
+  };
 
-/* ============================================================================
-   SURGICAL PACKAGES
-============================================================================ */
-const packages = {
-    thyroid: [
-        { desc: "OT Charges", rate: 18000 },
-        { desc: "Surgeon Fee", rate: 15000 },
-        { desc: "Assistant Surgeon Fee", rate: 6000 },
-        { desc: "Anesthesia Charges", rate: 9000 }
-    ],
-    turb: [
-        { desc: "OT Charges", rate: 26000 },
-        { desc: "Surgeon Fee", rate: 14000 }
-    ],
-    hernia: [
-        { desc: "OT Charges", rate: 15000 },
-        { desc: "Surgeon Fee", rate: 10000 }
-    ],
-    appendix: [
-        { desc: "OT Charges", rate: 14000 },
-        { desc: "Surgeon Fee", rate: 12000 }
-    ]
-};
+  save("tariff",tariff);
+}
+initTariff();
 
-document.getElementById("loadPackage").onclick = () => {
-    const key = document.getElementById("packageSelect").value;
-    if (!key) return;
 
-    packages[key].forEach(item => {
-        addRow(new Date().toISOString().split("T")[0], item.desc, item.rate, 1);
-    });
-};
+/* ============================================================
+   LOAD DROPDOWNS
+============================================================ */
+function loadDropdowns(){
+  let r=document.getElementById("ui_roomCat");
+  r.innerHTML="";
+  Object.keys(tariff.rooms).forEach(x=>{
+    let o=document.createElement("option");
+    o.text=x; r.add(o);
+  });
 
-/* ============================================================================
-   MANUAL ITEM
-============================================================================ */
-document.getElementById("addManual").onclick = () => {
-    addRow(new Date().toISOString().split("T")[0], "Manual Item", 0, 1);
-};
+  let d=document.getElementById("ui_doc");
+  d.innerHTML="";
+  tariff.doctors.forEach(x=>{
+    let o=document.createElement("option");
+    o.text=x; d.add(o);
+  });
+}
+loadDropdowns();
 
-/* ============================================================================
-   TOTALS ENGINE
-============================================================================ */
-function calcTotals() {
-    let gross = 0, gst = 0, net = 0;
 
-    billRows.querySelectorAll(".billrow").forEach(r => {
-        let rate = +r.querySelector(".rate").value;
-        let qty = +r.querySelector(".qty").value;
-
-        let g = rate * qty;
-        let gs = g * 0.12;
-        let n = g + gs;
-
-        r.querySelector(".gross").innerText = g.toFixed(2);
-        r.querySelector(".gst").innerText = gs.toFixed(2);
-        r.querySelector(".net").innerText = n.toFixed(2);
-
-        gross += g;
-        gst += gs;
-        net += n;
-    });
-
-    document.getElementById("grossTotal").innerText = "₹" + gross.toFixed(2);
-    document.getElementById("gstTotal").innerText = "₹" + gst.toFixed(2);
-    document.getElementById("finalTotal").innerText = "₹" + net.toFixed(2);
+/* ============================================================
+   AUTO GENERATE BILL NO
+============================================================ */
+function uniqBillNo(){
+  return "BILL-" + Math.floor(Math.random()*999999999);
 }
 
-billRows.addEventListener("input", calcTotals);
 
-/* ============================================================================
-   PRINT ENGINE
-============================================================================ */
-document.getElementById("goPrint").onclick = () => {
-    let printDetails = `
-        <p><strong>UHID:</strong> ${document.getElementById("uhid").value}</p>
-        <p><strong>IP No:</strong> ${document.getElementById("ipNo").value}</p>
-        <p><strong>Patient:</strong> ${document.getElementById("pname").value}</p>
-        <p><strong>Age/Gender:</strong> ${document.getElementById("agegender").value}</p>
-        <p><strong>Practitioner:</strong> ${document.getElementById("doctor").value}</p>
-        <p><strong>Speciality:</strong> ${document.getElementById("speciality").value}</p>
-    `;
+/* ============================================================
+   ADD NEW ITEM
+============================================================ */
+function addItem(){
+  let cat = ui_cat.value;
+  let desc = ui_desc.value;
+  let rate = parseFloat(ui_rate.value || 0);
+  let qty = parseFloat(ui_qty.value || 1);
+  let date = ui_date.value;
 
-    document.getElementById("printDetails").innerHTML = printDetails;
+  if(cat==="Pharmacy" || cat==="Investigation"){
+    date = ""; // as requested
+  }
 
-    const tbody = document.getElementById("printRows");
-    tbody.innerHTML = "";
-
-    billRows.querySelectorAll(".billrow").forEach(r => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${r.querySelector(".date").value}</td>
-            <td>${r.children[1].value}</td>
-            <td>${r.querySelector(".rate").value}</td>
-            <td>${r.querySelector(".qty").value}</td>
-            <td>${r.querySelector(".gross").innerText}</td>
-            <td>${r.querySelector(".gst").innerText}</td>
-            <td>${r.querySelector(".net").innerText}</td>
-        `;
-        tbody.appendChild(tr);
+  // Packages
+  if(cat==="Package" || cat==="Surgical"){
+    if(tariff.packages[desc]){
+      tariff.packages[desc].breakup.forEach(x=>{
+        let g = x.r * x.q;
+        billItems.push({
+          cat:"Surgical",
+          date:"",
+          desc:x.d,
+          rate:x.r,
+          qty:x.q,
+          gross:g,
+          net:g
+        });
+      });
+    }
+  } else {
+    let gross = rate * qty;
+    billItems.push({
+      cat, desc, rate, qty, date,
+      gross, net:gross
     });
+  }
 
-    document.getElementById("p_gross").innerText = document.getElementById("grossTotal").innerText;
-    document.getElementById("p_gst").innerText = document.getElementById("gstTotal").innerText;
-    document.getElementById("p_final").innerText = document.getElementById("finalTotal").innerText;
-};
+  renderUI();
+}
 
-document.getElementById("printBill").onclick = () => {
-    window.print();
-};
+
+/* ============================================================
+   AUTO-ADD ROOM DAYS
+============================================================ */
+ui_dod.addEventListener("change", addRoomDays);
+
+function addRoomDays(){
+  let doa = ui_doa.value;
+  let dod = ui_dod.value;
+  if(!doa || !dod) return;
+
+  let room = ui_roomCat.value;
+  let info = tariff.rooms[room];
+  if(!info) return;
+
+  let s = new Date(doa), e = new Date(dod);
+  let days = Math.ceil((e - s) / 86400000);
+
+  for(let i=0;i<days;i++){
+    let d = new Date(s.getTime()+i*86400000).toISOString().split("T")[0];
+
+    billItems.push({cat:"Room Rent",date:d,desc:`Room: ${room}`,rate:info.room,qty:1,gross:info.room,net:info.room});
+    billItems.push({cat:"Nursing",date:d,desc:`Nursing`,rate:info.nursing,qty:1,gross:info.nursing,net:info.nursing});
+    billItems.push({cat:"Doctor Visit",date:d,desc:`Professional Visit`,rate:info.doctor,qty:2,gross:info.doctor*2,net:info.doctor*2});
+  }
+
+  renderUI();
+}
+
+
+/* ============================================================
+   ADD RECEIPT
+============================================================ */
+function addReceipt(){
+  let amt = parseFloat(ui_ramt.value||0);
+  let recTot = receipts.reduce((a,b)=>a+b.amt,0);
+
+  let gross = billItems.reduce((a,b)=>a+b.gross,0);
+
+  if(recTot + amt > gross){
+    alert("Receipt exceeds total bill amount!");
+    return;
+  }
+
+  receipts.push({
+    no: "R" + (receipts.length+1),
+    date: ui_rdate.value,
+    amt,
+    mode: ui_rmode.value
+  });
+
+  renderUI();
+}
+
+
+/* ============================================================
+   RENDER UI TABLES
+============================================================ */
+function renderUI(){
+  let tb = ui_billBody;
+  tb.innerHTML="";
+
+  let gross=0, ret=0, rec=0;
+
+  billItems.forEach(x=>{
+    gross += x.gross;
+    if(x.cat==="Returns") ret += x.gross;
+
+    tb.innerHTML+=`
+      <tr>
+        <td>${x.cat}</td>
+        <td>${x.date}</td>
+        <td>${x.desc}</td>
+        <td>${x.rate}</td>
+        <td>${x.qty}</td>
+        <td>${x.gross}</td>
+        <td>${x.net}</td>
+      </tr>`;
+  });
+
+  receipts.forEach(x=>{
+    rec+=x.amt;
+  });
+
+  ui_s_gross.innerText="₹"+gross;
+  ui_s_ret.innerText="₹"+ret;
+  ui_s_rec.innerText="₹"+rec;
+  ui_s_final.innerText="₹"+(gross-ret-rec);
+}
+
+
+/* ============================================================
+   SAVE BILL
+============================================================ */
+function saveBill(){
+  let finalGross = billItems.reduce((a,b)=>a+b.gross,0);
+  let rec = receipts.reduce((a,b)=>a+b.amt,0);
+  if(rec > finalGross){
+    alert("Receipts exceed total!");
+    return;
+  }
+
+  let billNo = uniqBillNo();
+  let data = {
+    billNo,
+    patient:{
+      name:ui_name.value,
+      age:ui_age.value,
+      gender:ui_gender.value,
+      uhid:ui_uhid.value,
+      ip:ui_ip.value,
+      room:ui_roomCat.value,
+      doc:ui_doc.value,
+      spec:ui_spec.value,
+      ins:ui_ins.value==="Yes"?ui_insName.value:"No",
+      doa:ui_doa.value,
+      dod:ui_dod.value
+    },
+    items:billItems,
+    receipts:receipts,
+    date:new Date().toISOString()
+  };
+
+  history.push(data);
+  save("history",history);
+
+  alert("Bill Saved!");
+  loadHistoryTable();
+}
+
+
+/* ============================================================
+   LOAD HISTORY TABLE
+============================================================ */
+function loadHistoryTable(){
+  historyTable.innerHTML="";
+  history.forEach(x=>{
+    historyTable.innerHTML+=`
+      <tr>
+        <td>${x.billNo}</td>
+        <td>${x.patient.name}</td>
+        <td>${x.patient.uhid}</td>
+        <td>${x.date.split("T")[0]}</td>
+        <td><button onclick="loadBill('${x.billNo}')">Open</button></td>
+      </tr>
+    `;
+  });
+}
+loadHistoryTable();
+
+
+/* ============================================================
+   LOAD BILL BACK INTO UI
+============================================================ */
+function loadBill(no){
+  let b = history.find(x=>x.billNo==no);
+  if(!b) return;
+
+  billItems = JSON.parse(JSON.stringify(b.items));
+  receipts  = JSON.parse(JSON.stringify(b.receipts));
+
+  // patient
+  ui_name.value = b.patient.name;
+  ui_age.value = b.patient.age;
+  ui_gender.value = b.patient.gender;
+  ui_uhid.value = b.patient.uhid;
+  ui_ip.value = b.patient.ip;
+  ui_roomCat.value = b.patient.room;
+  ui_doc.value = b.patient.doc;
+  ui_spec.value = b.patient.spec;
+  ui_ins.value = b.patient.ins==="No"?"No":"Yes";
+  ui_insName.value = b.patient.ins==="No"?"":b.patient.ins;
+  ui_doa.value = b.patient.doa;
+  ui_dod.value = b.patient.dod;
+
+  renderUI();
+
+  document.querySelector(`[data-screen="billingScreen"]`).click();
+}
+
+
+/* ============================================================
+   PREPARE PRINT VIEW
+============================================================ */
+function preparePrint(){
+  let name = ui_name.value;
+  let age = ui_age.value;
+  let gender = ui_gender.value;
+  let doa = ui_doa.value;
+  let dod = ui_dod.value;
+
+  b_invoice.innerText = uniqBillNo();
+  b_name.innerText = name;
+  b_age_gender.innerText = `${age}Y / ${gender}`;
+  b_doa.innerText = doa.replace("T"," ");
+  b_dod.innerText = dod.replace("T"," ");
+  b_doc.innerText = ui_doc.value;
+  b_spec.innerText = ui_spec.value;
+  b_ins.innerText = ui_ins.value==="Yes"?ui_insName.value:"No";
+
+  b_items.innerHTML="";
+  let total=0;
+
+  billItems.forEach(x=>{
+    b_items.innerHTML+=`
+      <div class="row">
+        <div>${x.desc}</div>
+        <div>${x.rate}</div>
+        <div>${x.qty}</div>
+        <div>${x.gross}</div>
+      </div>
+    `;
+    total+=x.gross;
+  });
+
+  let rec = receipts.reduce((a,b)=>a+b.amt,0);
+
+  s_gross.innerText="₹"+total;
+  s_final.innerText="₹"+total;
+
+  // receipts print
+  receiptLines.innerHTML="";
+  receipts.forEach(r=>{
+    receiptLines.innerHTML+=`
+      <div class="sum-line">
+        <span>${r.no} (${r.date})</span>
+        <strong>₹${r.amt}</strong>
+      </div>
+    `;
+  });
+
+  rc_total.innerText="₹"+rec;
+  rc_balance.innerText="₹"+(total - rec);
+
+  window.print();
+}
+
+
+/* ============================================================
+   SWITCH SCREENS
+============================================================ */
+document.querySelectorAll(".sidebar-nav button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".sidebar-nav button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById(btn.dataset.screen).classList.add("active");
+  });
+});
