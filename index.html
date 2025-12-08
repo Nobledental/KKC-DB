@@ -117,6 +117,19 @@
             margin-top: 2px;
         }
 
+        /* Navigation Tabs */
+        .nav-tab {
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+        }
+        .nav-tab.active {
+            border-bottom-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
         /* --- CSS: PRINT MEDIA QUERY --- */
         @media print {
             @page { size: A4; margin: 10mm; }
@@ -196,24 +209,23 @@
         }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center min-h-screen">
 
-    <!-- SETTINGS MODAL (Admin) -->
-    <div id="tariffModal" class="no-print hidden-admin fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden">
-        <div class="bg-white rounded-lg shadow-2xl w-[600px] max-h-[80vh] flex flex-col">
-            <div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-lg">
-                <h2 class="font-bold text-gray-800">Tariff Master Configuration</h2>
-                <button onclick="toggleTariffAdmin()" class="text-gray-400 hover:text-red-500 text-2xl">&times;</button>
+    <!-- NAVIGATION BAR (No Print) -->
+    <div class="w-full bg-white shadow-sm border-b border-gray-200 no-print sticky top-0 z-10">
+        <div class="max-w-[210mm] mx-auto px-4 flex justify-between items-center">
+            <div class="font-black text-[#1e3a8a] text-lg py-3">KCC BILLING</div>
+            <div class="flex gap-4">
+                <div class="nav-tab active" onclick="switchView('billing')" id="tab-billing">Billing</div>
+                <div class="nav-tab" onclick="switchView('history')" id="tab-history">History</div>
+                <div class="nav-tab" onclick="switchView('tariff')" id="tab-tariff">Tariff Master</div>
             </div>
-            <div id="tariffBody" class="p-6 overflow-y-auto grid grid-cols-2 gap-4"></div>
-            <div class="p-4 border-t bg-gray-50 text-right rounded-b-lg">
-                <button onclick="toggleTariffAdmin()" class="px-4 py-2 bg-gray-800 text-white rounded text-xs font-bold">CLOSE</button>
-            </div>
+            <div class="text-xs text-gray-500" id="authStatus">Connecting...</div>
         </div>
     </div>
 
-    <!-- MAIN A4 PAGE -->
-    <div class="container-main shadow-lg rounded-sm flex flex-col relative">
+    <!-- VIEW: BILLING (Main A4 Page) -->
+    <div id="view-billing" class="container-main shadow-lg rounded-sm flex flex-col relative mb-10">
         
         <!-- HEADER -->
         <header class="p-8 pb-2">
@@ -241,9 +253,9 @@
 
         <!-- CONTROLS (Screen Only) -->
         <div class="px-8 mb-2 no-print flex gap-2">
-            <button onclick="generateNewIDs()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded">GENERATE IDS</button>
-            <button onclick="newBill()" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded">CLEAR FORM</button>
-            <button onclick="toggleTariffAdmin()" class="bg-gray-700 hover:bg-gray-800 text-white text-xs font-bold px-3 py-2 rounded ml-auto">SETTINGS</button>
+            <button onclick="generateNewIDs()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded">NEW BILL</button>
+            <button onclick="newBill()" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-2 rounded">RESET</button>
+            <div class="ml-auto text-xs text-gray-400 self-center hidden" id="saveStatus">Saved</div>
         </div>
 
         <!-- PATIENT DETAILS SECTION -->
@@ -417,8 +429,12 @@
                             </div>
                         </div>
                         
-                        <div class="mt-4 text-right no-print">
-                            <button onclick="preparePrint()" class="bg-[#1e3a8a] text-white font-bold px-4 py-2 rounded shadow hover:bg-blue-900 transition flex items-center gap-2 justify-center w-full text-xs">
+                        <div class="mt-4 flex gap-2 justify-end no-print">
+                            <button onclick="saveBillToCloud()" class="bg-green-600 text-white font-bold px-4 py-2 rounded shadow hover:bg-green-700 transition flex items-center gap-2 justify-center text-xs">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                                SAVE
+                            </button>
+                            <button onclick="preparePrint()" class="bg-[#1e3a8a] text-white font-bold px-4 py-2 rounded shadow hover:bg-blue-900 transition flex items-center gap-2 justify-center text-xs">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                                 PRINT FINAL INVOICE
                             </button>
@@ -428,7 +444,7 @@
             </div>
         </div>
 
-        <!-- SIGNATURE SECTION (Added as requested) -->
+        <!-- SIGNATURE SECTION -->
         <div class="px-8 mt-auto mb-4">
             <div class="flex justify-between items-end pt-8 pb-4">
                 <div class="text-center">
@@ -452,9 +468,110 @@
 
     </div>
 
+    <!-- VIEW: HISTORY -->
+    <div id="view-history" class="container-main hidden bg-white shadow p-8 min-h-screen">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Bill History</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3">Date</th>
+                        <th class="px-6 py-3">Bill No</th>
+                        <th class="px-6 py-3">Patient Name</th>
+                        <th class="px-6 py-3 text-right">Amount</th>
+                        <th class="px-6 py-3 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- VIEW: TARIFF MASTER -->
+    <div id="view-tariff" class="container-main hidden bg-white shadow p-8 min-h-screen">
+        <div class="flex justify-between items-center mb-6 border-b pb-2">
+            <h2 class="text-2xl font-bold text-gray-800">Tariff Master</h2>
+            <button onclick="openAddTariffModal()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">+ ADD ITEM</button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tariffGrid">
+            <!-- Tariff Cards will go here -->
+        </div>
+    </div>
+
+    <!-- TARIFF ADD/EDIT MODAL -->
+    <div id="tariffAddModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h3 class="font-bold mb-4">Add Tariff Item</h3>
+            <input id="tm_category" class="mb-2 border p-2 w-full text-xs" placeholder="Category (e.g. SURGEON FEES)">
+            <input id="tm_description" class="mb-2 border p-2 w-full text-xs" placeholder="Description">
+            <input id="tm_rate" type="number" class="mb-4 border p-2 w-full text-xs" placeholder="Rate">
+            <div class="flex justify-end gap-2">
+                <button onclick="document.getElementById('tariffAddModal').classList.add('hidden')" class="px-3 py-1 bg-gray-200 rounded text-xs">Cancel</button>
+                <button onclick="saveTariffItem()" class="px-3 py-1 bg-blue-600 text-white rounded text-xs">Save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- --- JAVASCRIPT LOGIC --- -->
     <script type="module">
-        // 1. DECIMAL CONFIG
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 1. FIREBASE SETUP
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        let currentUser = null;
+
+        // AUTH & INIT
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        };
+        initAuth();
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                document.getElementById('authStatus').innerText = "Online";
+                document.getElementById('authStatus').className = "text-xs text-green-600 font-bold";
+                // Load Data
+                loadTariffFromCloud();
+                loadHistoryFromCloud();
+            }
+        });
+
+        // 2. DATA & STATE
+        // Default Tariff Structure if cloud is empty
+        let localTariff = {
+            "SURGEON FEES": [],
+            "ASSISTANT SURGEON FEES": [],
+            "DJ STENTING": [],
+            "ANAESTHESIA FEES": [],
+            "ICU CHARGE": [],
+            "DOCTOR CHARGE": [],
+            "SPECIALTY DOCTOR ICU VISIT CHARGE": [],
+            "BED CHARGE": [],
+            "NURSING CHARGES": [],
+            "OT CHARGE": [],
+            "PREANESTHETIC CHECKUP": [],
+            "MEDICINE CHARGE": [],
+            "ROOM RENT": [],
+            "MISC": []
+        };
+
+        window.billItems = [];
+        window.receipts = [];
+        window.currentBillId = null; // Tracks if we are editing an existing bill
+
+        // 3. DECIMAL CONFIG
         if (typeof Decimal === 'undefined') {
             window.Decimal = class {
                 constructor(value) { this.v = Number(value || 0); }
@@ -471,74 +588,25 @@
             window.Decimal = Decimal;
         }
 
-        // 2. DATA CONSTANTS
-        window.TARIFF = {
-            currency: "INR",
-            opd_charges: { CONSULTATION: { name: "General Consultation", rate: 500 }, SPECIALIST: { name: "Super Specialist Visit", rate: 1000 } },
-            rooms: {
-                "SINGLE AC": { tariff: 3500, nursing: 750, consultant: 800 },
-                "GENERAL WARD": { tariff: 2500, nursing: 750, consultant: 800 },
-                "GW": { tariff: 2000, nursing: 500, consultant: 500 },
-                "PVT": { tariff: 4000, nursing: 1000, consultant: 1000 },
-                "ICU": { tariff: 6000, nursing: 2000, consultant: 2000 }
-            },
-            // Flat list of categories added to TARIFF keys to appear in dropdown
-            "SURGEON FEES": { default: { rate: 0 } },
-            "ASSISTANT SURGEON FEES": { default: { rate: 0 } },
-            "DJ STENTING": { default: { rate: 0 } },
-            "ANAESTHESIA FEES": { default: { rate: 0 } },
-            "ICU CHARGE": { default: { rate: 0 } },
-            "DOCTOR CHARGE": { default: { rate: 0 } },
-            "SPECIALTY DOCTOR ICU VISIT CHARGE": { default: { rate: 0 } },
-            "BED CHARGE": { default: { rate: 0 } },
-            "NURSING CHARGES": { default: { rate: 0 } },
-            "OT CHARGE": { default: { rate: 0 } },
-            "PREANESTHETIC CHECKUP": { default: { rate: 0 } },
-            "MEDICINE CHARGE": { default: { rate: 0 } },
-
-            doctors: ["Dr. B.K. Srinivasan", "Dr. Rajesh", "Dr. Anjali"],
-            surgical_packages: {
-                URO: { 
-                    TURP: { "GENERAL WARD": 54000, "SINGLE AC": 67500, breakup: { "Surgeon": 0.6, "OT": 0.25, "Anesthesia": 0.15 } }
-                }
-            },
-            investigations: { CBC: { name: "Complete Blood Count", rate: 450 }, CREATININE: { name: "Serum Creatinine", rate: 250 } },
-            pharmacy: { PARA500: { name: "Paracetamol 500mg", rate: 2 }, ANTIBIOTIC: { name: "Antibiotic Inj", rate: 450 } },
-            miscellaneous: { MRD: { name: "MRD Charges", rate: 500 }, ADMISSION: { name: "Admission Fee", rate: 250 } }
-        };
-        
-        window.billItems = [];
-        window.receipts = [];
-        const STORAGE_KEY = 'kcc_bill_data';
-
-        // 3. CORE FUNCTIONS
-        function formatMoney(amount) {
-            // CHANGED: Removed Commas, simple fixed decimal
-            return new Decimal(amount).toFixed(2);
-        }
-
-        function formatDate(dateStr) {
+        // 4. CORE BILLING FUNCTIONS
+        window.formatMoney = (amount) => new Decimal(amount).toFixed(2);
+        window.formatDate = (dateStr) => {
             if (!dateStr) return '';
             const d = new Date(dateStr);
             return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
-        }
-
-        function generateUniqueBillNo() {
-            // CHANGED: 12-digit alphanumeric unique sequence
+        };
+        window.generateUniqueBillNo = () => {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
-            for (let i = 0; i < 12; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            for (let i = 0; i < 12; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
             return result;
-        }
+        };
 
-        function calculateTotals() {
+        window.calculateTotals = () => {
             let gross = new Decimal(0);
             let totalItemDisc = new Decimal(0);
             let netAfterItemDisc = new Decimal(0);
 
-            // Item Level Calcs
             window.billItems.forEach(item => {
                 const g = new Decimal(item.rate).mul(item.qty);
                 const d = new Decimal(item.discount || 0);
@@ -551,7 +619,6 @@
                 netAfterItemDisc = netAfterItemDisc.plus(g.minus(d));
             });
 
-            // Global Discount
             const globalDiscPercent = new Decimal(document.getElementById('ui_billDiscount').value || 0);
             let globalDiscVal = new Decimal(0);
             if(globalDiscPercent.gt(0)) {
@@ -560,13 +627,11 @@
 
             const finalBill = netAfterItemDisc.minus(globalDiscVal);
             
-            // Receipts
             let totalPaid = new Decimal(0);
             window.receipts.forEach(r => totalPaid = totalPaid.plus(r.amount));
             
             const balance = finalBill.minus(totalPaid);
 
-            // Update DOM Summary
             document.getElementById('ui_s_gross').innerText = formatMoney(gross.toNumber());
             document.getElementById('ui_itemDiscount').innerText = "- " + formatMoney(totalItemDisc.toNumber());
             document.getElementById('ui_globalDiscount').innerText = "- " + formatMoney(globalDiscVal.toNumber());
@@ -574,65 +639,48 @@
             document.getElementById('ui_s_grand_total').innerText = formatMoney(finalBill.toNumber());
             document.getElementById('ui_s_rec').innerText = formatMoney(totalPaid.toNumber());
             document.getElementById('ui_s_final').innerText = formatMoney(balance.toNumber());
-        }
+        };
 
-        function renderUI() {
-            // 1. Update Patient Display (For Print)
+        window.renderUI = () => {
             const fields = ['uhid', 'ip', 'name', 'doa', 'dod', 'roomCat', 'doc', 'insurance'];
             fields.forEach(f => {
                 const val = document.getElementById('ui_' + f).value;
                 const display = document.getElementById('print_' + f);
-                if (display) {
-                    display.innerText = (f === 'doa' || f === 'dod') ? formatDate(val) : val;
-                }
+                if (display) display.innerText = (f === 'doa' || f === 'dod') ? formatDate(val) : val;
             });
             
-            // NEW: Update Run Date to match Discharge Date
             const dodVal = document.getElementById('ui_dod').value;
             document.getElementById('b_run_date').innerText = formatDate(dodVal);
 
-            // 2. Render Bill Items
             const tbody = document.getElementById('ui_billBody');
             tbody.innerHTML = '';
             
-            // Sort items by Category then Date
             const sortedItems = [...window.billItems].sort((a, b) => a.category.localeCompare(b.category) || a.date.localeCompare(b.date));
-            
             let currentCat = null;
             let sno = 1;
 
             sortedItems.forEach((item, idx) => {
-                // Group Header
                 if (item.category !== currentCat) {
                     currentCat = item.category;
                     tbody.innerHTML += `<div class="category-row">${currentCat}</div>`;
                 }
-
-                const originalIdx = window.billItems.indexOf(item); // To delete/edit correctly
-                
+                const originalIdx = window.billItems.indexOf(item);
                 const row = document.createElement('div');
                 row.className = 'bill-grid-row group hover:bg-blue-50';
                 row.innerHTML = `
                     <div class="text-left-col text-gray-500">${sno++}</div>
                     <div class="text-left-col">${formatDate(item.date)}</div>
-                    
                     <div class="text-left-col">
-                        <!-- Editable Description Input -->
                         <input type="text" class="input-desc-edit" value="${item.desc}" onchange="updateItemDesc(${originalIdx}, this.value)">
                         <span class="print-desc-display hidden">${item.desc}</span>
                     </div>
-
                     <div class="text-right-col">${parseFloat(item.rate).toFixed(2)}</div>
                     <div class="text-right-col">${item.qty}</div>
-                    
                     <div class="text-right-col">
-                        <input type="number" class="input-financial w-full h-6 text-xs no-print" 
-                            value="${item.discount}" onchange="updateItemDisc(${originalIdx}, this.value)">
+                        <input type="number" class="input-financial w-full h-6 text-xs no-print" value="${item.discount}" onchange="updateItemDisc(${originalIdx}, this.value)">
                         <span class="print-value-display hidden">${item.discount > 0 ? item.discount : '-'}</span>
                     </div>
-                    
                     <div class="text-right-col font-bold text-gray-900">${item.total}</div>
-                    
                     <div class="text-center no-print">
                         <button onclick="deleteItem(${originalIdx})" class="text-red-400 hover:text-red-600 font-bold">×</button>
                     </div>
@@ -640,7 +688,6 @@
                 tbody.appendChild(row);
             });
 
-            // 3. Render Receipts
             const rContainer = document.getElementById('receiptLines');
             rContainer.innerHTML = window.receipts.map((r, i) => `
                 <div class="flex justify-between border-b border-dashed border-gray-200 py-1">
@@ -650,191 +697,301 @@
             `).join('');
 
             calculateTotals();
-            saveData();
-        }
+        };
 
-        // 4. ACTION FUNCTIONS
-        window.addItem = function() {
+        // 5. BILLING ACTIONS
+        window.addItem = () => {
             const cat = document.getElementById('ui_cat').value;
-            // CHANGED: Get value from input instead of select
             const desc = document.getElementById('ui_desc').value;
             const rate = document.getElementById('ui_rate').value;
             const qty = document.getElementById('ui_qty').value;
-            const date = document.getElementById('ui_doa').value; // Default to admission date
+            // CHANGED: Default to Discharge Date (ui_dod) instead of Admission Date
+            const date = document.getElementById('ui_dod').value; 
 
             if(!rate || !qty) return;
 
-            window.billItems.push({
-                category: cat,
-                desc: desc,
-                rate: rate,
-                qty: qty,
-                date: date,
-                discount: 0
-            });
+            window.billItems.push({ category: cat, desc: desc, rate: rate, qty: qty, date: date, discount: 0 });
             renderUI();
         };
 
-        window.updateItemDisc = function(idx, val) {
-            window.billItems[idx].discount = val;
-            renderUI();
-        };
-        
-        // New Function to handle description edits
-        window.updateItemDesc = function(idx, val) {
-            window.billItems[idx].desc = val;
-            // No need to re-render UI completely for text change to avoid focus loss, 
-            // but we call saveData.
-            saveData();
-        };
-
-        window.deleteItem = function(idx) {
-            window.billItems.splice(idx, 1);
-            renderUI();
-        };
-
-        window.addReceipt = function() {
+        window.updateItemDisc = (idx, val) => { window.billItems[idx].discount = val; renderUI(); };
+        window.updateItemDesc = (idx, val) => { window.billItems[idx].desc = val; };
+        window.deleteItem = (idx) => { window.billItems.splice(idx, 1); renderUI(); };
+        window.addReceipt = () => {
             const rno = document.getElementById('ui_rno').value;
             const amt = document.getElementById('ui_ramt').value;
             const date = document.getElementById('ui_rdate').value;
             const mode = document.getElementById('ui_rmode').value;
-
             if(!amt || !rno) return;
-
             window.receipts.push({ no: rno, amount: parseFloat(amt), date: date, mode: mode });
             document.getElementById('ui_ramt').value = '';
             renderUI();
         };
+        window.deleteReceipt = (idx) => { window.receipts.splice(idx, 1); renderUI(); };
 
-        window.deleteReceipt = function(idx) {
-            window.receipts.splice(idx, 1);
-            renderUI();
-        };
-
-        window.addRoomDays = function() {
+        window.addRoomDays = () => {
             const roomType = document.getElementById('ui_roomCat').value;
             const start = new Date(document.getElementById('ui_doa').value);
             const end = new Date(document.getElementById('ui_dod').value);
-            
             if(isNaN(start) || isNaN(end)) return alert("Set Dates first");
-
-            const roomData = window.TARIFF.rooms[roomType];
-            if(!roomData) return;
+            // Assuming hardcoded room logic for auto-calc or can be fetched from tariff if structured
+            // Using basic values for demo as dynamic tariff structure is flat
+            let tariff = 2000, nursing = 500, doc = 500;
+            if(roomType.includes("PVT")) { tariff=4000; nursing=1000; doc=1000; }
+            if(roomType.includes("ICU")) { tariff=6000; nursing=2000; doc=2000; }
+            if(roomType.includes("AC")) { tariff=3500; nursing=750; doc=800; }
 
             const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-            
             for(let i=0; i < days; i++) {
                 let d = new Date(start);
                 d.setDate(d.getDate() + i);
                 const dateStr = d.toISOString().split('T')[0];
-
                 window.billItems.push(
-                    { category: "Room Rent", desc: `Room Charge: ${roomType}`, rate: roomData.tariff, qty: 1, date: dateStr, discount: 0 },
-                    { category: "Nursing", desc: "Nursing Charges", rate: roomData.nursing, qty: 1, date: dateStr, discount: 0 },
-                    { category: "Doctor Visit", desc: "Consultant Visits", rate: roomData.consultant * 2, qty: 1, date: dateStr, discount: 0 }
+                    { category: "ROOM RENT", desc: `Room: ${roomType}`, rate: tariff, qty: 1, date: dateStr, discount: 0 },
+                    { category: "NURSING CHARGES", desc: "Nursing Charges", rate: nursing, qty: 1, date: dateStr, discount: 0 },
+                    { category: "DOCTOR CHARGE", desc: "Consultant Visit", rate: doc, qty: 1, date: dateStr, discount: 0 }
                 );
             }
             renderUI();
         };
 
-        // 5. SETUP & HELPERS
-        function saveData() {
-            const data = {
-                items: window.billItems,
-                receipts: window.receipts,
-                patient: {
-                    uhid: document.getElementById('ui_uhid').value,
-                    name: document.getElementById('ui_name').value,
-                }
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
-
-        window.generateNewIDs = function() {
+        window.generateNewIDs = () => {
+            window.currentBillId = null; // Reset current editing ID
             document.getElementById('ui_uhid').value = "KCC" + Math.floor(Math.random() * 10000);
             document.getElementById('ui_ip').value = "IP" + Math.floor(Math.random() * 10000);
-            // CHANGED: Use new generator function
             document.getElementById('b_invoice_no').innerText = generateUniqueBillNo();
             renderUI();
         };
 
-        window.preparePrint = function() {
-            // NEW: Updated File Name Saving
+        window.preparePrint = () => {
             const name = document.getElementById('ui_name').value || "Patient";
             const billNo = document.getElementById('b_invoice_no').innerText || "Bill";
             document.title = `${name}_${billNo}`;
             setTimeout(() => window.print(), 100);
         };
 
-        window.newBill = function() {
-            if(confirm("Clear current bill?")) {
+        window.newBill = () => {
+            if(confirm("Reset form? Unsaved changes will be lost.")) {
                 window.billItems = [];
                 window.receipts = [];
+                window.currentBillId = null;
                 document.querySelectorAll('input').forEach(i => i.value = '');
                 renderUI();
             }
         };
 
-        // 6. INITIALIZATION
-        (function init() {
-            // Populate Dropdowns
-            const catSel = document.getElementById('ui_cat');
-            Object.keys(window.TARIFF).forEach(k => {
-                 // Expanded list to include new keys
-                 if(['opd_charges', 'rooms', 'investigations', 'pharmacy', 'miscellaneous',
-                    'SURGEON FEES', 'ASSISTANT SURGEON FEES', 'DJ STENTING', 'ANAESTHESIA FEES',
-                    'ICU CHARGE', 'DOCTOR CHARGE', 'SPECIALTY DOCTOR ICU VISIT CHARGE', 'BED CHARGE',
-                    'NURSING CHARGES', 'OT CHARGE', 'PREANESTHETIC CHECKUP', 'MEDICINE CHARGE'
-                    ].includes(k)) {
-                     const opt = document.createElement('option');
-                     opt.value = k;
-                     opt.text = k.toUpperCase().replace('_', ' ');
-                     catSel.add(opt);
-                 }
+        // 6. CLOUD SAVING & HISTORY
+        window.saveBillToCloud = async () => {
+            if (!currentUser) return alert("Offline. Cannot save.");
+            const billData = {
+                uhid: document.getElementById('ui_uhid').value,
+                ip: document.getElementById('ui_ip').value,
+                name: document.getElementById('ui_name').value,
+                doa: document.getElementById('ui_doa').value,
+                dod: document.getElementById('ui_dod').value,
+                roomCat: document.getElementById('ui_roomCat').value,
+                doc: document.getElementById('ui_doc').value,
+                insurance: document.getElementById('ui_insurance').value,
+                billNo: document.getElementById('b_invoice_no').innerText,
+                billDiscount: document.getElementById('ui_billDiscount').value,
+                items: window.billItems,
+                receipts: window.receipts,
+                updatedAt: new Date().toISOString()
+            };
+
+            const statusEl = document.getElementById('saveStatus');
+            statusEl.innerText = "Saving...";
+            statusEl.classList.remove('hidden');
+
+            try {
+                if (window.currentBillId) {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bills', window.currentBillId), billData);
+                } else {
+                    const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'bills'), billData);
+                    window.currentBillId = docRef.id;
+                }
+                statusEl.innerText = "Saved to Cloud";
+                setTimeout(() => statusEl.classList.add('hidden'), 2000);
+            } catch (e) {
+                console.error(e);
+                alert("Error saving bill");
+            }
+        };
+
+        const loadHistoryFromCloud = () => {
+            if (!currentUser) return;
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'bills'), (snapshot) => {
+                const tbody = document.getElementById('historyTableBody');
+                tbody.innerHTML = '';
+                snapshot.forEach(docSnap => {
+                    const d = docSnap.data();
+                    const total = d.items.reduce((acc, item) => acc + (item.rate * item.qty - (item.discount||0)), 0);
+                    const tr = document.createElement('tr');
+                    tr.className = "bg-white border-b hover:bg-gray-50 cursor-pointer";
+                    tr.innerHTML = `
+                        <td class="px-6 py-4">${formatDate(d.updatedAt.split('T')[0])}</td>
+                        <td class="px-6 py-4 font-mono font-bold">${d.billNo}</td>
+                        <td class="px-6 py-4 font-bold text-gray-900">${d.name}</td>
+                        <td class="px-6 py-4 text-right">₹${total.toFixed(2)}</td>
+                        <td class="px-6 py-4 text-center">
+                            <button class="text-blue-600 hover:underline">Edit</button>
+                        </td>
+                    `;
+                    tr.onclick = () => loadBillIntoEditor(docSnap.id, d);
+                    tbody.appendChild(tr);
+                });
             });
+        };
+
+        const loadBillIntoEditor = (id, data) => {
+            window.currentBillId = id;
+            window.billItems = data.items || [];
+            window.receipts = data.receipts || [];
             
-            // Populate Rooms
+            document.getElementById('ui_uhid').value = data.uhid;
+            document.getElementById('ui_ip').value = data.ip;
+            document.getElementById('ui_name').value = data.name;
+            document.getElementById('ui_doa').value = data.doa;
+            document.getElementById('ui_dod').value = data.dod;
+            document.getElementById('ui_roomCat').value = data.roomCat;
+            document.getElementById('ui_doc').value = data.doc;
+            document.getElementById('ui_insurance').value = data.insurance;
+            document.getElementById('b_invoice_no').innerText = data.billNo;
+            document.getElementById('ui_billDiscount').value = data.billDiscount || 0;
+
+            switchView('billing');
+            renderUI();
+        };
+
+        // 7. TARIFF MASTER LOGIC
+        const loadTariffFromCloud = () => {
+            if (!currentUser) return;
+            const tariffRef = doc(db, 'artifacts', appId, 'public', 'data', 'tariff', 'master');
+            
+            onSnapshot(tariffRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    localTariff = docSnap.data();
+                } else {
+                    // Initialize if empty
+                    setDoc(tariffRef, localTariff);
+                }
+                updateDropdowns();
+                renderTariffMasterUI();
+            });
+        };
+
+        const updateDropdowns = () => {
+            const catSel = document.getElementById('ui_cat');
             const roomSel = document.getElementById('ui_roomCat');
-            Object.keys(window.TARIFF.rooms).forEach(k => {
+            const currentVal = catSel.value; // preserve selection
+            catSel.innerHTML = '';
+            
+            Object.keys(localTariff).forEach(k => {
                 const opt = document.createElement('option');
                 opt.value = k;
                 opt.text = k;
-                roomSel.add(opt);
+                catSel.add(opt);
             });
+            if(currentVal) catSel.value = currentVal;
 
-            // Populate Doctors
-            const docSel = document.getElementById('ui_doc');
-            window.TARIFF.doctors.forEach(d => {
+            // Simple room population based on hardcoded types for now, 
+            // but ideally this also comes from tariff if we structured it that way.
+            roomSel.innerHTML = '';
+            ["GENERAL WARD", "SINGLE AC", "GW", "PVT", "ICU"].forEach(r => {
                 const opt = document.createElement('option');
-                opt.value = d;
-                opt.text = d;
-                docSel.add(opt);
+                opt.value = r; opt.text = r; roomSel.add(opt);
             });
+        };
 
-            // Dynamic Description Loader - MODIFIED
-            catSel.addEventListener('change', (e) => {
-                // Auto-fill Description text input with the Category Name
-                // This is helpful since the user has to manual edit descriptions now
-                const descInput = document.getElementById('ui_desc');
-                descInput.value = e.target.value; 
+        window.openAddTariffModal = () => document.getElementById('tariffAddModal').classList.remove('hidden');
+        
+        window.saveTariffItem = async () => {
+            const cat = document.getElementById('tm_category').value.toUpperCase();
+            const desc = document.getElementById('tm_description').value;
+            const rate = parseFloat(document.getElementById('tm_rate').value);
+
+            if(!cat || !desc) return;
+
+            if(!localTariff[cat]) localTariff[cat] = [];
+            localTariff[cat].push({ name: desc, rate: rate });
+
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tariff', 'master'), localTariff);
+            document.getElementById('tariffAddModal').classList.add('hidden');
+        };
+
+        window.deleteTariffItem = async (cat, idx) => {
+            if(confirm("Delete this tariff item?")) {
+                localTariff[cat].splice(idx, 1);
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tariff', 'master'), localTariff);
+            }
+        };
+
+        const renderTariffMasterUI = () => {
+            const grid = document.getElementById('tariffGrid');
+            grid.innerHTML = '';
+            Object.keys(localTariff).forEach(cat => {
+                const card = document.createElement('div');
+                card.className = "border rounded p-4 shadow-sm bg-gray-50";
+                
+                let listHtml = '';
+                localTariff[cat].forEach((item, idx) => {
+                    listHtml += `
+                        <div class="flex justify-between items-center text-xs py-1 border-b border-gray-200">
+                            <span>${item.name}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold">₹${item.rate}</span>
+                                <button onclick="deleteTariffItem('${cat}', ${idx})" class="text-red-500 hover:text-red-700">×</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <h4 class="font-bold text-[#1e3a8a] mb-2 border-b pb-1">${cat}</h4>
+                    <div class="max-h-40 overflow-y-auto">${listHtml}</div>
+                `;
+                grid.appendChild(card);
             });
-            
-            // Trigger first load
-            // catSel.dispatchEvent(new Event('change')); 
+        };
 
-            // Set Dates
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('ui_doa').value = today;
-            document.getElementById('ui_dod').value = today;
-            document.getElementById('ui_rdate').value = today;
-            
-            generateNewIDs();
-            renderUI();
-        })();
+        // 8. NAVIGATION
+        window.switchView = (view) => {
+            ['billing', 'history', 'tariff'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                document.getElementById('tab-' + v).classList.remove('active');
+            });
+            document.getElementById('view-' + view).classList.remove('hidden');
+            document.getElementById('tab-' + view).classList.add('active');
+        };
 
-        // Admin Toggles
-        window.toggleTariffAdmin = () => document.getElementById('tariffModal').classList.toggle('hidden');
-        window.clearBillingItems = () => { window.billItems = []; renderUI(); };
+        // 9. INIT LISTENERS
+        document.getElementById('ui_cat').addEventListener('change', (e) => {
+            // Auto-fill Description if items exist in tariff
+            const cat = e.target.value;
+            
+            // FIXED: Uncommented this line so description auto-fills again
+            document.getElementById('ui_desc').value = cat; 
+            
+            // Optional: If you want to grab a default rate from your localTariff items
+            // const items = localTariff[cat];
+            // if(items && items.length > 0) document.getElementById('ui_rate').value = items[0].rate;
+        });
+
+        // Initialize Dates
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('ui_doa').value = today;
+        document.getElementById('ui_dod').value = today;
+        document.getElementById('ui_rdate').value = today;
+        generateNewIDs();
+        renderUI();
+
+        // Populate doctors (hardcoded for now as not in dynamic tariff yet)
+        const docSel = document.getElementById('ui_doc');
+        ["Dr. B.K. Srinivasan", "Dr. Rajesh", "Dr. Anjali"].forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d; opt.text = d; docSel.add(opt);
+        });
+
     </script>
 </body>
 </html>
