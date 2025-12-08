@@ -1,94 +1,99 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KCC Billing OS — Krishna Kidney Centre</title>
+<meta charset="UTF-8">
+<title>KCC Billing OS — Final Tax Invoice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="compact_v7_5.css">
 
-    <link rel="stylesheet" href="style.css" />
+<script>
+/* *** DECIMAL.JS LIBRARY CODE GOES HERE ***
+    To run this offline, replace this comment block with the FULL minified code 
+    from decimal.min.js (or ensure it's loaded via <script src="vendor/decimal.min.js"></script>
+    if using a vendor folder).
+*/
+if (typeof Decimal === 'undefined') {
+    // Basic fallback for development testing only
+    console.error("Decimal.js not loaded. Financial calculations will be inaccurate.");
+    // Define a dummy Decimal to prevent hard crash during development
+    window.Decimal = function(value) {
+        return {
+            toNumber: () => Number(value),
+            plus: (other) => new Decimal(Number(value) + Number(other)),
+            mul: (other) => new Decimal(Number(value) * Number(other)),
+            toFixed: (d) => Number(value).toFixed(d),
+            lte: (other) => Number(value) <= Number(other),
+            gt: (other) => Number(value) > Number(other),
+            lt: (other) => Number(value) < Number(other),
+            div: (other) => new Decimal(Number(value) / Number(other)),
+            minus: (other) => new Decimal(Number(value) - Number(other))
+        };
+    };
+}
+</script>
 
-    <script src="vendor/decimal.min.js"></script>
+<script src="data/tariffs.js"></script>
 
-    <script src="vendor/html2canvas.min.js"></script>
-    <script src="vendor/jspdf.umd.min.js"></script>
-    <script src="vendor/jspdf.autotable.min.js"></script>
-    <script src="vendor/JsBarcode.min.js"></script>
-    <script src="vendor/qrcode.min.js"></script>
-
-    <script src="data/tariffs.js"></script>
-
-    <script defer src="app.js"></script>
+<script defer src="app.js"></script>
 
 </head>
-
 <body>
-
-<aside class="sidebar">
-    <div class="sidebar-header">
-        <div class="sidebar-logo">KKC</div>
-        <h2>Krishna Kidney Centre</h2>
-    </div>
-
-    <nav class="sidebar-nav">
-        <button data-screen="billingScreen" class="active">🧾 Billing</button>
-        <button data-screen="tariffScreen">⚙️ Tariff Master</button>
-        <button data-screen="historyScreen">📜 Bill History</button>
-    </nav>
-</aside>
-
-<main id="main">
-
-    <section id="billingScreen" class="screen active">
-
-        <h1 class="ui-title">KCC Billing System</h1>
-
-        <div class="ui-card">
-            <h2>Patient Details</h2>
-
-            <div class="ui-row-3">
-                <div><label>Name</label><input id="ui_name" type="text" placeholder="Patient Name"></div>
-                <div><label>Age</label><input id="ui_age" type="number" placeholder="Age"></div>
-                <div><label>Gender</label>
-                    <select id="ui_gender">
-                        <option>Male</option><option>Female</option><option>Other</option>
-                    </select>
+    <div class="container" id="billingPage">
+        
+        <div class="header-flex">
+            <div class="logo-area">
+                <div class="logotype">KCC</div>
+                <div class="h-info">
+                    <h1 class="h-title">KRISHNA KIDNEY CENTRE</h1>
+                    <p class="h-sub">Krishnagiri, Tamil Nadu • India</p> 
                 </div>
             </div>
-
-            <div class="ui-row-3">
-                <div><label>UHID</label><input id="ui_uhid" type="text" placeholder="Unique Health ID"></div>
-                <div><label>IP Number</label><input id="ui_ip" type="text" placeholder="Inpatient/Case No."></div>
-                <div><label>Room Category</label><select id="ui_roomCat"></select></div>
+            <div class="invoice-block">
+                <span class="invoice-label">IP TAX INVOICE — CASH</span>
+                <p class="small-meta">Bill No: <strong id="b_invoice_no">PROVISIONAL</strong></p>
+                <p class="small-meta">Run Date: <strong id="b_run_date">-</strong></p>
             </div>
-
-            <div class="ui-row-2">
-                <div><label>Admission Date</label><input id="ui_doa" type="date"></div> 
-                <div><label>Discharge Date</label><input id="ui_dod" type="date"></div>
-            </div>
-
-            <div class="ui-row-2">
-                <div><label>Consultant</label><select id="ui_doc"></select></div>
-                <div><label>Speciality</label><input id="ui_spec" value="Urology" type="text"></div>
-            </div>
-
-            <div class="ui-row-2">
-                <div><label>Insurance?</label>
-                    <select id="ui_ins"><option value="No">No</option><option value="Yes">Yes</option></select>
-                </div>
-                <div><label>Insurance Name/TPA</label><input id="ui_insName" type="text" placeholder="Enter Insurance/TPA Name"></div>
-            </div>
-            
-             <button class="btn info" onclick="addRoomDays()">Calculate & Add Room Days</button>
         </div>
 
+        <div class="compact-line"> 
+            <input type="text" id="ui_uhid" placeholder="UHID" value="KCC001045"> &nbsp;•&nbsp; 
+            <input type="text" id="ui_ip" placeholder="IP No" value="KCC-IPD-0045"> &nbsp;•&nbsp; 
+            Age: <input type="number" id="ui_age" placeholder="Age" value="55" style="width: 40px;"> / <select id="ui_gender" style="width: 70px;"><option>Male</option><option>Female</option></select> &nbsp;•&nbsp; 
+            Room: <select id="ui_roomCat" style="width: 120px;"></select>
+            <button onclick="addRoomDays()" class="btn-compact">Auto-Charge</button>
+            <button onclick="preparePrint()" class="btn-compact print-btn">Export PDF</button>
+        </div>
 
-        <div class="ui-card">
-            <h2>Add Billing Item</h2>
-
-            <div class="ui-row-4">
-                <div><label>Category</label>
+        <div class="section">
+            <div class="column-title">Patient & Billing Details</div>
+            <div class="details-grid">
+                <div> 
+                    <label>Patient Name</label> 
+                    <input type="text" id="ui_name" placeholder="Name" value="Mr. RAHUL">
+                </div>
+                <div> 
+                    <label>Admission Date</label> 
+                    <input type="date" id="ui_doa" value="2025-11-28">
+                </div>
+                <div> 
+                    <label>Discharge Date</label> 
+                    <input type="date" id="ui_dod" value="2025-11-30">
+                </div>
+                <div> 
+                    <label>Practitioner</label> 
+                    <select id="ui_doc"></select>
+                </div>
+                <div> 
+                    <label>Speciality</label> 
+                    <input type="text" id="ui_spec" value="Urology">
+                </div>
+                <div> 
+                    <label>Discount (%)</label> 
+                    <input type="number" id="ui_billDiscount" placeholder="0" value="0">
+                </div>
+                <div> 
+                    <label>Bill Item Category</label> 
                     <select id="ui_cat">
                         <option value="Consultation">Consultation</option>
                         <option value="Pharmacy">Pharmacy</option>
@@ -98,240 +103,48 @@
                         <option value="Returns">Returns</option>
                     </select>
                 </div>
-
-                <div><label>Date</label><input id="ui_date" type="date"></div>
-                <div><label>Description/Item</label>
-                    <select id="ui_desc"><option value="">-- Select Category First --</option></select>
+                <div> 
+                    <label>Item Description / Rate</label> 
+                    <select id="ui_desc"></select>
                 </div>
-                <div><label>Rate (Manual/Tariff)</label><input id="ui_rate" type="number" placeholder="0.00"></div>
-            </div>
-
-            <div class="ui-row-3">
-                <div><label>Qty</label><input id="ui_qty" type="number" value="1"></div>
-                <div><label>Copay % (Not Implemented)</label><input id="ui_copay" type="number" disabled></div>
-                <div><button class="btn primary full" onclick="addItem()">Add Item</button></div>
-            </div>
-        </div>
-
-
-        <div class="ui-card">
-            <h2>Payment Receipts</h2>
-
-            <div class="ui-row-3">
-                <div><label>Date</label><input id="ui_rdate" type="date"></div>
-                <div><label>Amount (₹)</label><input id="ui_ramt" type="number"></div>
-                <div><label>Mode</label>
-                    <select id="ui_rmode"><option>Cash</option><option>UPI</option><option>Card</option></select>
-                </div>
-            </div>
-
-            <button class="btn primary" onclick="addReceipt()">Add Receipt</button>
-        </div>
-
-
-        <div class="ui-card">
-            <h2>Bill Discount</h2>
-
-            <div class="ui-row-3">
-                <div>
-                    <label>Overall Discount (₹)</label>
-                    <input id="ui_billDiscount" type="number" value="0">
-                </div>
-
-                <div>
-                    <label>Apply Discount</label>
-                    <button class="btn primary full" onclick="applyBillDiscount()">Apply Proportional</button>
-                </div>
-
-                <div>
-                    <label>Total Discount Applied</label>
-                    <p id="ui_totalDiscount" class="sum-value">₹0.00</p>
+                <div> 
+                    <label>Qty / Add Item</label> 
+                    <input type="number" id="ui_qty" value="1" style="width: 40px;">
+                    <button onclick="addItem()" class="btn-compact">Add</button>
                 </div>
             </div>
         </div>
 
-
-        <div class="ui-card">
-            <h2>Billing Items</h2>
-
-            <table class="bill-ui-table">
-                <thead>
-                    <tr>
-                        <th>Cat</th>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Rate</th>
-                        <th>Qty</th>
-                        <th>Gross</th>
-                        <th>Discount</th>
-                        <th>Net</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="ui_billBody"></tbody>
-            </table>
-        </div>
-
-
-        <div class="ui-card summary-card">
-            <h2>Summary</h2>
-
-            <div class="sum-ui-row"><span>Total Gross</span><strong id="ui_s_gross">₹0.00</strong></div>
-            <div class="sum-ui-row"><span>Total Discount</span><strong id="ui_totalDiscount_summary">₹0.00</strong></div>
-            <div class="sum-ui-row"><span>Net Bill Amount</span><strong id="ui_s_net_bill">₹0.00</strong></div>
-            <div class="sum-ui-row"><span>Receipts Paid</span><strong id="ui_s_rec">₹0.00</strong></div>
-            <div class="sum-ui-row total"><span>Balance Payable</span><strong id="ui_s_final">₹0.00</strong></div>
-
-            <div class="summary-actions">
-                <button class="btn success" onclick="saveBill()">💾 Save Bill</button>
-                <button class="btn secondary" onclick="preparePrint()">🖨️ Print Bill</button>
+        <div class="section">
+            <div class="column-title">Billing Items</div>
+            <div class="column-header-row">
+                <div class="column-header">Category</div>
+                <div class="column-header">Date</div>
+                <div class="column-header">Description</div>
+                <div class="column-header">Rate</div>
+                <div class="column-header">Qty</div>
+                <div class="column-header">Gross</div>
+                <div class="column-header">Net</div>
+                <div class="column-header">Action</div>
             </div>
+            <div class="column-detail" id="ui_billBody">
+                </div>
         </div>
 
-    </section>
-
-
-    <section id="tariffScreen" class="screen">
-        <h1 class="ui-title">Tariff Master</h1>
-
-        <div class="ui-card">
-            <h2>Rooms (IPD Charges)</h2>
-            <div id="tariff_rooms" class="tariff-grid-container"></div>
-            <button class="btn primary" onclick="addRoom()">+ Add Room</button>
-        </div>
-
-        <div class="ui-card">
-            <h2>Doctors / Consultants</h2>
-            <div id="tariff_doctors" class="tariff-grid-container"></div>
-            <button class="btn primary" onclick="addDoctor()">+ Add Doctor</button>
-        </div>
-
-        <div class="ui-card">
-            <h2>Surgical Packages</h2>
-            <p class="note-text">Edit package names in tariffs.js for this version.</p>
-            <div id="tariff_packages" class="tariff-grid-container" style="flex-direction: column;"></div>
-        </div>
-
-        <div class="save-tariff-container">
-            <button class="btn success huge" onclick="saveTariff()">✅ Save All Tariff Changes</button>
-        </div>
-    </section>
-
-
-    <section id="historyScreen" class="screen">
-        <h1 class="ui-title">Bill History</h1>
-
-        <div class="ui-card">
-            <table class="bill-ui-table">
-                <thead>
-                    <tr>
-                        <th>Bill No</th><th>Patient</th><th>UHID</th><th>Date</th><th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="historyTable"></tbody>
-            </table>
-        </div>
-    </section>
-
-</main>
-
-
-<div class="container print-page" id="billContainerFinal">
-
-    <div class="header-flex">
-        <div class="logo-area">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////Li4uKk9QrwAAAAJ0Uk5T/wDltzBKAAAAKklEQVR42u3MgQAAAAQEof7/qwcKQAAAAAAAAAAAAAAAAAAAAAAAAd4AGLpAAaVz+mEAAAAASUVORK5CYII=" alt="Hospital Logo" class="logo-img"> 
-            <div class="h-info">
-                <h1 class="h-title">KRISHNA KIDNEY CENTRE</h1>
-                <p class="h-sub">No.1/375-7, Rayakottai Main Road, Near Flyover, Krishnagiri - 635001</p>
-                <p class="h-sub">Mobile: 8300224569 / 9442318169 • Email: bksrinivasan1980@yahoo.co.in</p>
-                <p class="h-sub tamil">மருத்துவர்: சிறுநீர் பாதை நோய்கள் சேவை</p>
-            </div>
-        </div>
-
-        <div class="invoice-block">
-            <span class="invoice-label">HOSPITAL BREAK-UP BILL</span>
-            <p class="small-meta">Bill No: <strong id="b_invoice">-</strong></p>
-            <p class="small-meta">Date: <strong id="b_date_issued">-</strong></p>
-        </div>
-    </div>
-
-    <div class="doctor-line" id="doctorLine">
-        Dr. B.K. SRINIVASAN, M.S, M.Ch. (Urology) — UROLOGIST & ANDROLOGIST — Regd No: 73759
-    </div>
-
-    <div class="section">
-        <div class="column-title">Patient & Billing Details</div>
-
-        <div class="details-grid">
-            <div><label>Name</label><p id="b_name"></p></div>
-            <div><label>UHID / IP No</label><p id="b_uhid_ip"></p></div>
-            <div><label>Age / Gender</label><p id="b_age_gender"></p></div>
-            <div><label>Room Category</label><p id="b_room"></p></div>
-            <div><label>D.O.A</label><p id="b_doa"></p></div>
-            <div><label>D.O.D</label><p id="b_dod"></p></div>
-            <div><label>Consultant</label><p id="b_doc"></p></div>
-            <div><label>Speciality</label><p id="b_spec"></p></div>
-            <div><label>Insurance</label><p id="b_ins"></p></div>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="column-title">Billing Items</div>
-
-        <div class="column-header-row">
-            <div class="column-header">Description</div>
-            <div class="column-header-small">Rate</div>
-            <div class="column-header-small">Qty</div>
-            <div class="column-header-small">Gross (₹)</div>
-            <div class="column-header-small">Disc (₹)</div>
-            <div class="column-header-small">Net (₹)</div>
-        </div>
-
-        <div class="column-detail" id="b_items"></div>
-    </div>
-
-    <div class="section">
-        <div class="column-title">Final Summary</div>
-
-        <div class="summary-box">
-            <div class="sum-line"><span>Total Gross Charges</span><strong id="s_gross">₹0.00</strong></div>
-            <div class="sum-line"><span>Total Discount/Adjustment</span><strong id="s_discount">₹0.00</strong></div>
-            <div class="sum-line total"><span>NET Payable Amount</span><strong id="s_final">₹0.00</strong></div>
-        </div>
-    </div>
-</div>
-
-
-<div class="container receipt-container print-page" id="receiptContainer">
-    <div class="header-flex">
-        <div class="logo-area">
-            <img src="assets/logo.png" class="logo-img">
-            <div class="h-info"><h1 class="h-title">KRISHNA KIDNEY CENTRE</h1></div>
-        </div>
-        <div class="invoice-block"><span class="invoice-label">PAYMENT BREAKDOWN</span></div>
-    </div>
-    
-    <div class="section">
-        <div class="column-title">Receipts and Balance</div>
-
-        <div class="summary-box">
-            <div id="receiptLines"></div>
-
-            <div class="sum-line total">
-                <span>Total Receipts</span><strong id="rc_total">₹0.00</strong>
-            </div>
-
-            <div class="sum-final">
-                <span>Balance Payable / Refundable</span><strong id="rc_balance">₹0.00</strong>
-            </div>
-            
-            <div class="sum-final footer-text">
-                <p>Signature (Billing Executive)</p>
+        <div class="section">
+            <div class="column-title">Summary</div>
+            <div class="summary-box">
+                <div class="sum-line"><span>Total Gross</span> <strong id="ui_s_gross">₹0.00</strong></div>
+                <div class="sum-line"><span>Total Discount</span> <strong id="ui_totalDiscount">- ₹0.00</strong></div>
+                <div class="sum-line"><span>Taxable Amount</span> <strong id="ui_s_net_bill">₹0.00</strong></div>
+                <div class="sum-line total"><span>Final Amount Payable</span> <strong id="ui_s_final">₹0.00</strong></div>
+                
+                <div class="sum-line" style="margin-top: 10px;"><span>Receipts Paid</span> <strong id="ui_s_rec">₹0.00</strong></div>
+                <input type="number" id="ui_ramt" placeholder="Add Receipt Amt" style="width: 100px;">
+                <select id="ui_rmode" style="width: 80px;"><option>Cash</option><option>UPI</option></select>
+                <button onclick="addReceipt()" class="btn-compact">Pay</button>
             </div>
         </div>
     </div>
-</div>
-
 </body>
 </html>
