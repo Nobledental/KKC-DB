@@ -128,13 +128,12 @@ body {
     margin-top: 2px; 
     font-size: 13px; 
     font-weight: 700; 
-    /* Ensure P tags don't wrap and clip text in the grid */
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis;
 } 
 /* =========================================== BILL TABLE =========================================== */ 
-/* NOTE: The grid column sizing must match the number of columns in app.js: 8 columns total (SN, Date, Desc, Rate, Qty, Gross, Net, Action) */
+/* Grid template for 8 columns: SNo, Date, Desc, Rate, Qty, Gross, Net, Action */
 .column-header-row, .row { 
     display: grid; 
     grid-template-columns: 35px 65px 1fr 60px 40px 60px 60px 40px; 
@@ -148,7 +147,7 @@ body {
     border-right: 1px solid #eee; 
     text-align: center;
 } 
-.column-header:nth-child(3) { text-align: left; } /* Description */
+.column-header:nth-child(3) { text-align: left; }
 .column-detail { 
     border-top: 1px solid #eee; 
 } 
@@ -166,15 +165,15 @@ body {
 .row div { 
     display: flex; 
     align-items: center; 
-    justify-content: flex-end; /* Right align all content by default */
+    justify-content: flex-end; 
 } 
 .row div:nth-child(1), .row div:nth-child(3) { 
-    justify-content: flex-start; /* Left align SN and Description */
+    justify-content: flex-start; 
 } 
-.row strong { /* Net Amount */
+.row strong { 
     font-weight: 700;
 }
-.r input { /* Discount/Rate Input */
+.r input {
     border: 1px dashed #ccc;
     width: 90%;
     padding: 2px;
@@ -217,32 +216,22 @@ body {
 
 /* =========================================== PRINT MODE (CRITICAL) =========================================== */ 
 @media print {
-    /* Hide the entire body initially */
-    body * {
-        visibility: hidden;
-    }
-    
-    /* Make ONLY the main container visible */
+    body * { visibility: hidden; }
     .container, .container * {
         visibility: visible;
-        /* Force background colors/stripes to print */
         -webkit-print-color-adjust: exact !important; 
         color-adjust: exact !important;
     }
-    
-    /* Reset main container layout for A4 */
     .container {
         position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        padding: 15px 30px;
+        left: 0; top: 0;
+        width: 100%; max-width: 100%;
+        margin: 0; padding: 15px 30px;
         box-shadow: none;
+        font-size: 10pt; /* Adjust base font size for A4 */
     }
     
-    /* Hide all interactive/control elements */
+    /* Hide all interactive elements */
     .compact-line input, .compact-line select, .compact-line button,
     .section input, .section select, .delete-btn, .print-btn {
         display: none !important;
@@ -257,24 +246,13 @@ body {
     
     /* Adjust table for print output: remove action column and replace input fields with static value */
     .column-header-row, .row { 
-        /* Remove space for the last column (Action) */
+        /* Total 7 columns visible in print */
         grid-template-columns: 35px 65px 1fr 60px 40px 60px 60px !important; 
     }
     .column-header:last-child { display: none !important; }
     .row > div:last-child { display: none !important; } 
     
-    /* Show static text in place of input fields */
-    .r input {
-        display: none !important;
-    }
-    /* Net amount strong tag becomes the static value */
-    .r strong {
-        display: block !important;
-        text-align: right !important;
-    }
-    
-    /* Hide manual add section inputs */
-    .section:nth-child(4) .details-grid {
-        display: none !important;
-    }
+    /* Show static text in place of input fields (Discount input field) */
+    .r input { display: none !important; }
+    .r strong { display: block !important; text-align: right !important; }
 }
